@@ -1,2 +1,0 @@
-- [X] automatically open up signature help
-- [ ] support `Ultisnips`
