@@ -31,7 +31,11 @@ local performCompletion = function(bufnr, line_to_cursor)
         end
       end
     end)
-  elseif api.nvim_call_function('pumvisible', {}) == 1 and api.nvim_get_var('completion_enable_auto_hover') == 1 then
+  end
+end
+
+local autoOpenHoverInPopup = function(bufnr)
+  if api.nvim_call_function('pumvisible', {}) == 1 then
     -- Auto open hover
     local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items"}})
     if item['selected'] ~= M.selected then
@@ -92,6 +96,9 @@ local completionManager = function()
   local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
   if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
     performCompletion(bufnr, line_to_cursor)
+  end
+  if api.nvim_get_var('completion_enable_auto_hover') == 1 then
+    autoOpenHoverInPopup(bufnr)
   end
   if api.nvim_get_var('completion_enable_auto_signature') == 1 then
     autoOpenSignatureHelp(bufnr, line_to_cursor)
