@@ -5,7 +5,7 @@ endfunction
 
 function! completion#wrap_completion() abort
     if pumvisible() != 0
-        lua require'completor'.confirmCompletion()
+        lua require'completion'.confirmCompletion()
     else
         call nvim_feedkeys(g:completion_confirm_key, 'n', v:true)
     endif
