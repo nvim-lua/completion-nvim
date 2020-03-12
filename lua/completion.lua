@@ -181,9 +181,11 @@ end
 
 M.on_attach = function()
   M.modifyCallback()
-  api.nvim_command("autocmd InsertEnter * lua require'completor'.on_InsertEnter()")
-  api.nvim_command("autocmd InsertLeave * lua require'completor'.on_InsertLeave()")
-  api.nvim_command("autocmd InsertCharPre * lua require'completor'.on_InsertCharPre()")
+  api.nvim_command [[augroup CompletionCommand]]
+    api.nvim_command("autocmd InsertEnter * lua require'completion'.on_InsertEnter()")
+    api.nvim_command("autocmd InsertLeave * lua require'completion'.on_InsertLeave()")
+    api.nvim_command("autocmd InsertCharPre * lua require'completion'.on_InsertCharPre()")
+  api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'), '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
 end
 
