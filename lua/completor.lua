@@ -14,28 +14,26 @@ local performCompletion = function(bufnr, line_to_cursor)
   local prefix = line_to_cursor:sub(textMatch+1)
 
   local params = vim.lsp.util.make_position_params()
-  M.items = {}
   if prefix ~= '' and api.nvim_call_function('pumvisible', {}) == 0 then
     vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
       if err or not result then return end
       local comment_string = api.nvim_buf_get_option(0, 'commentstring')
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-        local matches = vim.lsp.util.text_document_completion_list_to_complete_items(result, prefix)
-        local snippets = snippet.getUltisnipItems(prefix)
-        vim.list_extend(matches, snippets) 
+        local matches = util.text_document_completion_list_to_complete_items(result, prefix)
+        if api.nvim_get_var('completion_enable_snippet') ~= nil then
+          local snippets = snippet.getUltisnipItems(prefix)
+          vim.list_extend(matches, snippets)
+        end
+        util.sort_completion_items(matches)
         if #matches ~= 0 and M.insertChar == true then
-          vim.list_extend(M.items, matches)
           vim.fn.complete(textMatch+1, matches)
           M.insertChar = false
         end
       end
     end)
-  elseif api.nvim_call_function('pumvisible', {}) == 1 then
+  elseif api.nvim_call_function('pumvisible', {}) == 1 and api.nvim_get_var('completion_enable_auto_hover') == 1 then
     -- Auto open hover and signature help
     local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items"}})
-    if item['selected'] ~= -1 then
-      print(item['items'][item['selected']+1]['kind'])
-    end
     if item['selected'] ~= M.selected then
       M.textHover = true
       if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
@@ -44,9 +42,21 @@ local performCompletion = function(bufnr, line_to_cursor)
       M.winner = nil
     end
     if M.textHover == true and item['selected'] ~= -1 then
+      if item['selected'] == -2 then
+        item['selected'] = 0
+      end
       if item['items'][item['selected']+1]['kind'] == 'UltiSnips' then
+        -- TODO show Snippet information in floating window
       else
-        vim.lsp.buf.hover()
+        local row, col = unpack(api.nvim_win_get_cursor(0))
+        row = row - 1
+        local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
+        col = vim.str_utfindex(line, col)
+        params = {
+          textDocument = vim.lsp.util.make_text_document_params();
+          position = { line = row; character = col-1; }
+        }
+        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       end
       M.textHover = false
     end
@@ -80,10 +90,12 @@ local completionManager = function()
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
-  if status ~= 'Comment' or api.nvim_get_var('completion_disable_in_comment') == 0 then
+  if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
     performCompletion(bufnr, line_to_cursor)
   end
-  autoOpenSignatureHelp(bufnr, line_to_cursor)
+  if api.nvim_get_var('completion_enable_auto_signature') == 1 then
+    autoOpenSignatureHelp(bufnr, line_to_cursor)
+  end
 end
 
 
@@ -107,12 +119,14 @@ function M.modifyCallback()
         return
       end
       local bufnr, winnr = nil, nil
+      -- modified to open hover window align to popupmenu
       if vim.fn.pumvisible() == 1 then
+        -- nvim_get_option('columns')
         local position = vim.fn.pum_getpos()
-        -- print(position['col'], position['row'])
+        -- TODO modified hover window position
         bufnr, winnr = util.fancy_floating_markdown(markdown_lines, {
           pad_left = 1; pad_right = 1;
-          col = position['col'] + position['width']; row = position['row']-1;
+          col = position['col']; width = position['width']; row = position['row']-1;
         })
       else
         bufnr, winnr = vim.lsp.util.fancy_floating_markdown(markdown_lines, {

@@ -1,3 +1,4 @@
+local protocol = require 'vim.lsp.protocol'
 local vim = vim
 local validate = vim.validate
 local api = vim.api
@@ -7,8 +8,68 @@ local M = {}
 --      utility function that are modified from neovim's source       --
 ------------------------------------------------------------------------
 
+------------------------
+--  completion items  --
+------------------------
+local function remove_unmatch_completion_items(items, prefix)
+  return vim.tbl_filter(function(item)
+    local word = item.insertText or item.label
+    return vim.startswith(word, prefix)
+  end, items)
+end
 
--- local function copy from neovim's source code
+function M.sort_completion_items(items)
+  table.sort(items, function(a, b) return string.len(a.word) < string.len(b.word)
+  end)
+end
+
+function M.text_document_completion_list_to_complete_items(result, prefix)
+  local items = vim.lsp.util.extract_completion_items(result)
+  if vim.tbl_isempty(items) then
+    return {}
+  end
+
+  items = remove_unmatch_completion_items(items, prefix)
+  -- sort_completion_items(items)
+
+  local matches = {}
+
+  for _, completion_item in ipairs(items) do
+    -- skip snippets items
+    if protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
+      local info = ' '
+      local documentation = completion_item.documentation
+      if documentation then
+        if type(documentation) == 'string' and documentation ~= '' then
+          info = documentation
+        elseif type(documentation) == 'table' and type(documentation.value) == 'string' then
+          info = documentation.value
+        -- else
+          -- TODO(ashkan) Validation handling here?
+        end
+      end
+
+      local word = completion_item.insertText or completion_item.label
+      table.insert(matches, {
+        word = word,
+        abbr = completion_item.label,
+        kind = protocol.CompletionItemKind[completion_item.kind] or '',
+        menu = completion_item.detail or '',
+        info = info,
+        icase = 1,
+        dup = 1,
+        empty = 1,
+      })
+    end
+  end
+
+  return matches
+end
+
+
+----------------------
+--  signature help  --
+----------------------
 M.signature_help_to_preview_contents = function(input)
   if not input.signatures then
     return
@@ -41,6 +102,10 @@ M.signature_help_to_preview_contents = function(input)
   return contents
 end
 
+
+---------------------------------
+--  floating window for hover  --
+---------------------------------
 local make_floating_popup_options = function(width, height, opts)
   validate {
     opts = { opts, 't', true };
@@ -51,36 +116,29 @@ local make_floating_popup_options = function(width, height, opts)
     ["opts.offset_y"] = { opts.offset_y, 'n', true };
   }
 
-  local anchor = ''
-  local row, col
 
   local lines_above = vim.fn.winline() - 1
   local lines_below = vim.fn.winheight(0) - lines_above
 
-  if lines_above < lines_below then
-    anchor = anchor..'N'
-    height = math.min(lines_below, height)
-    row = 1
-  else
-    anchor = anchor..'S'
-    height = math.min(lines_above, height)
-    row = 0
-  end
+  local col
 
-  if vim.fn.wincol() + width <= api.nvim_get_option('columns') then
-    anchor = anchor..'W'
-    col = 0
+  if lines_above < lines_below then
+    height = math.min(lines_below, height)
   else
-    anchor = anchor..'E'
-    col = 1
+    height = math.min(lines_above, height)
   end
 
   print(opts.col, opts.row)
+  if opts.col + opts.width + width < api.nvim_get_option('columns') then
+    col = opts.col + opts.width
+  else
+    col = opts.col - width - 1
+  end
+
   return {
-    -- anchor = anchor,
-    col = opts.col,
+    col = col,
     height = height,
-    relative = 'win',
+    relative = 'editor',
     row = opts.row,
     style = 'minimal',
     width = width,

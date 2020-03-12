@@ -6,7 +6,8 @@ Other LSP sources is not supported.
 ## Features
 
 - Asynchronous completion using `libuv` api.
-- Automatically opens signature help if it's available.
+- Automatically open hover windows when popupmenu is available.
+- Automatically open signature help if it's available.
 - Snippets integration with UltiSnips.
 
 ## Demo
@@ -30,12 +31,61 @@ Plug 'haorenW1025/completion-nvim'
   ```
 - Change `pyls` to whatever language server you are using.
 
-## Options
+## Configuration
+
+### Recommended Setting
+```
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Auto close popup menu when finish completion
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+```
+
+### Enable Snippets Support
+- By default other snippets source support are closed, turn it on by
+```
+let g:completion_enable_snippet = 'UltiSnips'
+```
+- Only support `UltiSnips` in current stage.
+
+### Changing Completion Confirm key
+- By default <CR> is use for confirm completion and expand snippets, change it by
+```
+let g:completion_confirm_key = "\<C-y>"
+```
+- Make sure to use `""` and add escape key `\` to avoid parsing issue.
+
+### Enable/Disable auto hover
+- By default when navigate through complete items, LSP's hover is automatically
+called and display in floating window, disable it by
+```
+let g:completion_enable_auto_hover = 0
+```
+
+### Enable/Disable auto signature
+- By default signature help is open automatically whenever it's available, disable
+it by
+```
+let g:completion_enable_auto_signature = 0
+```
+
+### Enable/Disable completion in comment
+- By default completion will not activate when you're in a comment section, enable
+it by
+```
+let g:completion_enable_in_comment = 1
+```
 
 ## TODO
 
 - [ ] File name completion
 - [ ] Support other snippets engine
+- [ ] Support custom source
 
 ## WARNING
 This plugin is in early stage, might have unexpected issues.
