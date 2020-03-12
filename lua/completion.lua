@@ -107,6 +107,9 @@ end
 function M.modifyCallback()
   local callback = 'textDocument/hover'
   vim.lsp.callbacks[callback] = function(_, method, result)
+    if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
+      api.nvim_win_close(M.winnr, true)
+    end
     vim.lsp.util.focusable_float(method, function()
       if not (result and result.contents) then
         -- return { 'No information available' }
@@ -128,13 +131,13 @@ function M.modifyCallback()
           pad_left = 1; pad_right = 1;
           col = position['col']; width = position['width']; row = position['row']-1;
         })
+        M.winnr = winnr
       else
         bufnr, winnr = vim.lsp.util.fancy_floating_markdown(markdown_lines, {
           pad_left = 1; pad_right = 1;
         })
       end
       vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
-      M.winnr = winnr
       return bufnr, winnr
     end)
   end
