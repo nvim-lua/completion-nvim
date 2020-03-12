@@ -57,11 +57,11 @@ let g:completion_enable_snippet = 'UltiSnips'
 - Only support `UltiSnips` in current stage.
 
 ### Changing Completion Confirm key
-- By default <CR> is use for confirm completion and expand snippets, change it by
+- By default `<CR>` is use for confirm completion and expand snippets, change it by
 ```.vim
 let g:completion_confirm_key = "\<C-y>"
 ```
-- Make sure to use `""` and add escape key `\` to avoid parsing issue.
+- Make sure to use `" "` and add escape key `\` to avoid parsing issue.
 
 ### Enable/Disable auto hover
 - By default when navigate through complete items, LSP's hover is automatically
