@@ -22,14 +22,14 @@ Demo using `sumneko_lua`
 ## Install
 
 - Install with any plugin manager by using the path on GitHub.
-```
+```.vim
 Plug 'haorenW1025/completion-nvim'
 ```
 
 ## Setup
 - completion-nvim require several autocommand set up to work properly, you should
   set it up using the `on_attach` function like this.
-  ```
+  ```.vim
   lua require'nvim_lsp'.pyls.setup{on_attach=require'completion'.on_attach}
   ```
 - Change `pyls` to whatever language server you are using.
@@ -37,7 +37,7 @@ Plug 'haorenW1025/completion-nvim'
 ## Configuration
 
 ### Recommended Setting
-```
+```.vim
 " Use <Tab> and <S-Tab> to navigate through popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -51,14 +51,14 @@ set completeopt=menuone,noinsert,noselect
 
 ### Enable Snippets Support
 - By default other snippets source support are closed, turn it on by
-```
+```.vim
 let g:completion_enable_snippet = 'UltiSnips'
 ```
 - Only support `UltiSnips` in current stage.
 
 ### Changing Completion Confirm key
 - By default <CR> is use for confirm completion and expand snippets, change it by
-```
+```.vim
 let g:completion_confirm_key = "\<C-y>"
 ```
 - Make sure to use `""` and add escape key `\` to avoid parsing issue.
@@ -66,21 +66,21 @@ let g:completion_confirm_key = "\<C-y>"
 ### Enable/Disable auto hover
 - By default when navigate through complete items, LSP's hover is automatically
 called and display in floating window, disable it by
-```
+```.vim
 let g:completion_enable_auto_hover = 0
 ```
 
 ### Enable/Disable auto signature
 - By default signature help is open automatically whenever it's available, disable
 it by
-```
+```.vim
 let g:completion_enable_auto_signature = 0
 ```
 
 ### Enable/Disable completion in comment
 - By default completion will not activate when you're in a comment section, enable
 it by
-```
+```.vim
 let g:completion_enable_in_comment = 1
 ```
 
