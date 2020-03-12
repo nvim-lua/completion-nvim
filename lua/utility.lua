@@ -128,7 +128,6 @@ local make_floating_popup_options = function(width, height, opts)
     height = math.min(lines_above, height)
   end
 
-  print(opts.col, opts.row)
   if opts.col + opts.width + width < api.nvim_get_option('columns') then
     col = opts.col + opts.width
   else
