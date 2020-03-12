@@ -12,6 +12,9 @@ Other LSP sources is not supported.
 
 ## Demo
 
+Demo using `sumneko_lua`
+![](https://user-images.githubusercontent.com/35623968/76489411-3ca1d480-6463-11ea-8c3a-7f0e3c521cdb.gif)
+
 ## Prerequisite
 - Neovim nightly
 - You should be setting up language server with the help of [nvim-lsp](https://github.com/neovim/nvim-lsp)
