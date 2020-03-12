@@ -54,7 +54,7 @@ set completeopt=menuone,noinsert,noselect
 ```.vim
 let g:completion_enable_snippet = 'UltiSnips'
 ```
-- Only support `UltiSnips` in current stage.
+- Support `UltiSnips` and `Neosnippet`
 
 ### Changing Completion Confirm key
 - By default `<CR>` is use for confirm completion and expand snippets, change it by

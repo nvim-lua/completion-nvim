@@ -21,7 +21,7 @@ local performCompletion = function(bufnr, line_to_cursor)
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
         local matches = util.text_document_completion_list_to_complete_items(result, prefix)
         if api.nvim_get_var('completion_enable_snippet') ~= nil then
-          local snippets = snippet.getUltisnipItems(prefix)
+          local snippets = snippet.getSnippetItems(prefix)
           vim.list_extend(matches, snippets)
         end
         util.sort_completion_items(matches)
@@ -155,6 +155,8 @@ M.confirmCompletion = function()
   local complete_item = api.nvim_get_vvar('completed_item')
   if complete_item.kind == 'UltiSnips' then
     api.nvim_call_function('UltiSnips#ExpandSnippet', {})
+  elseif complete_item.kind == 'Neosnippet' then
+    api.nvim_command('execute "normal \\<Plug>(neosnippet_expand)"')
   end
   if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
     api.nvim_win_close(M.winnr, true)
