@@ -86,6 +86,7 @@ let g:completion_enable_in_comment = 1
 
 ## TODO
 
+- [ ] Support trigger pattern
 - [ ] File name completion
 - [ ] Support other snippets engine
 - [ ] Support custom source

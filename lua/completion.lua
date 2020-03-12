@@ -14,10 +14,10 @@ local performCompletion = function(bufnr, line_to_cursor)
   local prefix = line_to_cursor:sub(textMatch+1)
 
   local params = vim.lsp.util.make_position_params()
-  if prefix ~= '' and api.nvim_call_function('pumvisible', {}) == 0 then
+  -- if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
+  if (prefix ~= '' or string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '.') and api.nvim_call_function('pumvisible', {}) == 0 then
     vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
       if err or not result then return end
-      local comment_string = api.nvim_buf_get_option(0, 'commentstring')
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
         local matches = util.text_document_completion_list_to_complete_items(result, prefix)
         if api.nvim_get_var('completion_enable_snippet') ~= nil then
@@ -32,7 +32,7 @@ local performCompletion = function(bufnr, line_to_cursor)
       end
     end)
   elseif api.nvim_call_function('pumvisible', {}) == 1 and api.nvim_get_var('completion_enable_auto_hover') == 1 then
-    -- Auto open hover and signature help
+    -- Auto open hover
     local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items"}})
     if item['selected'] ~= M.selected then
       M.textHover = true
