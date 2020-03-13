@@ -131,12 +131,22 @@ function M.modifyCallback()
       local bufnr, winnr = nil, nil
       -- modified to open hover window align to popupmenu
       if vim.fn.pumvisible() == 1 then
-        -- nvim_get_option('columns')
         local position = vim.fn.pum_getpos()
-        -- TODO modified hover window position
+        -- Set max width option to avoid overlapping with popup menu
+        local total_column = api.nvim_get_option('columns')
+        local max_width
+        if total_column - (position.col + position.width) > position.col then
+          col = position.col + position.width
+          max_width = total_column - (position.col + position.width)
+        else
+          max_width = position.col - 1
+          col = position.col - max_width - 1
+        end
+
         bufnr, winnr = util.fancy_floating_markdown(markdown_lines, {
           pad_left = 1; pad_right = 1;
           col = position['col']; width = position['width']; row = position['row']-1;
+          max_width = max_width
         })
         M.winnr = winnr
       else
