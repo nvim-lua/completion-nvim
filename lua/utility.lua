@@ -149,6 +149,15 @@ M.fancy_floating_markdown = function(contents, opts)
   local pad_right = opts and opts.pad_right
   local stripped = {}
   local highlights = {}
+
+  local max_width
+  if opts.align == 'right' then
+    local columns = api.nvim_get_option('columns')
+    max_width = columns - opts.col - opts.width
+  else
+    max_width = opts.col - 1
+  end
+
   do
     local i = 1
     while i <= #contents do
@@ -163,20 +172,50 @@ M.fancy_floating_markdown = function(contents, opts)
             i = i + 1
             break
           end
-          table.insert(stripped, line)
+          if #line > max_width then
+            while #line > max_width do
+              local trimmed_line = string.sub(line, 1, max_width)
+              local index = trimmed_line:reverse():find(" ")
+              if index == nil or index > #trimmed_line/2 then
+                break
+              else
+                table.insert(stripped, string.sub(line, 1, max_width-index))
+                line = string.sub(line, max_width-index+2, #line)
+              end
+            end
+            table.insert(stripped, line)
+          else
+            table.insert(stripped, line)
+          end
           i = i + 1
         end
         table.insert(highlights, {
           ft = ft;
           start = start + 1;
-          finish = #stripped + 1 - 1;
+          finish = #stripped + 1 - 1
         })
       else
-        table.insert(stripped, line)
+        if #line > max_width then
+          while #line > max_width do
+            local trimmed_line = string.sub(line, 1, max_width)
+            -- local index = math.max(trimmed_line:reverse():find(" "), trimmed_line:reverse():find("/"))
+            local index = trimmed_line:reverse():find(" ")
+            if index == nil or index > #trimmed_line/2 then
+              break
+            else
+              table.insert(stripped, string.sub(line, 1, max_width-index))
+              line = string.sub(line, max_width-index+2, #line)
+            end
+          end
+          table.insert(stripped, line)
+        else
+          table.insert(stripped, line)
+        end
         i = i + 1
       end
     end
   end
+  -- print(vim.inspect(stripped))
   local width = 0
   for i, v in ipairs(stripped) do
     v = v:gsub("\r", "")
