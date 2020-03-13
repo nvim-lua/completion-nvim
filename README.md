@@ -8,7 +8,7 @@ Other LSP sources is not supported.
 - Asynchronous completion using `libuv` api.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
-- Snippets integration with UltiSnips.
+- Snippets integration with UltiSnips and Neosnippet.
 
 ## Demo
 
