@@ -229,4 +229,16 @@ M.fancy_floating_markdown = function(contents, opts)
   return bufnr, winnr
 end
 
+-- Check trigger character
+M.checkTriggerCharacter = function(line_to_cursor)
+  local trigger_character = api.nvim_get_var('completion_trigger_character')
+  for _, ch in ipairs(trigger_character) do
+    local current_char = string.sub(line_to_cursor, #line_to_cursor-#ch+1, #line_to_cursor)
+    if current_char == ch then
+      return true
+    end
+  end
+  return false
+end
+
 return M

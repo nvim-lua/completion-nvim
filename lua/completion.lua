@@ -8,14 +8,13 @@ local M = {}
 --                           local function                           --
 ------------------------------------------------------------------------
 
-local performCompletion = function(bufnr, line_to_cursor)
+local autoCompletion = function(bufnr, line_to_cursor)
   -- Get the start position of the current keyword
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
-
   local params = vim.lsp.util.make_position_params()
   -- if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
-  if (prefix ~= '' or string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '.') and api.nvim_call_function('pumvisible', {}) == 0 then
+  if (prefix ~= '' or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
     vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
       if err or not result then return end
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
@@ -33,6 +32,7 @@ local performCompletion = function(bufnr, line_to_cursor)
     end)
   end
 end
+
 
 local autoOpenHoverInPopup = function(bufnr)
   if api.nvim_call_function('pumvisible', {}) == 1 then
@@ -95,7 +95,7 @@ local completionManager = function()
   local line_to_cursor = line:sub(1, pos[2])
   local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
   if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
-    performCompletion(bufnr, line_to_cursor)
+    autoCompletion(bufnr, line_to_cursor)
   end
   if api.nvim_get_var('completion_enable_auto_hover') == 1 then
     autoOpenHoverInPopup(bufnr)

@@ -23,6 +23,10 @@ if ! exists('g:completion_enable_auto_signature')
     let g:completion_enable_auto_signature = 1
 endif
 
+if ! exists('g:completion_trigger_character')
+    let g:completion_trigger_character = ['.']
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

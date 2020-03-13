@@ -84,9 +84,29 @@ it by
 let g:completion_enable_in_comment = 1
 ```
 
+### Trigger Characters
+- You can add or disable trigger character that will trigger completion. By default
+trigger character = ['.'], you can disable it by
+```.vim
+let g:completion_trigger_character = []
+```
+- Or multiple trigger character
+```.vim
+let g:completion_trigger_character = ['.', '::']
+```
+- If you want different trigger character for different language, wrap it in an autocommand like
+```.vim
+augroup CompleteionTriggerCharacter
+    autocmd!
+    autocmd BufEnter * let g:completion_trigger_character = ['.']
+    autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
+augroup end
+```
+
+
+
 ## TODO
 
-- [ ] Support trigger pattern
 - [ ] File name completion
 - [ ] Support other snippets engine
 - [ ] Support custom source
