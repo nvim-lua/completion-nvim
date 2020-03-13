@@ -189,7 +189,7 @@ M.fancy_floating_markdown = function(contents, opts)
   if opts.align == 'right' then
     local columns = api.nvim_get_option('columns')
     if opts.col + opts.row + width > columns then
-      width = columns - opts.col - opts.row
+      width = columns - opts.col - opts.width -1
     end
   else
     if width > opts.col then
