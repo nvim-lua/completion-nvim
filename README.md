@@ -107,8 +107,9 @@ augroup end
 
 ## TODO
 
-- [ ] File name completion
+- [ ] Support other `ins-complete`
 - [ ] Support other snippets engine
+- [ ] Treesitter integration
 - [ ] Support custom source
 
 ## WARNING

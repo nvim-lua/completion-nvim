@@ -185,19 +185,6 @@ M.fancy_floating_markdown = function(contents, opts)
     stripped[i] = v
     width = math.max(width, #v)
   end
-  if opts and opts.max_width then
-    width = math.min(opts.max_width, width)
-  end
-  local insert_separator = true
-  if insert_separator then
-    for i, h in ipairs(highlights) do
-      h.start = h.start + i - 1
-      h.finish = h.finish + i - 1
-      if h.finish + 1 <= #stripped then
-        table.insert(stripped, h.finish + 1, string.rep("─", width))
-      end
-    end
-  end
 
   if opts.align == 'right' then
     local columns = api.nvim_get_option('columns')
@@ -209,6 +196,18 @@ M.fancy_floating_markdown = function(contents, opts)
       width = opts.col - 1
     end
   end
+
+  local insert_separator = true
+  if insert_separator then
+    for i, h in ipairs(highlights) do
+      h.start = h.start + i - 1
+      h.finish = h.finish + i - 1
+      if h.finish + 1 <= #stripped then
+        table.insert(stripped, h.finish + 1, string.rep("─", width))
+      end
+    end
+  end
+
 
   -- Make the floating window.
   local height = #stripped
