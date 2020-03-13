@@ -128,7 +128,7 @@ local make_floating_popup_options = function(width, height, opts)
     height = math.min(lines_above, height)
   end
 
-  if opts.col + opts.width + width < api.nvim_get_option('columns') then
+  if opts.align == 'right' then
     col = opts.col + opts.width
   else
     col = opts.col - width - 1
@@ -196,6 +196,17 @@ M.fancy_floating_markdown = function(contents, opts)
       if h.finish + 1 <= #stripped then
         table.insert(stripped, h.finish + 1, string.rep("─", width))
       end
+    end
+  end
+
+  if opts.align == 'right' then
+    local columns = api.nvim_get_option('columns')
+    if opts.col + opts.row + width > columns then
+      width = columns - opts.col - opts.row
+    end
+  else
+    if width > opts.col then
+      width = opts.col - 1
     end
   end
 
