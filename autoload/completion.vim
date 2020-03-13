@@ -10,7 +10,3 @@ function! completion#wrap_completion() abort
         call nvim_feedkeys(g:completion_confirm_key, 'n', v:true)
     endif
 endfunction
-
-function! completion#wrap_neosnippet_expand(expand) abort
-    call nvim_feedkeys("\<C-r>=neosnippet#expand('".a:expand."')\<CR>", 'i', v:true)
-endfunction
