@@ -164,7 +164,7 @@ M.confirmCompletion = function()
   if complete_item.kind == 'UltiSnips' then
     api.nvim_call_function('UltiSnips#ExpandSnippet', {})
   elseif complete_item.kind == 'Neosnippet' then
-    api.nvim_command('execute "normal \\<Plug>(neosnippet_expand)"')
+    api.nvim_call_function('completion#wrap_neosnippet_expand', {complete_item.word})
   end
   if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
     api.nvim_win_close(M.winnr, true)
