@@ -49,6 +49,16 @@ autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 set completeopt=menuone,noinsert,noselect
 ```
 
+### Enable/Disable auto popup
+- By default auto popup is enable, turn it off by
+```.vim
+let g:completion_enable_auto_popup = 0
+```
+- You can manually trigger completion with mapping key by
+```.vim
+inoremap <silent><expr> <c-p> completion#trigger_completion() "map <c-p> to manually trigger completion
+```
+
 ### Enable Snippets Support
 - By default other snippets source support are closed, turn it on by
 ```.vim

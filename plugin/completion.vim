@@ -27,9 +27,14 @@ if ! exists('g:completion_trigger_character')
     let g:completion_trigger_character = ['.']
 endif
 
+if ! exists('g:completion_auto_popup')
+    let g:completion_enable_auto_popup = 0
+endif
+
 if ! exists('g:completion_trigger_keyword_length')
     let g:completion_trigger_keyword_length = 1
 endif
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

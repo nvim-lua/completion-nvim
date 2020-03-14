@@ -1,35 +1,40 @@
 local vim = vim
 local api = vim.api
 local util = require 'utility'
+local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local M = {}
 
 ------------------------------------------------------------------------
 --                           local function                           --
 ------------------------------------------------------------------------
+local performCompletion = function(bufnr, prefix, textMatch)
+  local params = vim.lsp.util.make_position_params()
+  vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
+    if err or not result then return end
+    if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
+      local matches = util.text_document_completion_list_to_complete_items(result, prefix)
+      if api.nvim_get_var('completion_enable_snippet') ~= nil then
+        local snippets = snippet.getSnippetItems(prefix)
+        vim.list_extend(matches, snippets)
+      end
+      util.sort_completion_items(matches)
+      if #matches ~= 0 and M.insertChar == true then
+        vim.fn.complete(textMatch+1, matches)
+        M.insertChar = false
+      end
+    end
+  end)
+end
+
 
 local autoCompletion = function(bufnr, line_to_cursor)
   -- Get the start position of the current keyword
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
-  local params = vim.lsp.util.make_position_params()
   local length = api.nvim_get_var('completion_trigger_keyword_length')
   if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
-    vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
-      if err or not result then return end
-      if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-        local matches = util.text_document_completion_list_to_complete_items(result, prefix)
-        if api.nvim_get_var('completion_enable_snippet') ~= nil then
-          local snippets = snippet.getSnippetItems(prefix)
-          vim.list_extend(matches, snippets)
-        end
-        util.sort_completion_items(matches)
-        if #matches ~= 0 and M.insertChar == true then
-          vim.fn.complete(textMatch+1, matches)
-          M.insertChar = false
-        end
-      end
-    end)
+    performCompletion(bufnr, prefix, textMatch)
   end
 end
 
@@ -93,9 +98,11 @@ local completionManager = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
-  if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
-    autoCompletion(bufnr, line_to_cursor)
+  if api.nvim_get_var('completion_enable_auto_popup') == 1 then
+    local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
+    if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
+      autoCompletion(bufnr, line_to_cursor)
+    end
   end
   if api.nvim_get_var('completion_enable_auto_hover') == 1 then
     autoOpenHoverInPopup(bufnr)
@@ -168,6 +175,19 @@ M.confirmCompletion = function()
   end
   if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
     api.nvim_win_close(M.winnr, true)
+  end
+end
+
+
+M.triggerCompletion = function()
+  local bufnr = api.nvim_get_current_buf()
+  local pos = api.nvim_win_get_cursor(0)
+  local line = api.nvim_get_current_line()
+  local line_to_cursor = line:sub(1, pos[2])
+  local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
+  local prefix = line_to_cursor:sub(textMatch+1)
+  if api.nvim_call_function('pumvisible', {}) == 0 then
+    performCompletion(bufnr, prefix, textMatch)
   end
 end
 
