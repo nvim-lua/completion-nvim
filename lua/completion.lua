@@ -1,7 +1,6 @@
 local vim = vim
 local api = vim.api
 local util = require 'utility'
-local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local M = {}
 

@@ -58,6 +58,18 @@ let g:completion_enable_auto_popup = 0
 ```.vim
 inoremap <silent><expr> <c-p> completion#trigger_completion() "map <c-p> to manually trigger completion
 ```
+- Or you want to use `<Tab>` as completion keys
+```.vim
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ completion#trigger_completion()
+```
 
 ### Enable Snippets Support
 - By default other snippets source support are closed, turn it on by
