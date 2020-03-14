@@ -7,7 +7,14 @@ function! completion#wrap_completion() abort
     if pumvisible() != 0
         lua require'completion'.confirmCompletion()
     else
-        call nvim_feedkeys(g:completion_confirm_key, 'n', v:true)
+        let key = g:completion_confirm_key
+        let remap = 'n'
+        if !empty(g:completion_confirm_key_rhs)
+            let key = g:completion_confirm_key_rhs
+            let remap = 'm'
+        endif
+
+        call nvim_feedkeys(key, remap, v:true)
     endif
 endfunction
 
