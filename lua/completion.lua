@@ -13,8 +13,8 @@ local autoCompletion = function(bufnr, line_to_cursor)
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
   local params = vim.lsp.util.make_position_params()
-  -- if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
-  if (prefix ~= '' or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
+  local length = api.nvim_get_var('completion_trigger_keyword_length')
+  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
     vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
       if err or not result then return end
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
