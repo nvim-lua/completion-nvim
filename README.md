@@ -85,6 +85,12 @@ let g:completion_confirm_key = "\<C-y>"
 ```
 - Make sure to use `" "` and add escape key `\` to avoid parsing issue.
 
+- If confirm key has a fallback mapping, for example, if you use auto pairs plugin that maps to `<CR>`, provide it like this:
+```.vim
+"Fallback for https://github.com/Raimondi/delimitMate expanding on enter
+let g:completion_confirm_key_rhs = "\<Plug>delimitMateCR"
+```
+
 ### Enable/Disable auto hover
 - By default when navigate through complete items, LSP's hover is automatically
 called and display in floating window, disable it by
