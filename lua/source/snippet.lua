@@ -65,7 +65,6 @@ end
 M.triggerCompletion = function(manager, bufnr, prefix, textMatch)
   local snippet_list = M.getSnippetItems(prefix)
   util.sort_completion_items(snippet_list)
-  print(manager.insertChar)
   if #snippet_list ~= 0 and manager.insertChar == true then
     vim.fn.complete(textMatch+1, snippet_list)
     manager.insertChar = false
