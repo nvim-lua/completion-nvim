@@ -63,7 +63,7 @@ M.getSnippetItems = function(prefix)
 end
 
 M.triggerCompletion = function(manager, bufnr, prefix, textMatch)
-  local snippet_list = getSnippetItems(prefix)
+  local snippet_list = M.getSnippetItems(prefix)
   util.sort_completion_items(snippet_list)
   print(manager.insertChar)
   if #snippet_list ~= 0 and manager.insertChar == true then
