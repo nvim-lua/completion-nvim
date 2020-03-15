@@ -1,5 +1,6 @@
 local vim = vim
 local api = vim.api
+local util = require 'utility'
 local M = {}
 
 
@@ -59,6 +60,18 @@ M.getSnippetItems = function(prefix)
     snippet_list = getNeosnippetItems(prefix)
   end
   return snippet_list
+end
+
+M.triggerCompletion = function(manager, bufnr, prefix, textMatch)
+  local snippet_list = getSnippetItems(prefix)
+  util.sort_completion_items(snippet_list)
+  print(manager.insertChar)
+  if #snippet_list ~= 0 and manager.insertChar == true then
+    vim.fn.complete(textMatch+1, snippet_list)
+    manager.insertChar = false
+  else
+    manager.changeSource = true
+  end
 end
 
 return M

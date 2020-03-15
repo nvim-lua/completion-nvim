@@ -39,6 +39,9 @@ if ! exists('g:completion_trigger_keyword_length')
     let g:completion_trigger_keyword_length = 1
 endif
 
+if ! exists('g:completion_auto_change_source')
+    let g:completion_auto_change_source = 0
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

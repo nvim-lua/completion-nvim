@@ -1,39 +1,35 @@
 local vim = vim
 local api = vim.api
 local util = require 'utility'
-local snippet = require 'source.snippet'
+local source = require 'source'
+local lsp = require 'source.lsp'
 local M = {}
 
 ------------------------------------------------------------------------
 --                           local function                           --
 ------------------------------------------------------------------------
-local performCompletion = function(bufnr, prefix, textMatch)
-  local params = vim.lsp.util.make_position_params()
-  vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
-    if err or not result then return end
-    if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-      local matches = util.text_document_completion_list_to_complete_items(result, prefix)
-      if api.nvim_get_var('completion_enable_snippet') ~= nil then
-        local snippets = snippet.getSnippetItems(prefix)
-        vim.list_extend(matches, snippets)
-      end
-      util.sort_completion_items(matches)
-      if #matches ~= 0 and M.insertChar == true then
-        vim.fn.complete(textMatch+1, matches)
-        M.insertChar = false
-      end
-    end
-  end)
-end
 
+-- Manager variable to keep all state accross completion
+local manager = {
+  insertChar = false,
+  insertLeave = false,
+  textHover = false,
+  selected = -1,
+  changedTick = 0,
+  changeSource = false
+}
 
 local autoCompletion = function(bufnr, line_to_cursor)
   -- Get the start position of the current keyword
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
   local length = api.nvim_get_var('completion_trigger_keyword_length')
+  if (#prefix < length) then
+    source.chain_complete_index = 1
+  end
+  if source.stop_complete == true then return end
   if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
-    performCompletion(bufnr, prefix, textMatch)
+    source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   end
 end
 
@@ -42,14 +38,14 @@ local autoOpenHoverInPopup = function(bufnr)
   if api.nvim_call_function('pumvisible', {}) == 1 then
     -- Auto open hover
     local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items"}})
-    if item['selected'] ~= M.selected then
-      M.textHover = true
+    if item['selected'] ~= manager.selected then
+      manager.textHover = true
       if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
         api.nvim_win_close(M.winnr, true)
       end
       M.winner = nil
     end
-    if M.textHover == true and item['selected'] ~= -1 then
+    if manager.textHover == true and item['selected'] ~= -1 then
       if item['selected'] == -2 then
         item['selected'] = 0
       end
@@ -66,9 +62,9 @@ local autoOpenHoverInPopup = function(bufnr)
         }
         vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       end
-      M.textHover = false
+      manager.textHover = false
     end
-    M.selected = item['selected']
+    manager.selected = item['selected']
   end
 end
 
@@ -116,55 +112,7 @@ end
 --                          member function                           --
 ------------------------------------------------------------------------
 
--- Modify hover callback
-function M.modifyCallback()
-  local callback = 'textDocument/hover'
-  vim.lsp.callbacks[callback] = function(_, method, result)
-    if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
-      api.nvim_win_close(M.winnr, true)
-    end
-    vim.lsp.util.focusable_float(method, function()
-      if not (result and result.contents) then
-        -- return { 'No information available' }
-        return
-      end
-      local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-      markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-      if vim.tbl_isempty(markdown_lines) then
-        -- return { 'No information available' }
-        return
-      end
-      local bufnr, winnr = nil, nil
-      -- modified to open hover window align to popupmenu
-      if vim.fn.pumvisible() == 1 then
-        local position = vim.fn.pum_getpos()
-        -- Set max width option to avoid overlapping with popup menu
-        local total_column = api.nvim_get_option('columns')
-        local align
-        if position['col'] < total_column/2 then
-          align = 'right'
-        else
-          align = 'left'
-        end
-
-        bufnr, winnr = util.fancy_floating_markdown(markdown_lines, {
-          pad_left = 1; pad_right = 1;
-          col = position['col']; width = position['width']; row = position['row']-1;
-          align = align
-        })
-        M.winnr = winnr
-      else
-        bufnr, winnr = vim.lsp.util.fancy_floating_markdown(markdown_lines, {
-          pad_left = 1; pad_right = 1;
-        })
-      end
-      vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
-      return bufnr, winnr
-    end)
-  end
-end
-
-M.confirmCompletion = function()
+function M.confirmCompletion()
   api.nvim_call_function('completion#completion_confirm', {})
   local complete_item = api.nvim_get_vvar('completed_item')
   if complete_item.kind == 'UltiSnips' then
@@ -178,40 +126,63 @@ M.confirmCompletion = function()
 end
 
 
-M.triggerCompletion = function()
+M.triggerCompletion = function(force)
   local bufnr = api.nvim_get_current_buf()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
-  if api.nvim_call_function('pumvisible', {}) == 0 then
-    performCompletion(bufnr, prefix, textMatch)
+  manager.insertChar = true
+  -- force is used when manually trigger, so it doesn't repect the trigger word length
+  local length = api.nvim_get_var('completion_trigger_keyword_length')
+  if force == true or (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) then
+    source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   end
 end
 
 function M.on_InsertCharPre()
-  M.insertChar = true
-  M.textHover = true
-  M.selected = -1
+  manager.insertChar = true
+  manager.textHover = true
+  manager.selected = -1
 end
 
 function M.on_InsertLeave()
-  M.insertLeave = true
+  manager.insertLeave = true
 end
 
 function M.on_InsertEnter()
   local timer = vim.loop.new_timer()
-  M.changedTick = api.nvim_buf_get_changedtick(0)
-  M.insertLeave = false
-  M.insertChar = false
-  timer:start(100, 30, vim.schedule_wrap(function()
+  -- setup variable
+  manager.changedTick = api.nvim_buf_get_changedtick(0)
+  manager.insertLeave = false
+  manager.insertChar = false
+  manager.changeSource = false
+  
+  -- reset source
+  source.chain_complete_index = 1
+  source.stop_complete = false
+  local l_complete_index = source.chain_complete_index
+
+  timer:start(100, 50, vim.schedule_wrap(function()
     local l_changedTick = api.nvim_buf_get_changedtick(0)
-    if l_changedTick ~= M.changedTick then
-      M.changedTick = l_changedTick
+    -- complete if changes are made
+    if l_changedTick ~= manager.changedTick then
+      manager.changedTick = l_changedTick
       completionManager()
     end
-    if M.insertLeave == true and timer:is_closing() == false then
+    -- change source if no item is available
+    if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
+      source.nextCompletion()
+      manager.changeSource = false
+    end
+    -- force trigger completion if changing completion source
+    if l_complete_index ~= source.chain_complete_index then
+      M.triggerCompletion(false)
+      l_complete_index = source.chain_complete_index
+    end
+    -- closing timer if leaving insert mode
+    if manager.insertLeave == true and timer:is_closing() == false then
       timer:stop()
       timer:close()
     end
@@ -219,9 +190,11 @@ function M.on_InsertEnter()
 end
 
 M.on_attach = function()
-  M.modifyCallback()
+  require 'hover'.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
+    api.nvim_command("autocmd!")
     api.nvim_command("autocmd InsertEnter * lua require'completion'.on_InsertEnter()")
+    api.nvim_command("autocmd InsertEnter * lua require'source'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave * lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre * lua require'completion'.on_InsertCharPre()")
   api.nvim_command [[augroup end]]
