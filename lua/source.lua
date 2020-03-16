@@ -2,6 +2,7 @@ local vim = vim
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local ins = require 'source.ins_complete'
+local ts = require'source.ts_complete'
 
 local M = {}
 
@@ -14,6 +15,10 @@ local chain_complete_list = {
     ins_complete = false,
     trigger_function = snippet.triggerCompletion,
   },
+	{
+		ins_complete=false,
+		trigger_function = ts.triggerCompletion
+	},
   {
     ins_complete = true,
     mode = 'keyn'
