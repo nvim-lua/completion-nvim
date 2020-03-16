@@ -67,40 +67,6 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
 end
 
 
-----------------------
---  signature help  --
-----------------------
-M.signature_help_to_preview_contents = function(input)
-  if not input.signatures then
-    return
-  end
-  local contents = {}
-  local active_signature = input.activeSignature or 0
-  if active_signature >= #input.signatures then
-    active_signature = 0
-  end
-  local signature = input.signatures[active_signature + 1]
-  if not signature then
-    return
-  end
-  vim.list_extend(contents, vim.split(signature.label, '\n', true))
-  if signature.documentation then
-    vim.lsp.util.convert_input_to_markdown_lines(signature.documentation, contents)
-  end
-  if input.parameters then
-    local active_parameter = input.activeParameter or 0
-    if active_parameter >= #input.parameters then
-      active_parameter = 0
-    end
-    local parameter = signature.parameters and signature.parameters[active_parameter]
-    if parameter then
-      if parameter.documentation then
-        vim.lsp.util.convert_input_to_markdown_lines(parameter.documentation, contents)
-      end
-    end
-  end
-  return contents
-end
 
 
 ---------------------------------

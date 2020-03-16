@@ -3,6 +3,7 @@ local api = vim.api
 local util = require 'utility'
 local source = require 'source'
 local lsp = require 'source.lsp'
+local signature = require'signature_help'
 local M = {}
 
 ------------------------------------------------------------------------
@@ -76,8 +77,8 @@ local autoOpenSignatureHelp = function(bufnr, line_to_cursor)
       if not (result and result.signatures and result.signatures[1]) then
         return
       else
-        vim.lsp.util.focusable_preview(method, function()
-          local lines = util.signature_help_to_preview_contents(result)
+        signature.focusable_preview(method, function()
+          local lines = signature.signature_help_to_preview_contents(result)
           lines = vim.lsp.util.trim_empty_lines(lines)
           if vim.tbl_isempty(lines) then
             return { 'No signature available' }
