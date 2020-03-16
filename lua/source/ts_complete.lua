@@ -9,6 +9,7 @@ local function expression_at_point(tsroot)
 	return current_node
 end
 
+-- Copied from runtime treesitter.lua
 local function get_node_text(node, bufnr)
 	local start_row, start_col, end_row, end_col = node:range()
 	if start_row ~= end_row then
@@ -32,16 +33,38 @@ local function is_parent(source, dest)
 	return false
 end
 
+local function smallestContext(tree, parser, source)
+	-- Step 1 get current context
+	local contexts_query = ts.parse_query(parser.lang, [[
+	((function_definition) @context)
+	]])
+
+	local row_start, col_start, row_end, col_end = tree:range()
+	local contexts = {}
+
+	for _, node in contexts_query:iter_captures(tree, parser.bufnr, row_start, row_end) do
+		table.insert(contexts, node)
+	end
+
+	local current = source
+	while not vim.tbl_contains(contexts, current) and current ~= nil do
+		current = current:parent()
+	end
+
+	return current
+end
+
 local function getCompletionItems(parser, prefix)
 	local tstree = parser:parse():root()
 
 	-- Get all identifiers
-	local raw_query = [[
+	local ident_query = [[
 	(function_declarator declarator: (identifier) @func)
 	(preproc_def name: (identifier) @preproc)
 	(preproc_function_def name: (identifier) @preproc)
 	(parameter_declaration declarator: (identifier) @param)
 	(parameter_declaration declarator: (pointer_declarator declarator: (identifier) @param))
+	(array_declarator declarator: (identifier) @var)
 	(pointer_declarator declarator: (identifier) @var)
 	(init_declarator declarator: (identifier) @var)
 	(declaration declarator: (identifier) @var)
@@ -49,16 +72,23 @@ local function getCompletionItems(parser, prefix)
 
 	local row_start, col_start, row_end, col_end = tstree:range()
 
-	local tsquery = ts.parse_query(parser.lang, raw_query)
+	local tsquery = ts.parse_query(parser.lang, ident_query)
 
-	-- local at_point = expression_at_point(tstree)
+	local at_point = expression_at_point(tstree)
+	local context_here = smallestContext(tstree, parser, at_point)
 
 	local complete_items = {}
+	local found = {}
 
+	-- Step 2 find correct completions
 	for id, node in tsquery:iter_captures(tstree, parser.bufnr, row_start, row_end) do
 		local name = tsquery.captures[id] -- name of the capture in the query
 		local node_text = get_node_text(node)
-		if string.sub(node_text, 1, #prefix) == prefix then
+
+		-- Only consider items in current scope, and not already met
+		if node_text:sub(1, #prefix) == prefix 
+			and (is_parent(node, context_here) or smallestContext(tstree, parser, node) == nil or name == "func")
+			and not vim.tbl_contains(found, node_text) then
 			table.insert(complete_items, {
 				word = node_text,
 				kind = 'TS : '..name,
@@ -66,6 +96,7 @@ local function getCompletionItems(parser, prefix)
 				dup = 1,
 				empty = 1,
 			})
+			table.insert(found, node_text)
 		end
 	end
 
