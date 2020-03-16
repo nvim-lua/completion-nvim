@@ -139,6 +139,7 @@ local make_floating_popup_options = function(width, height, opts)
     height = height,
     relative = 'editor',
     row = opts.row,
+    focusable = false,
     style = 'minimal',
     width = width,
   }
