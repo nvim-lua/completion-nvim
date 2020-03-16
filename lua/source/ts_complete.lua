@@ -38,6 +38,8 @@ local function getCompletionItems(parser, prefix)
 	-- Get all identifiers
 	local raw_query = [[
 	(function_declarator declarator: (identifier) @func)
+	(preproc_def name: (identifier) @preproc)
+	(preproc_function_def name: (identifier) @preproc)
 	(parameter_declaration declarator: (identifier) @param)
 	(parameter_declaration declarator: (pointer_declarator declarator: (identifier) @param))
 	(pointer_declarator declarator: (identifier) @var)
