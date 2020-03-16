@@ -23,6 +23,10 @@ if ! exists('g:completion_enable_auto_hover')
     let g:completion_enable_auto_hover = 1
 endif
 
+if ! exists('g:completion_enable_focusable_hover')
+    let g:completion_enable_focusable_hover = 0
+endif
+
 if ! exists('g:completion_enable_auto_signature')
     let g:completion_enable_auto_signature = 1
 endif

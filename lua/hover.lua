@@ -4,14 +4,55 @@ local util = require 'utility'
 
 local M = {}
 
+local function ok_or_nil(status, ...)
+  if not status then return end
+  return ...
+end
+
+local function npcall(fn, ...)
+  return ok_or_nil(pcall(fn, ...))
+end
+
+local function find_window_by_var(name, value)
+  for _, win in ipairs(api.nvim_list_wins()) do
+    if npcall(api.nvim_win_get_var, win, name) == value then
+      return win
+    end
+  end
+end
+
+local function focusable_float(unique_name, fn)
+  if npcall(api.nvim_win_get_var, 0, unique_name) then
+    return api.nvim_command("wincmd p")
+  end
+  local bufnr = api.nvim_get_current_buf()
+  do
+    local win = find_window_by_var(unique_name, bufnr)
+    if win then
+      if api.nvim_get_var('completion_enable_focusable_hover') == 0 then
+        api.nvim_win_close(win, true)
+      else
+        api.nvim_set_current_win(win)
+        api.nvim_command("stopinsert")
+        return
+      end
+    end
+  end
+  local pbufnr, pwinnr = fn()
+  if pbufnr then
+    api.nvim_win_set_var(pwinnr, unique_name, bufnr)
+    return pbufnr, pwinnr
+  end
+end
+
 -- Modify hover callback
 function M.modifyCallback()
   local callback = 'textDocument/hover'
   vim.lsp.callbacks[callback] = function(_, method, result)
-    if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
-      api.nvim_win_close(M.winnr, true)
-    end
-    vim.lsp.util.focusable_float(method, function()
+    -- if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
+      -- api.nvim_win_close(M.winnr, true)
+    -- end
+    focusable_float(method, function()
       if not (result and result.contents) then
         -- return { 'No information available' }
         return
