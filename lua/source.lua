@@ -36,7 +36,7 @@ M.stop_complete = false
 function M.triggerCurrentCompletion(Manager, bufnr, prefix, textMatch)
   if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
     local complete_source = chain_complete_list[M.chain_complete_index]
-    if complete_source.ins_complete == true then
+    if complete_source.ins_complete then
       ins.triggerCompletion(Manager, complete_source.mode)
     else
       complete_source.trigger_function(Manager, bufnr, prefix, textMatch)
@@ -48,9 +48,7 @@ function M.nextCompletion()
   if M.chain_complete_index ~= #chain_complete_list then
     M.chain_complete_index = M.chain_complete_index + 1
   else
-    print('no next completion method')
-    -- Avoid keep completing if no source are avaiable
-    M.stop_complete = true
+	M.chain_complete_index = 1
   end
 end
 
@@ -58,7 +56,7 @@ function M.prevCompletion()
   if M.chain_complete_index ~= 1 then
     M.chain_complete_index = M.chain_complete_index - 1
   else
-    print('no previous completion method')
+	M.chain_complete_index = #chain_complete_list
   end
 end
 
