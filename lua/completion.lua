@@ -26,6 +26,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
   local length = api.nvim_get_var('completion_trigger_keyword_length')
   if (#prefix < length) then
     source.chain_complete_index = 1
+    source.stop_complete = false
   end
   if source.stop_complete == true then return end
   if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
@@ -189,8 +190,12 @@ function M.on_InsertEnter()
     end
     -- change source if no item is available
     if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
-      source.nextCompletion()
-      manager.changeSource = false
+      if source.chain_complete_index ~= source.chain_complete_length then
+        source.chain_complete_index = source.chain_complete_index + 1
+        manager.changeSource = false
+      else
+        M.stop_complete = true
+      end
     end
     -- force trigger completion if changing completion source
     if l_complete_index ~= source.chain_complete_index then

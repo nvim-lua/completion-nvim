@@ -32,6 +32,7 @@ local chain_complete_list = {
 
 M.chain_complete_index = 1
 M.stop_complete = false
+M.chain_complete_length = #chain_complete_list
 
 function M.triggerCurrentCompletion(Manager, bufnr, prefix, textMatch)
   if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
