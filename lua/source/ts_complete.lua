@@ -3,6 +3,10 @@ local ts = vim.treesitter
 
 local M = {}
 
+function M.has_parser(lang)
+    return #api.nvim_get_runtime_file('parser/' .. lang .. '.*', false) > 0
+end
+
 local function expression_at_point(tsroot)
 	local cursor = vim.api.nvim_win_get_cursor(0)
 	local current_node = tsroot:named_descendant_for_range(cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2])
@@ -55,74 +59,77 @@ local function smallestContext(tree, parser, source)
 end
 
 function M.getCompletionItems(prefix, score_func, bufnr)
-	if api.nvim_buf_get_option(bufnr, 'ft') ~= 'c' then return {} end
-	local parser = ts.get_parser(bufnr)
-	local tstree = parser:parse():root()
+    if M.has_parser(api.nvim_buf_get_option(bufnr, 'ft')) then
+        local parser = ts.get_parser(bufnr)
+        local tstree = parser:parse():root()
 
-	-- Get all identifiers
-	local ident_query = [[
-	(function_declarator declarator: (identifier) @func)
-	(preproc_def name: (identifier) @preproc)
-	(preproc_function_def name: (identifier) @preproc)
-	(parameter_declaration declarator: (identifier) @param)
-	(parameter_declaration declarator: (pointer_declarator declarator: (identifier) @param))
-	(array_declarator declarator: (identifier) @var)
-	(pointer_declarator declarator: (identifier) @var)
-	(init_declarator declarator: (identifier) @var)
-	(declaration declarator: (identifier) @var)
-	]]
+        -- Get all identifiers
+        local ident_query = [[
+        (function_declarator declarator: (identifier) @func)
+        (preproc_def name: (identifier) @preproc)
+        (preproc_function_def name: (identifier) @preproc)
+        (parameter_declaration declarator: (identifier) @param)
+        (parameter_declaration declarator: (pointer_declarator declarator: (identifier) @param))
+        (array_declarator declarator: (identifier) @var)
+        (pointer_declarator declarator: (identifier) @var)
+        (init_declarator declarator: (identifier) @var)
+        (declaration declarator: (identifier) @var)
+        ]]
 
-	local row_start, col_start, row_end, col_end = tstree:range()
+        local row_start, col_start, row_end, col_end = tstree:range()
 
-	local tsquery = ts.parse_query(parser.lang, ident_query)
+        local tsquery = ts.parse_query(parser.lang, ident_query)
 
-	local at_point = expression_at_point(tstree)
-	local context_here = smallestContext(tstree, parser, at_point)
+        local at_point = expression_at_point(tstree)
+        local context_here = smallestContext(tstree, parser, at_point)
 
-	local complete_items = {}
-	local found = {}
+        local complete_items = {}
+        local found = {}
 
-	-- Step 2 find correct completions
-	for id, node in tsquery:iter_captures(tstree, parser.bufnr, row_start, row_end) do
-		local name = tsquery.captures[id] -- name of the capture in the query
-		local node_text = get_node_text(node)
+        -- Step 2 find correct completions
+        for id, node in tsquery:iter_captures(tstree, parser.bufnr, row_start, row_end) do
+            local name = tsquery.captures[id] -- name of the capture in the query
+            local node_text = get_node_text(node)
 
-		-- Only consider items in current scope, and not already met
-		local score = score_func(prefix, node_text)
-		if score < #prefix
-			and (is_parent(node, context_here) or smallestContext(tstree, parser, node) == nil or name == "func")
-			and not vim.tbl_contains(found, node_text) then
-			table.insert(complete_items, {
-				word = node_text,
-				kind = 'TS : '..name,
-				score = score,
-				icase = 1,
-				dup = 1,
-				empty = 1,
-			})
-			table.insert(found, node_text)
-		end
-	end
+            -- Only consider items in current scope, and not already met
+            local score = score_func(prefix, node_text)
+            if score < #prefix
+                and (is_parent(node, context_here) or smallestContext(tstree, parser, node) == nil or name == "func")
+                and not vim.tbl_contains(found, node_text) then
+                table.insert(complete_items, {
+                    word = node_text,
+                    kind = 'TS : '..name,
+                    score = score,
+                    icase = 1,
+                    dup = 1,
+                    empty = 1,
+                })
+                table.insert(found, node_text)
+            end
+        end
 
-	return complete_items
+        return complete_items
+    else
+        return {}
+    end
 end
 
 function M.triggerCompletion(manager, bufnr, prefix, textMatch)
-	if api.nvim_buf_get_option(bufnr, 'ft') == 'c' then
-		local parser = ts.get_parser(bufnr)
-		local completions = M.getCompletionItems(parser, prefix)
-    if manager.insertChar == true then
-      vim.fn.complete(textMatch+1, completions)
-      if #completions ~= 0 then
-        manager.insertChar = false
-        manager.changeSource = false
-      else
+    if M.has_parser(api.nvim_buf_get_option(bufnr, 'ft')) then
+        local parser = ts.get_parser(bufnr)
+        local completions = M.getCompletionItems(parser, prefix)
+        if manager.insertChar == true then
+            vim.fn.complete(textMatch+1, completions)
+            if #completions ~= 0 then
+                manager.insertChar = false
+                manager.changeSource = false
+            else
+                manager.changeSource = true
+            end
+        end
+    else
         manager.changeSource = true
-      end
     end
-  else
-    manager.changeSource = true
-	end
 end
 
 return M
