@@ -5,7 +5,7 @@ local snippet = require 'source.snippet'
 local M = {}
 
 
-M.getCompletionItems = function(prefix, bufnr)
+M.getCompletionItems = function(prefix, _, bufnr)
   local items = {}
   -- M.callback_complete = false
   local params = vim.lsp.util.make_position_params()

@@ -54,7 +54,8 @@ local function smallestContext(tree, parser, source)
 	return current
 end
 
-local function getCompletionItems(parser, prefix)
+function M.getCompletionItems(prefix, score_func, bufnr)
+	local parser = ts.get_parser(bufnr)
 	local tstree = parser:parse():root()
 
 	-- Get all identifiers
@@ -86,12 +87,14 @@ local function getCompletionItems(parser, prefix)
 		local node_text = get_node_text(node)
 
 		-- Only consider items in current scope, and not already met
-		if node_text:sub(1, #prefix) == prefix 
+		local score = score_func(prefix, node_text)
+		if score < #prefix
 			and (is_parent(node, context_here) or smallestContext(tstree, parser, node) == nil or name == "func")
 			and not vim.tbl_contains(found, node_text) then
 			table.insert(complete_items, {
 				word = node_text,
 				kind = 'TS : '..name,
+				score = score,
 				icase = 1,
 				dup = 1,
 				empty = 1,
