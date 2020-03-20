@@ -39,9 +39,7 @@ end
 
 local function smallestContext(tree, parser, source)
 	-- Step 1 get current context
-	local contexts_query = ts.parse_query(parser.lang, [[
-	((function_definition) @context)
-	]])
+	local contexts_query = ts.parse_query(parser.lang, api.nvim_buf_get_var(parser.bufnr, 'completion_context_query'))
 
 	local row_start, col_start, row_end, col_end = tree:range()
 	local contexts = {}
@@ -64,17 +62,7 @@ function M.getCompletionItems(prefix, score_func, bufnr)
         local tstree = parser:parse():root()
 
         -- Get all identifiers
-        local ident_query = [[
-        (function_declarator declarator: (identifier) @func)
-        (preproc_def name: (identifier) @preproc)
-        (preproc_function_def name: (identifier) @preproc)
-        (parameter_declaration declarator: (identifier) @param)
-        (parameter_declaration declarator: (pointer_declarator declarator: (identifier) @param))
-        (array_declarator declarator: (identifier) @var)
-        (pointer_declarator declarator: (identifier) @var)
-        (init_declarator declarator: (identifier) @var)
-        (declaration declarator: (identifier) @var)
-        ]]
+        local ident_query = api.nvim_buf_get_var(bufnr, 'completion_ident_query')
 
         local row_start, col_start, row_end, col_end = tstree:range()
 
