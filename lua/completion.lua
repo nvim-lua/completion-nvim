@@ -170,6 +170,7 @@ function M.on_InsertLeave()
 end
 
 function M.on_InsertEnter()
+  if vim.lsp.buf_get_clients() == {} then return end
   local timer = vim.loop.new_timer()
   -- setup variable
   manager.changedTick = api.nvim_buf_get_changedtick(0)
@@ -192,18 +193,21 @@ function M.on_InsertEnter()
     -- change source if no item is available
     if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
       if source.chain_complete_index ~= source.chain_complete_length then
+        -- force clear completion
+        vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
+
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
-        manager.changeSource = false
-        api.nvim_input("<c-e>")
         M.triggerCompletion(false)
+        manager.changeSource = false
       else
         source.stop_complete = true
       end
     end
     -- force trigger completion when manaully chaging source
     if l_complete_index ~= source.chain_complete_index then
-      api.nvim_input("<c-e>")
+      -- force clear completion
+      vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
       M.triggerCompletion(false)
       l_complete_index = source.chain_complete_index
     end
