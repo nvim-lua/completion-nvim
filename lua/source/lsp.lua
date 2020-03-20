@@ -9,7 +9,8 @@ M.getCompletionItems = function(prefix, _, bufnr)
   local items = {}
   -- M.callback_complete = false
   local params = vim.lsp.util.make_position_params()
-  local callback = vim.lsp.buf_request_sync(bufnr, 'textDocument/completion', params, 1000)
+  local callback = vim.lsp.buf_request_sync(bufnr, 'textDocument/completion', params, 100)
+  if not callback then return {} end
   local result, err
   for _, val in pairs(callback) do
     result = val.result
