@@ -10,7 +10,7 @@ local M = {}
 local chain_complete_list = {
   {
     ins_complete = false,
-    trigger_function = {lsp.getCompletionItems, snippet.getCompletionItems},
+    trigger_function = {'lsp'}
   },
   {
     ins_complete = false,
@@ -44,6 +44,11 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
     else
       items = {}
       for _, func in ipairs(complete_source.trigger_function) do
+        -- work around for lsp
+        if func == 'lsp' then
+          lsp.getCompletionItems(prefix, textMatch, bufnr, manager)
+          return
+        end
         item = func(prefix, util.fuzzy_score, bufnr)
         vim.list_extend(items, item)
       end
