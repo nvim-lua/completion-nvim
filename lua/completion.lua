@@ -26,9 +26,11 @@ local autoCompletion = function(bufnr, line_to_cursor)
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
   local length = api.nvim_get_var('completion_trigger_keyword_length')
-  if (#prefix < length) then
+  -- force reset chain completion if entering a new word
+  if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
     source.chain_complete_index = 1
     source.stop_complete = false
+    manager.changeSource = false
   end
   if source.stop_complete == true then return end
   if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and vim.fn.pumvisible() == 0 then
@@ -185,6 +187,7 @@ function M.on_InsertEnter()
   local l_complete_index = source.chain_complete_index
 
   timer:start(100, 50, vim.schedule_wrap(function()
+    -- print(source.chain_complete_index)
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
