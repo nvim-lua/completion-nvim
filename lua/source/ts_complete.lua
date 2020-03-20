@@ -55,6 +55,7 @@ local function smallestContext(tree, parser, source)
 end
 
 function M.getCompletionItems(prefix, score_func, bufnr)
+	if api.nvim_buf_get_option(bufnr, 'ft') ~= 'c' then return {} end
 	local parser = ts.get_parser(bufnr)
 	local tstree = parser:parse():root()
 
@@ -109,7 +110,7 @@ end
 function M.triggerCompletion(manager, bufnr, prefix, textMatch)
 	if api.nvim_buf_get_option(bufnr, 'ft') == 'c' then
 		local parser = ts.get_parser(bufnr)
-		local completions = getCompletionItems(parser, prefix)
+		local completions = M.getCompletionItems(parser, prefix)
     if manager.insertChar == true then
       vim.fn.complete(textMatch+1, completions)
       if #completions ~= 0 then
