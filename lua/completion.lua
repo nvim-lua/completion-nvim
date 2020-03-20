@@ -30,7 +30,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
     source.stop_complete = false
   end
   if source.stop_complete == true then return end
-  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and api.nvim_call_function('pumvisible', {}) == 0 then
+  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) then
     source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   end
 end
@@ -193,13 +193,17 @@ function M.on_InsertEnter()
     if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
       if source.chain_complete_index ~= source.chain_complete_length then
         source.chain_complete_index = source.chain_complete_index + 1
+        l_complete_index = source.chain_complete_index
         manager.changeSource = false
+        api.nvim_input("<c-e>")
+        M.triggerCompletion(false)
       else
-        M.stop_complete = true
+        source.stop_complete = true
       end
     end
-    -- force trigger completion if changing completion source
+    -- force trigger completion when manaully chaging source
     if l_complete_index ~= source.chain_complete_index then
+      api.nvim_input("<c-e>")
       M.triggerCompletion(false)
       l_complete_index = source.chain_complete_index
     end
@@ -216,7 +220,6 @@ M.on_attach = function()
   api.nvim_command [[augroup CompletionCommand]]
     api.nvim_command("autocmd!")
     api.nvim_command("autocmd InsertEnter * lua require'completion'.on_InsertEnter()")
-    api.nvim_command("autocmd InsertEnter * lua require'source'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave * lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre * lua require'completion'.on_InsertCharPre()")
   api.nvim_command [[augroup end]]
