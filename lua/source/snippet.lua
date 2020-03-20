@@ -51,7 +51,7 @@ local getNeosnippetItems = function(prefix)
   return complete_items
 end
 
-M.getSnippetItems = function(prefix)
+M.getCompletionItems = function(prefix)
   local source = api.nvim_get_var('completion_enable_snippet')
   local snippet_list = {}
   if source == 'UltiSnips' then
@@ -63,13 +63,16 @@ M.getSnippetItems = function(prefix)
 end
 
 M.triggerCompletion = function(manager, bufnr, prefix, textMatch)
-  local snippet_list = M.getSnippetItems(prefix)
+  local snippet_list = M.getCompletionItemsItem(prefix)
   util.sort_completion_items(snippet_list)
-  if #snippet_list ~= 0 and manager.insertChar == true then
+  if manager.insertChar == true then
     vim.fn.complete(textMatch+1, snippet_list)
-    manager.insertChar = false
-  else
-    manager.changeSource = true
+    if #snippet_list ~= 0 then
+      manager.insertChar = false
+      manager.changeSource = false
+    else
+      manager.changeSource = true
+    end
   end
 end
 

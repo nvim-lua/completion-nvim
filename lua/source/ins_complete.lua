@@ -17,19 +17,23 @@ local ins_complete_table = {
   ['tags'] = "<c-x><c-]>",
   ['thes'] = "<c-x><c-t>",
   ['user'] = "<c-x><c-u>",
+  ['<c-p>'] = "<c-p>",
+  ['<c-n>'] = "<c-n>",
 }
 
 local checkEmptyCompletion = function(manager)
   local item = api.nvim_call_function('complete_info', {{"items"}})
   if #item['items'] == 0 then
     manager.changeSource = true
+  else
+    manager.insertChar = false
+    manager.changeSource = false
   end
 end
 
 M.triggerCompletion = function(manager, mode)
-  if manager.insertChar == true then
+  if manager.insertChar == true and vim.fn.pumvisible() == 0 then
     api.nvim_input(ins_complete_table[mode])
-    manager.insertChar = false
     checkEmptyCompletion(manager)
   end
 end

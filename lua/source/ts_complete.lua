@@ -107,12 +107,17 @@ function M.triggerCompletion(manager, bufnr, prefix, textMatch)
 	if api.nvim_buf_get_option(bufnr, 'ft') == 'c' then
 		local parser = ts.get_parser(bufnr)
 		local completions = getCompletionItems(parser, prefix)
-		if #completions ~= 0 and manager.insertChar == true then
-			vim.fn.complete(textMatch+1, completions)
-			manager.insertChar = false
-		else
-			manager.changeSource = true
-		end
+    if manager.insertChar == true then
+      vim.fn.complete(textMatch+1, completions)
+      if #completions ~= 0 then
+        manager.insertChar = false
+        manager.changeSource = false
+      else
+        manager.changeSource = true
+      end
+    end
+  else
+    manager.changeSource = true
 	end
 end
 
