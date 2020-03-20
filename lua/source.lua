@@ -44,7 +44,7 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
     else
       items = {}
       for _, func in ipairs(complete_source.trigger_function) do
-        item = func(prefix, bufnr)
+        item = func(prefix, util.fuzzy_score, bufnr)
         vim.list_extend(items, item)
       end
       util.sort_completion_items(items)
