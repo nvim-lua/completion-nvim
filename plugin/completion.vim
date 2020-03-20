@@ -7,7 +7,7 @@ if ! exists('g:completion_enable_snippet')
     let g:completion_enable_snippet = v:null
 endif
 
-if ! exists('g:completion_disable_in_comment')
+if ! exists('g:completion_enable_in_comment')
     let g:completion_enable_in_comment = 0
 endif
 

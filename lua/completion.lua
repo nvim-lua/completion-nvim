@@ -3,6 +3,7 @@ local api = vim.api
 local util = require 'utility'
 local source = require 'source'
 local lsp = require 'source.lsp'
+local ts = require 'source.ts_complete'
 local signature = require'signature_help'
 local M = {}
 
@@ -96,7 +97,7 @@ local completionManager = function()
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   if api.nvim_get_var('completion_enable_auto_popup') == 1 then
-	  if api.nvim_buf_get_option(bufnr, 'ft') == 'c' then
+	  if ts.has_parser(api.nvim_buf_get_option(bufnr, 'ft')) then
 		  -- This uses treesitter
 		  -- For now only a C parser is provided, but we can add other parsers
 		  -- using vim.treesitter.require_language
@@ -107,7 +108,7 @@ local completionManager = function()
 		  -- Get syntax group at current point
 		  local sexpr_here = tstree:root():named_descendant_for_range(pos[1] - 1, pos[2], pos[1] - 1, pos[2]):sexpr()
 
-		  if not sexpr_here:match(".*comment.*") or api.nvim_get_var('completion_enable_in_comment') then
+		  if not sexpr_here:match(".*comment.*") or api.nvim_get_var('completion_enable_in_comment') == 1 then
 			  autoCompletion(bufnr, line_to_cursor)
 		  end
 	  else
