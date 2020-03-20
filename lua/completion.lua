@@ -202,8 +202,8 @@ function M.on_InsertEnter()
 
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
-        M.triggerCompletion(false)
         manager.changeSource = false
+        M.triggerCompletion(false)
       else
         source.stop_complete = true
       end
