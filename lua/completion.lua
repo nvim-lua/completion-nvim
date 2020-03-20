@@ -30,7 +30,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
     source.stop_complete = false
   end
   if source.stop_complete == true then return end
-  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) then
+  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and vim.fn.pumvisible() == 0 then
     source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   end
 end
