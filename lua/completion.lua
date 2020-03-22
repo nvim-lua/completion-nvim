@@ -187,7 +187,6 @@ function M.on_InsertEnter()
   local l_complete_index = source.chain_complete_index
 
   timer:start(100, 50, vim.schedule_wrap(function()
-    -- print(source.chain_complete_index)
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
@@ -231,9 +230,9 @@ M.on_attach = function()
   require 'hover'.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
     api.nvim_command("autocmd!")
-    api.nvim_command("autocmd InsertEnter * lua require'completion'.on_InsertEnter()")
-    api.nvim_command("autocmd InsertLeave * lua require'completion'.on_InsertLeave()")
-    api.nvim_command("autocmd InsertCharPre * lua require'completion'.on_InsertCharPre()")
+    api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
+    api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
+    api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
   api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'), '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
 end
