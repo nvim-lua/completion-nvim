@@ -198,7 +198,9 @@ function M.on_InsertEnter()
     if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
       if source.chain_complete_index ~= source.chain_complete_length then
         -- force clear completion
-        vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
+        if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
+            vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
+        end
 
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
@@ -211,7 +213,9 @@ function M.on_InsertEnter()
     -- force trigger completion when manaully chaging source
     if l_complete_index ~= source.chain_complete_index then
       -- force clear completion
-      vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
+      if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
+        vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
+      end
       M.triggerCompletion(false)
       l_complete_index = source.chain_complete_index
     end
