@@ -44,7 +44,7 @@ local getNeosnippetItems = function(prefix, score_func)
       table.insert(complete_items, {
         word = key,
         kind = 'Neosnippet',
-		score = score,
+        score = score,
         icase = 1,
         dup = 1,
         empty = 1,
