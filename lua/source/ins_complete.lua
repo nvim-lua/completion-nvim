@@ -33,7 +33,9 @@ end
 
 M.triggerCompletion = function(manager, mode)
   if manager.insertChar == true and vim.fn.pumvisible() == 0 then
-    api.nvim_input("<C-E>")
+    if api.nvim_get_mode()['mode'] == 'ic' then
+      api.nvim_input("<C-E>")
+    end
     api.nvim_input(ins_complete_table[mode])
     checkEmptyCompletion(manager)
   end
