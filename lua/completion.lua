@@ -33,7 +33,11 @@ local autoCompletion = function(bufnr, line_to_cursor)
     manager.changeSource = false
   end
   if source.stop_complete == true then return end
-  if (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) and vim.fn.pumvisible() == 0 then
+  local triggerCharacter = util.checkTriggerCharacter(line_to_cursor)
+  if (#prefix >= length or triggerCharacter == true) and vim.fn.pumvisible() == 0 then
+    if triggerCharacter == true then
+      source.chain_complete_index = 1
+    end
     source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   end
 end
