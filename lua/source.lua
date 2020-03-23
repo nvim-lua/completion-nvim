@@ -21,32 +21,8 @@ local complete_items_map = {
   }
 }
 
-local chain_complete_list = {
-  {
-    ins_complete = false,
-    complete_items = {'lsp', 'snippet'},
-  },
-  {
-    ins_complete = false,
-    complete_items = {'snippet'}
-  },
-  {
-    ins_complete=false,
-    complete_items = {'ts'}
-  },
-  {
-    ins_complete = true,
-    mode = '<c-p>'
-  },
-  {
-    ins_complete = true,
-    mode = '<c-n>'
-  },
-}
-
 M.chain_complete_index = 1
 M.stop_complete = false
-M.chain_complete_length = #chain_complete_list
 
 local function checkCallback(callback_array)
   for _,val in ipairs(callback_array) do
@@ -68,8 +44,10 @@ end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   if manager.insertChar == false then return end
+  M.chain_complete_list = vim.api.nvim_get_var('completion_chain_complete_list')
+  M.chain_complete_length = #M.chain_complete_list
   if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
-    local complete_source = chain_complete_list[M.chain_complete_index]
+    local complete_source = M.chain_complete_list[M.chain_complete_index]
     if complete_source.ins_complete then
       ins.triggerCompletion(manager, complete_source.mode)
     else
@@ -108,7 +86,7 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
 end
 
 function M.nextCompletion()
-  if M.chain_complete_index ~= #chain_complete_list then
+  if M.chain_complete_index ~= #M.chain_complete_list then
     M.chain_complete_index = M.chain_complete_index + 1
   else
 	M.chain_complete_index = 1
@@ -119,7 +97,7 @@ function M.prevCompletion()
   if M.chain_complete_index ~= 1 then
     M.chain_complete_index = M.chain_complete_index - 1
   else
-	M.chain_complete_index = #chain_complete_list
+	M.chain_complete_index = #M.chain_complete_list
   end
 end
 
