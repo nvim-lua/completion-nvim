@@ -9,6 +9,7 @@ Other LSP sources is not supported.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
 - Snippets integration with UltiSnips and Neosnippet.
+- Chain completion support inspired by ![vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
 
 ## Demo
 
@@ -78,6 +79,56 @@ let g:completion_enable_snippet = 'UltiSnips'
 ```
 - Support `UltiSnips` and `Neosnippet`
 
+### Chain Completion Support
+- completion-nvim support chain completion, which use other completion sources and `ins-completion` as fallback
+for lsp completion.
+
+- **NOTE**: you should check if `<c-e>` has been mapped to other word in insert mode since
+this plugin use `<c-e>` to stop completion when switching between sources, use `imap <c-e>` to
+see if it's been mapped, if you're not familiar with `<c-e>` in complete mode, see `help
+complete_CTRL-E`
+
+- By default, chain completion list is listed as below, which means you have lsp and snippet in the first completion source,
+`<c-p>` in `ins-complete` as the second source and `<c-n>` in `ins-complete` as the third source.
+```.vim
+let g:completion_chain_complete_list = [
+    \{'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
+    \{'ins_complete': v:true,  'mode': '<c-p>'},
+    \{'ins_complete': v:true,  'mode': '<c-n>'}
+\]
+```
+- You can switch to next or previous completion source with some mapping, for example
+```.vim
+imap <c-j> <cmd>lua require'source'.prevCompletion()<CR> "use <c-j> to switch to previous completion
+imap <c-k> <cmd>lua require'source'.nextCompletion()<CR> "use <c-k> to switch to next completion
+```
+- You can customize your own chain completion list, for not `ins-complete` sources, you can
+choose to put them in the same source or separate them. For example, if you want to separate
+lsp and snippet into two different source, do it like this
+```.vim
+" make sure to specify none-ins_complete sources with 'ins_complete': v:false
+let g:completion_chain_complete_list = [
+    \{'ins_complete': v:false, 'complete_items': ['lsp']},
+    \{'ins_complete': v:false, 'complete_items': ['snippet']},
+    \{'ins_complete': v:true,  'mode': '<c-p>'},
+    \{'ins_complete': v:true,  'mode': '<c-n>'}
+\]
+```
+- You can also use `ins-complete` sources, possible option are: `line`, `cmd`, `defs`, `dict`,
+`file`, `incl`, `keyn`, `keyp`, `line`, `omni`, `spel`, `tags`, `thes`, `user`, `<c-p>`, `<c-n>`,
+for example
+```.vim
+" make sure to specify none-ins_complete sources with 'ins_complete': v:false
+let g:completion_chain_complete_list = [
+    \{'ins_complete': v:false, 'complete_items': ['lsp']},
+    \{'ins_complete': v:false, 'complete_items': ['snippet']},
+    \{'ins_complete': v:true,  'mode': 'file'},
+    \{'ins_complete': v:true,  'mode': 'spel'},
+    \{'ins_complete': v:true,  'mode': '<c-p>'},
+    \{'ins_complete': v:true,  'mode': '<c-n>'}
+\]
+```
+
 ### Changing Completion Confirm key
 - By default `<CR>` is use for confirm completion and expand snippets, change it by
 ```.vim
@@ -130,15 +181,6 @@ augroup CompleteionTriggerCharacter
     autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
 augroup end
 ```
-
-
-
-## TODO
-
-- [ ] Support other `ins-complete`
-- [ ] Support other snippets engine
-- [ ] Treesitter integration
-- [ ] Support custom source
 
 ## WARNING
 This plugin is in early stage, might have unexpected issues.

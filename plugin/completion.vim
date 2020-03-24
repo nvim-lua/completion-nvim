@@ -50,7 +50,6 @@ endif
 if ! exists('g:completion_chain_complete_list')
     let g:completion_chain_complete_list = [
         \{'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
-        \{'ins_complete': v:false, 'complete_items': ['snippet']},
         \{'ins_complete': v:true,  'mode': '<c-p>'},
         \{'ins_complete': v:true,  'mode': '<c-n>'}
     \]
