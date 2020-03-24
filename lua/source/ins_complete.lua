@@ -24,10 +24,10 @@ local ins_complete_table = {
 local checkEmptyCompletion = function(manager)
   local item = api.nvim_call_function('complete_info', {{"items"}})
   if #item['items'] == 0 then
-    manager.changeSource = true
-  else
     manager.insertChar = false
     manager.changeSource = false
+  else
+    manager.changeSource = true
   end
 end
 
