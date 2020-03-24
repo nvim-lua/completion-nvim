@@ -18,7 +18,8 @@ local manager = {
   textHover = false,
   selected = -1,
   changedTick = 0,
-  changeSource = false
+  changeSource = false,
+  autochange = false
 }
 
 local autoCompletion = function(bufnr, line_to_cursor)
@@ -170,6 +171,9 @@ function M.on_InsertCharPre()
   manager.insertChar = true
   manager.textHover = true
   manager.selected = -1
+  if api.nvim_get_var('completion_auto_change_source') == 1 then
+    manager.autochange = true
+  end
 end
 
 function M.on_InsertLeave()
@@ -184,6 +188,9 @@ function M.on_InsertEnter()
   manager.insertLeave = false
   manager.insertChar = false
   manager.changeSource = false
+  if api.nvim_get_var('completion_auto_change_source') == 1 then
+    manager.autochange = true
+  end
   
   -- reset source
   source.chain_complete_index = 1
@@ -198,7 +205,7 @@ function M.on_InsertEnter()
       completionManager()
     end
     -- change source if no item is available
-    if manager.changeSource == true and api.nvim_get_var('completion_auto_change_source') == 1 then
+    if manager.changeSource and manager.autochange then
       if source.chain_complete_index ~= source.chain_complete_length then
         -- force clear completion
         if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
@@ -220,6 +227,7 @@ function M.on_InsertEnter()
         vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
       end
       M.triggerCompletion(false)
+      manager.autochange = false
       l_complete_index = source.chain_complete_index
     end
     -- closing timer if leaving insert mode
