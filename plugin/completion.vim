@@ -44,7 +44,7 @@ if ! exists('g:completion_trigger_keyword_length')
 endif
 
 if ! exists('g:completion_auto_change_source')
-    let g:completion_auto_change_source = 1
+    let g:completion_auto_change_source = 0
 endif
 
 if ! exists('g:completion_chain_complete_list')

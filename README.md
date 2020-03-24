@@ -129,6 +129,12 @@ let g:completion_chain_complete_list = [
 \]
 ```
 
+- If you want to change source whenever this completion source has no complete items, turn on auto
+changing source by
+```.vim
+let g:completion_auto_change_source = 1
+```
+
 ### Changing Completion Confirm key
 - By default `<CR>` is use for confirm completion and expand snippets, change it by
 ```.vim
