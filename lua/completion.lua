@@ -2,7 +2,6 @@ local vim = vim
 local api = vim.api
 local util = require 'utility'
 local source = require 'source'
-local lsp = require 'source.lsp'
 local ts = require 'source.ts_complete'
 local signature = require'signature_help'
 local M = {}
@@ -59,14 +58,13 @@ local autoOpenHoverInPopup = function(bufnr)
       if item['selected'] == -2 then
         item['selected'] = 0
       end
-      if item['items'][item['selected']+1]['kind'] == 'UltiSnips' then
-        -- TODO show Snippet information in floating window
-      else
+      if item['items'][item['selected']+1]['kind'] ~= 'UltiSnips' and
+          item['items'][item['selected']+1]['kind'] ~= 'Neosnippets' then
         local row, col = unpack(api.nvim_win_get_cursor(0))
         row = row - 1
         local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
         col = vim.str_utfindex(line, col)
-        params = {
+        local params = {
           textDocument = vim.lsp.util.make_text_document_params();
           position = { line = row; character = col-1; }
         }
@@ -191,7 +189,7 @@ function M.on_InsertEnter()
   if api.nvim_get_var('completion_auto_change_source') == 1 then
     manager.autochange = true
   end
-  
+
   -- reset source
   source.chain_complete_index = 1
   source.stop_complete = false
@@ -245,7 +243,8 @@ M.on_attach = function()
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
   api.nvim_command [[augroup end]]
-  api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'), '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
+  api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
+      '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
 end
 
 return M

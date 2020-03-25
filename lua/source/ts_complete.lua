@@ -41,7 +41,7 @@ local function smallestContext(tree, parser, source)
 	-- Step 1 get current context
 	local contexts_query = ts.parse_query(parser.lang, api.nvim_buf_get_var(parser.bufnr, 'completion_context_query'))
 
-	local row_start, col_start, row_end, col_end = tree:range()
+	local row_start, _, row_end, _ = tree:range()
 	local contexts = {}
 
 	for _, node in contexts_query:iter_captures(tree, parser.bufnr, row_start, row_end) do
@@ -64,7 +64,7 @@ function M.getCompletionItems(prefix, score_func, bufnr)
         -- Get all identifiers
         local ident_query = api.nvim_buf_get_var(bufnr, 'completion_ident_query')
 
-        local row_start, col_start, row_end, col_end = tstree:range()
+        local row_start, _, row_end, _ = tstree:range()
 
         local tsquery = ts.parse_query(parser.lang, ident_query)
 
@@ -81,7 +81,7 @@ function M.getCompletionItems(prefix, score_func, bufnr)
 
             -- Only consider items in current scope, and not already met
             local score = score_func(prefix, node_text)
-            if score < #prefix
+            if score < #prefix/2
                 and (is_parent(node, context_here) or smallestContext(tstree, parser, node) == nil or name == "func")
                 and not vim.tbl_contains(found, node_text) then
                 table.insert(complete_items, {

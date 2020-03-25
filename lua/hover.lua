@@ -1,7 +1,6 @@
 local vim = vim
 local validate = vim.validate
 local api = vim.api
-local util = require 'utility'
 
 local M = {}
 
@@ -240,7 +239,7 @@ function M.modifyCallback()
         -- return { 'No information available' }
         return
       end
-      local bufnr, winnr = nil, nil
+      local bufnr, winnr
       -- modified to open hover window align to popupmenu
       if vim.fn.pumvisible() == 1 then
         local position = vim.fn.pum_getpos()

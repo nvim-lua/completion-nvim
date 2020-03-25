@@ -1,3 +1,4 @@
+-- luacheck: globals vim
 local vim = vim
 local api = vim.api
 local M = {}
@@ -11,9 +12,8 @@ local ins_complete_table = {
   ['incl'] = "<c-x><c-i>",
   ['keyn'] = "<c-x><c-n>",
   ['keyp'] = "<c-x><c-p>",
-  ['line'] = "<c-x><c-l>",
   ['omni'] = "<c-x><c-o>",
-  ['spel'] = "<c-x>s"     ,
+  ['spel'] = "<c-x>s",
   ['tags'] = "<c-x><c-]>",
   ['thes'] = "<c-x><c-t>",
   ['user'] = "<c-x><c-u>",

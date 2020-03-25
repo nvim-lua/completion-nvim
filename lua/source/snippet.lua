@@ -5,7 +5,7 @@ local M = {}
 
 
 local getUltisnipItems = function(prefix, score_func)
-  snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
+  local snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) then
     return {}
@@ -16,7 +16,7 @@ local getUltisnipItems = function(prefix, score_func)
       key = 'true'
     end
 	local score = score_func(prefix, key)
-    if score < #prefix then
+    if score < #prefix/2 then
       table.insert(complete_items, {
         word = key,
         kind = 'UltiSnips',
@@ -30,7 +30,7 @@ local getUltisnipItems = function(prefix, score_func)
 end
 
 local getNeosnippetItems = function(prefix, score_func)
-  snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
+  local snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
@@ -40,7 +40,7 @@ local getNeosnippetItems = function(prefix, score_func)
       key = 'true'
     end
 	local score = score_func(prefix, key)
-    if score < #prefix then
+    if score < #prefix/2 then
       table.insert(complete_items, {
         word = key,
         kind = 'Neosnippet',
@@ -65,7 +65,7 @@ M.getCompletionItems = function(prefix, score_func, _)
   return snippet_list
 end
 
-M.triggerCompletion = function(manager, bufnr, prefix, textMatch)
+M.triggerCompletion = function(manager, _, prefix, textMatch)
   local snippet_list = M.getCompletionItemsItem(prefix)
   util.sort_completion_items(snippet_list)
   if manager.insertChar == true then

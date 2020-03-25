@@ -34,8 +34,12 @@ local function checkCallback(callback_array)
   return true
 end
 
+function M.addCompleteItems(complete_item)
+  table.insert(complete_items_map, complete_item)
+end
+
 local function getCompletionItems(items_array, prefix)
-  complete_items = {}
+  local complete_items = {}
   for _,func in ipairs(items_array) do
     vim.list_extend(complete_items, func(prefix, util.fuzzy_score))
   end
@@ -51,10 +55,10 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
     if complete_source.ins_complete then
       ins.triggerCompletion(manager, complete_source.mode)
     else
-      callback_array = {}
-      items_array = {}
+      local callback_array = {}
+      local items_array = {}
       for _, item in ipairs(complete_source.complete_items) do
-        complete_items = complete_items_map[item]
+        local complete_items = complete_items_map[item]
         if complete_items.callback == nil then
           table.insert(callback_array, true)
         else
@@ -67,7 +71,7 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
       timer:start(20, 50, vim.schedule_wrap(function()
         if checkCallback(callback_array) == true and timer:is_closing() == false then
           if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
-            items = getCompletionItems(items_array, prefix)
+            local items = getCompletionItems(items_array, prefix)
             util.sort_completion_items(items)
             vim.fn.complete(textMatch+1, items)
             if #items ~= 0 then

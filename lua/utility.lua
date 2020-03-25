@@ -1,6 +1,5 @@
 local protocol = require 'vim.lsp.protocol'
 local vim = vim
-local validate = vim.validate
 local api = vim.api
 local M = {}
 
@@ -72,7 +71,7 @@ function M.fuzzy_score(str1, str2)
   local len1 = #str1
   local len2 = #str2
   local matrix = {}
-  local cost = 1
+  local cost
   local min = math.min;
 
   -- quick cut-offs to save time

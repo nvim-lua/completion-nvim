@@ -1,8 +1,6 @@
 local vim = vim
 local api = vim.api
 local util = require 'utility'
-local snippet = require 'source.snippet'
-local util = require 'utility'
 local M = {}
 
 M.callback = false
@@ -15,7 +13,7 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function(prefix, textMatch, bufnr, manager)
+M.triggerFunction = function(prefix, _, bufnr, manager)
   local params = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}
