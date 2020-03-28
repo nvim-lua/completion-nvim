@@ -24,6 +24,7 @@ local complete_items_map = {
 M.chain_complete_index = 1
 M.stop_complete = false
 
+
 local function checkCallback(callback_array)
   for _,val in ipairs(callback_array) do
     if val == false then return false end
@@ -34,8 +35,8 @@ local function checkCallback(callback_array)
   return true
 end
 
-function M.addCompleteItems(complete_item)
-  table.insert(complete_items_map, complete_item)
+function M.addCompleteItems(key, complete_item)
+  complete_items_map[key] = complete_item
 end
 
 local function getCompletionItems(items_array, prefix)
