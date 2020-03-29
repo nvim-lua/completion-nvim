@@ -3,7 +3,6 @@ local util = require 'utility'
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local ins = require 'source.ins_complete'
-local ts = require'source.ts_complete'
 
 local M = {}
 
@@ -16,9 +15,6 @@ local complete_items_map = {
   ['snippet'] = {
     item = snippet.getCompletionItems
   },
-  ['ts'] = {
-    item = ts.getCompletionItems
-  }
 }
 
 M.chain_complete_index = 1
