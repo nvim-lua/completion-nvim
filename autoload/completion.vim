@@ -29,3 +29,8 @@ function! completion#trigger_completion()
     return "\<c-r>=completion#completion_wrapper()\<CR>"
 endfunction
 
+" Wrapper of getting buffer variable
+" Avoid accessing to unavailable variable
+function! completion#get_buffer_variable(str)
+    return get(b:, a:str, v:null)
+endfunction

@@ -55,6 +55,8 @@ if ! exists('g:completion_chain_complete_list')
     \]
 endif
 
+command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

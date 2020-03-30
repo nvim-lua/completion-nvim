@@ -100,11 +100,9 @@ local completionManager = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  if api.nvim_get_var('completion_enable_auto_popup') == 1 then
-      local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
-      if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
-          autoCompletion(bufnr, line_to_cursor)
-      end
+  local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
+  if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
+    autoCompletion(bufnr, line_to_cursor)
   end
   if api.nvim_get_var('completion_enable_auto_hover') == 1 then
     autoOpenHoverInPopup(bufnr)
@@ -162,7 +160,11 @@ function M.on_InsertLeave()
 end
 
 function M.on_InsertEnter()
-  if vim.lsp.buf_get_clients() == {} then return end
+  local enable = api.nvim_call_function('completion#get_buffer_variable', {'completion_enable'})
+  if enable == nil or enable == 0 then 
+    return
+  end
+  if api.nvim_get_var('completion_enable_auto_popup') == 0 then return end
   local timer = vim.loop.new_timer()
   -- setup variable
   manager.changedTick = api.nvim_buf_get_changedtick(0)
@@ -219,6 +221,15 @@ function M.on_InsertEnter()
   end))
 end
 
+M.completionToggle = function()
+  local enable = api.nvim_call_function('completion#get_buffer_variable', {'completion_enable'})
+  if enable == nil or enable == 0 then
+    api.nvim_buf_set_var(0, 'completion_enable', 1)
+  else
+    api.nvim_buf_set_var(0, 'completion_enable', 0)
+  end
+end
+
 M.on_attach = function()
   require 'hover'.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
@@ -228,6 +239,7 @@ M.on_attach = function()
   api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
+  api.nvim_buf_set_var(0, 'completion_enable', 1)
 end
 
 return M
