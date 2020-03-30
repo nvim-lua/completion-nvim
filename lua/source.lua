@@ -70,6 +70,9 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
           if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
             local items = getCompletionItems(items_array, prefix)
             util.sort_completion_items(items)
+            if vim.api.nvim_get_var('completion_max_items') ~= nil then
+              items = { unpack(items, 1, vim.api.nvim_get_var('completion_max_items'))}
+            end
             vim.fn.complete(textMatch+1, items)
             if #items ~= 0 then
               manager.insertChar = false
