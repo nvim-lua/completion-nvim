@@ -55,11 +55,13 @@ set completeopt=menuone,noinsert,noselect
 ```.vim
 let g:completion_enable_auto_popup = 0
 ```
+- Or you can toggle auto popup on the fly by using command `CompletionToggle`
+
 - You can manually trigger completion with mapping key by
 ```.vim
 inoremap <silent><expr> <c-p> completion#trigger_completion() "map <c-p> to manually trigger completion
 ```
-- Or you want to use `<Tab>` as completion keys
+- Or you want to use `<Tab>` as trigger keys
 ```.vim
 function! s:check_back_space() abort
     let col = col('.') - 1
@@ -168,6 +170,13 @@ it by
 ```.vim
 let g:completion_enable_in_comment = 1
 ```
+### Max Items for completion
+- You can set a number limit for the maximum completion items, for example, you
+just want at most 10 items in your popup menu, set it by
+
+let g:completion_max_items = 10
+
+- Note that this only works for non `ins-complete` completion source.
 
 ### Trigger Characters
 - You can add or disable trigger character that will trigger completion. By default
