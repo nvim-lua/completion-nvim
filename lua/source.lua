@@ -1,4 +1,5 @@
 local vim = vim
+local api = vim.api
 local util = require 'utility'
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
@@ -43,11 +44,27 @@ local function getCompletionItems(items_array, prefix)
   return complete_items
 end
 
+-- perserve compatiblity of completion_chain_complete_list
+local function getChainCompleteList()
+  local chain_complete_list = api.nvim_get_var('completion_chain_complete_list')
+  -- check if chain_complete_list is a array
+  if chain_complete_list[1] ~= nil then
+    return chain_complete_list
+  else
+    local filetype = api.nvim_buf_get_option(0, 'filetype')
+    if chain_complete_list[filetype] ~= nil then
+      return chain_complete_list[filetype]
+    else
+      return chain_complete_list['default']
+    end
+  end
+end
+
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   if manager.insertChar == false then return end
-  M.chain_complete_list = vim.api.nvim_get_var('completion_chain_complete_list')
+  M.chain_complete_list = getChainCompleteList()
   M.chain_complete_length = #M.chain_complete_list
-  if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
+  if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
     local complete_source = M.chain_complete_list[M.chain_complete_index]
     if complete_source.ins_complete then
       ins.triggerCompletion(manager, complete_source.mode)
@@ -67,11 +84,11 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
       local timer = vim.loop.new_timer()
       timer:start(20, 50, vim.schedule_wrap(function()
         if checkCallback(callback_array) == true and timer:is_closing() == false then
-          if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
+          if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
             local items = getCompletionItems(items_array, prefix)
             util.sort_completion_items(items)
-            if vim.api.nvim_get_var('completion_max_items') ~= nil then
-              items = { unpack(items, 1, vim.api.nvim_get_var('completion_max_items'))}
+            if api.nvim_get_var('completion_max_items') ~= nil then
+              items = { unpack(items, 1, api.nvim_get_var('completion_max_items'))}
             end
             vim.fn.complete(textMatch+1, items)
             if #items ~= 0 then
