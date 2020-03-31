@@ -173,8 +173,9 @@ let g:completion_enable_in_comment = 1
 ### Max Items for completion
 - You can set a number limit for the maximum completion items, for example, you
 just want at most 10 items in your popup menu, set it by
-
+```.vim
 let g:completion_max_items = 10
+```
 
 - Note that this only works for non `ins-complete` completion source.
 
