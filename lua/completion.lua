@@ -100,10 +100,9 @@ local completionManager = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  local status = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
-  if status ~= 'Comment' or api.nvim_get_var('completion_enable_in_comment') == 1 then
-    autoCompletion(bufnr, line_to_cursor)
-  end
+
+  autoCompletion(bufnr, line_to_cursor)
+
   if api.nvim_get_var('completion_enable_auto_hover') == 1 then
     autoOpenHoverInPopup(bufnr)
   end

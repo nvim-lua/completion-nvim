@@ -44,19 +44,48 @@ local function getCompletionItems(items_array, prefix)
   return complete_items
 end
 
--- perserve compatiblity of completion_chain_complete_list
+local function getScopedCompleteList(ft_complete_list)
+
+    local function syntaxGroupAtPoint()
+        local pos = api.nvim_win_get_cursor(0)
+        return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
+    end
+
+    local VAR_NAME = "completion_syntax_at_point"
+
+    local syntax_getter
+
+    -- If this option is effectively a function, use it to determine syntax group at point
+    if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
+        syntax_getter = api.nvim_get_var(VAR_NAME)
+    else
+        syntax_getter = syntaxGroupAtPoint
+    end
+
+    if ft_complete_list[1] ~= nil then
+        return ft_complete_list
+    else
+        local atPoint = syntax_getter():lower()
+        for syntax_regex, complete_list in pairs(ft_complete_list) do
+            if string.match(atPoint, syntax_regex:lower()) ~= nil then
+                return complete_list
+            end
+        end
+
+        return ft_complete_list['default'] or api.nvim_get_var('completion_chain_complete_list')['default']['default']
+    end
+end
+
+-- preserve compatiblity of completion_chain_complete_list
 local function getChainCompleteList()
+
   local chain_complete_list = api.nvim_get_var('completion_chain_complete_list')
   -- check if chain_complete_list is a array
   if chain_complete_list[1] ~= nil then
     return chain_complete_list
   else
     local filetype = api.nvim_buf_get_option(0, 'filetype')
-    if chain_complete_list[filetype] ~= nil then
-      return chain_complete_list[filetype]
-    else
-      return chain_complete_list['default']
-    end
+    return getScopedCompleteList(chain_complete_list[filetype] or chain_complete_list['default'])
   end
 end
 
@@ -66,6 +95,9 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   M.chain_complete_length = #M.chain_complete_list
   if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
     local complete_source = M.chain_complete_list[M.chain_complete_index]
+
+    if complete_source == nil then return end
+
     if complete_source.ins_complete then
       ins.triggerCompletion(manager, complete_source.mode)
     else
