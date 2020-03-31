@@ -48,7 +48,7 @@ local function getScopedCompleteList(ft_complete_list)
 
     local function syntaxGroupAtPoint()
         local pos = api.nvim_win_get_cursor(0)
-        return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.synID(pos[1], pos[2]-1, 1)), "name")
+        return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
     end
 
     local VAR_NAME = "completion_syntax_at_point"
