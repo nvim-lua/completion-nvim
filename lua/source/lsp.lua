@@ -17,9 +17,13 @@ M.triggerFunction = function(prefix, _, bufnr, manager)
   local params = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}
+  if #vim.lsp.buf_get_clients() == 0 then
+    M.callback = true
+    return
+  end
   vim.lsp.buf_request(bufnr, 'textDocument/completion', params, function(err, _, result)
     if err or not result then
-      manager.changeSource = true
+      M.callback = true
       return
     end
     if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then

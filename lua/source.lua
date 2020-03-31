@@ -110,7 +110,7 @@ function M.nextCompletion()
   if M.chain_complete_index ~= #M.chain_complete_list then
     M.chain_complete_index = M.chain_complete_index + 1
   else
-	M.chain_complete_index = 1
+    M.chain_complete_index = 1
   end
 end
 
@@ -118,7 +118,7 @@ function M.prevCompletion()
   if M.chain_complete_index ~= 1 then
     M.chain_complete_index = M.chain_complete_index - 1
   else
-	M.chain_complete_index = #M.chain_complete_list
+    M.chain_complete_index = #M.chain_complete_list
   end
 end
 

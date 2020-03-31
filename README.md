@@ -35,6 +35,17 @@ Plug 'haorenW1025/completion-nvim'
   ```
 - Change `pyls` to whatever language server you are using.
 
+- If you want completion-nvim to set up all buffer instead of only used it when
+lsp is enable, call the `on_attach` function directly, for example
+
+```.vim
+" Use completion-nvim in every buffer
+autocmd BufEnter * lua require'completion'.on_attach()
+```
+
+*NOTE* It's okay to set up completion-nvim without lsp. It will simply use other completion
+source instead(Ex: snippets).
+
 ## Configuration
 
 ### Recommended Setting

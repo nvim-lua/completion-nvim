@@ -223,7 +223,9 @@ end
 
 M.completionToggle = function()
   local enable = api.nvim_call_function('completion#get_buffer_variable', {'completion_enable'})
-  if enable == nil or enable == 0 then
+  if enable == nil then
+    M.on_attach()
+  elseif enable == 0 then
     api.nvim_buf_set_var(0, 'completion_enable', 1)
   else
     api.nvim_buf_set_var(0, 'completion_enable', 0)
