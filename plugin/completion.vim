@@ -56,7 +56,7 @@ if ! exists('g:completion_chain_complete_list')
                 \       {'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
                 \       {'ins_complete': v:true,  'mode': '<c-p>'},
                 \       {'ins_complete': v:true,  'mode': '<c-n>'}],
-                \   '.*comment.*': []
+                \   'comment': []
                 \   }
                 \}
 endif

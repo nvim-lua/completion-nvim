@@ -87,7 +87,7 @@ local function getScopedChain(ft_subtree)
 
   local atPoint = syntax_getter():lower()
   for syntax_regex, complete_list in pairs(ft_subtree) do
-      if string.match(atPoint, syntax_regex:lower()) ~= nil then
+      if string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
           return complete_list
       end
   end
