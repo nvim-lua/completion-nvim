@@ -63,6 +63,15 @@ local function chain_list_to_tree(complete_list)
             end
         end
 
+        -- Be sure that default.default exists
+        if not complete_tree.default then
+            complete_tree.default = {
+                default = {
+                    { complete_items={ 'lsp', 'snippet' } }
+                }
+            }
+        end
+
         return complete_tree
     end
 end
@@ -103,10 +112,15 @@ local function getChainCompleteList()
   
   local filetype = api.nvim_buf_get_option(0, 'filetype')
 
-  return getScopedChain(chain_complete_list[filetype])
-    or getScopedChain(chain_complete_list.default)
-    or chain_complete_list[filetype].default
-    or chain_complete_list.default.default
+  if chain_complete_list[filetype] then
+      return getScopedChain(chain_complete_list[filetype])
+      or getScopedChain(chain_complete_list.default)
+      or chain_complete_list[filetype].default
+      or chain_complete_list.default.default
+  else
+      return getScopedChain(chain_complete_list.default) or chain_complete_list.default.default
+  end
+
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
