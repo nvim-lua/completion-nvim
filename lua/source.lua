@@ -98,9 +98,9 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
 
     if complete_source == nil then return end
 
-    if complete_source.ins_complete then
+    if vim.fn.has_key(complete_source, "mode") > 0 then
       ins.triggerCompletion(manager, complete_source.mode)
-    else
+    elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
       local callback_array = {}
       local items_array = {}
       for _, item in ipairs(complete_source.complete_items) do
