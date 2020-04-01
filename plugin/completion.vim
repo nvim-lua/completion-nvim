@@ -51,12 +51,12 @@ endif
 
 if ! exists('g:completion_chain_complete_list')
     let g:completion_chain_complete_list = {
-                \ "default" : [
+                \ 'default' : {
+                \   'default': [
                 \       {'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
                 \       {'ins_complete': v:true,  'mode': '<c-p>'},
                 \       {'ins_complete': v:true,  'mode': '<c-n>'}],
-                \ 'rust' : {
-                \       '.*comment.*': []
+                \   '.*comment.*': []
                 \   }
                 \}
 endif
