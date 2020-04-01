@@ -44,49 +44,69 @@ local function getCompletionItems(items_array, prefix)
   return complete_items
 end
 
-local function getScopedCompleteList(ft_complete_list)
-
-    local function syntaxGroupAtPoint()
-        local pos = api.nvim_win_get_cursor(0)
-        return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
-    end
-
-    local VAR_NAME = "completion_syntax_at_point"
-
-    local syntax_getter
-
-    -- If this option is effectively a function, use it to determine syntax group at point
-    if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
-        syntax_getter = api.nvim_get_var(VAR_NAME)
+local function chain_list_to_tree(complete_list)
+    if util.is_list(complete_list) then
+        return {
+            default = {
+                default= complete_list
+            }
+        }
     else
-        syntax_getter = syntaxGroupAtPoint
-    end
-
-    if ft_complete_list[1] ~= nil then
-        return ft_complete_list
-    else
-        local atPoint = syntax_getter():lower()
-        for syntax_regex, complete_list in pairs(ft_complete_list) do
-            if string.match(atPoint, syntax_regex:lower()) ~= nil then
-                return complete_list
+        local complete_tree = {}
+        for ft, c_list in pairs(complete_list) do
+            if util.is_list(c_list) then
+                complete_tree[ft] = {
+                    default=c_list
+                }
+            else
+                complete_tree[ft] = c_list
             end
         end
 
-        return ft_complete_list['default'] or api.nvim_get_var('completion_chain_complete_list')['default']['default']
+        return complete_tree
     end
+end
+
+local function getScopedChain(ft_subtree)
+
+  local function syntaxGroupAtPoint()
+      local pos = api.nvim_win_get_cursor(0)
+      return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
+  end
+
+  local VAR_NAME = "completion_syntax_at_point"
+
+  local syntax_getter
+
+  -- If this option is effectively a function, use it to determine syntax group at point
+  if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
+      syntax_getter = api.nvim_get_var(VAR_NAME)
+  else
+      syntax_getter = syntaxGroupAtPoint
+  end
+
+  local atPoint = syntax_getter():lower()
+  for syntax_regex, complete_list in pairs(ft_subtree) do
+      if string.match(atPoint, syntax_regex:lower()) ~= nil then
+          return complete_list
+      end
+  end
+
+  return nil
 end
 
 -- preserve compatiblity of completion_chain_complete_list
 local function getChainCompleteList()
 
-  local chain_complete_list = api.nvim_get_var('completion_chain_complete_list')
+  local chain_complete_list = chain_list_to_tree(api.nvim_get_var('completion_chain_complete_list'))
   -- check if chain_complete_list is a array
-  if chain_complete_list[1] ~= nil then
-    return chain_complete_list
-  else
-    local filetype = api.nvim_buf_get_option(0, 'filetype')
-    return getScopedCompleteList(chain_complete_list[filetype] or chain_complete_list['default'])
-  end
+  
+  local filetype = api.nvim_buf_get_option(0, 'filetype')
+
+  return getScopedChain(chain_complete_list[filetype])
+    or getScopedChain(chain_complete_list.default)
+    or chain_complete_list[filetype].default
+    or chain_complete_list.default.default
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)

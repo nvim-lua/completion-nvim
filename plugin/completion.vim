@@ -1,4 +1,4 @@
-" Last Change: 2020 mar 31
+" Last Change: 2020 avr 01
 
 if exists('g:loaded_completion') | finish | endif
 
@@ -51,12 +51,10 @@ endif
 
 if ! exists('g:completion_chain_complete_list')
     let g:completion_chain_complete_list = {
-                \ "default" : {
-                \   "default": [
+                \ "default" : [
                 \       {'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
                 \       {'ins_complete': v:true,  'mode': '<c-p>'},
-                \       {'ins_complete': v:true,  'mode': '<c-n>'}]
-                \   },
+                \       {'ins_complete': v:true,  'mode': '<c-n>'}],
                 \ 'rust' : {
                 \       '.*comment.*': []
                 \   }
