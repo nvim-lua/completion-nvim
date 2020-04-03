@@ -158,7 +158,7 @@ local fancy_floating_markdown = function(contents, opts)
       end
     end
   end
-  -- print(vim.inspect(stripped))
+
   local width = 0
   for i, v in ipairs(stripped) do
     v = v:gsub("\r", "")

@@ -1,3 +1,5 @@
+" Last Change: 2020 avr 01
+
 if exists('g:loaded_completion') | finish | endif
 
 let s:save_cpo = &cpo
@@ -5,10 +7,6 @@ set cpo&vim
 
 if ! exists('g:completion_enable_snippet')
     let g:completion_enable_snippet = v:null
-endif
-
-if ! exists('g:completion_enable_in_comment')
-    let g:completion_enable_in_comment = 0
 endif
 
 if ! exists('g:completion_confirm_key')
@@ -52,11 +50,15 @@ if ! exists('g:completion_max_items')
 endif
 
 if ! exists('g:completion_chain_complete_list')
-    let g:completion_chain_complete_list = [
-        \{'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
-        \{'ins_complete': v:true,  'mode': '<c-p>'},
-        \{'ins_complete': v:true,  'mode': '<c-n>'}
-    \]
+    let g:completion_chain_complete_list = {
+                \ 'default' : {
+                \   'default': [
+                \       {'ins_complete': v:false, 'complete_items': ['lsp', 'snippet']},
+                \       {'ins_complete': v:true,  'mode': '<c-p>'},
+                \       {'ins_complete': v:true,  'mode': '<c-n>'}],
+                \   'comment': []
+                \   }
+                \}
 endif
 
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()

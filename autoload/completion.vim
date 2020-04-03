@@ -34,3 +34,12 @@ endfunction
 function! completion#get_buffer_variable(str)
     return get(b:, a:str, v:null)
 endfunction
+
+function! completion#enable_in_comment()
+    let l:list = g:completion_chain_complete_list
+    if type(l:list) == v:t_dict && has_key(l:list, 'default')
+                \ && type(l:list.default) == v:t_dict
+                \ && has_key(l:list.default, 'comment')
+        call remove(g:completion_chain_complete_list, 'comment')
+    endif
+endfunction

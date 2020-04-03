@@ -127,7 +127,7 @@ let g:completion_enable_auto_signature = 0
 - By default completion will not activate when you're in a comment section, enable
 it by
 ```.vim
-let g:completion_enable_in_comment = 1
+call completion#enable_in_comment()
 ```
 ### Max Items for completion
 - You can set a number limit for the maximum completion items, for example, you

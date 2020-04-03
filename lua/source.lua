@@ -44,20 +44,83 @@ local function getCompletionItems(items_array, prefix)
   return complete_items
 end
 
--- perserve compatiblity of completion_chain_complete_list
-local function getChainCompleteList()
-  local chain_complete_list = api.nvim_get_var('completion_chain_complete_list')
-  -- check if chain_complete_list is a array
-  if chain_complete_list[1] ~= nil then
-    return chain_complete_list
-  else
-    local filetype = api.nvim_buf_get_option(0, 'filetype')
-    if chain_complete_list[filetype] ~= nil then
-      return chain_complete_list[filetype]
+local function chain_list_to_tree(complete_list)
+    if util.is_list(complete_list) then
+        return {
+            default = {
+                default= complete_list
+            }
+        }
     else
-      return chain_complete_list['default']
+        local complete_tree = {}
+        for ft, c_list in pairs(complete_list) do
+            if util.is_list(c_list) then
+                complete_tree[ft] = {
+                    default=c_list
+                }
+            else
+                complete_tree[ft] = c_list
+            end
+        end
+
+        -- Be sure that default.default exists
+        if not complete_tree.default then
+            complete_tree.default = {
+                default = {
+                    { complete_items={ 'lsp', 'snippet' } }
+                }
+            }
+        end
+
+        return complete_tree
     end
+end
+
+local function getScopedChain(ft_subtree)
+
+  local function syntaxGroupAtPoint()
+      local pos = api.nvim_win_get_cursor(0)
+      return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
   end
+
+  local VAR_NAME = "completion_syntax_at_point"
+
+  local syntax_getter
+
+  -- If this option is effectively a function, use it to determine syntax group at point
+  if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
+      syntax_getter = api.nvim_get_var(VAR_NAME)
+  else
+      syntax_getter = syntaxGroupAtPoint
+  end
+
+  local atPoint = syntax_getter():lower()
+  for syntax_regex, complete_list in pairs(ft_subtree) do
+      if string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
+          return complete_list
+      end
+  end
+
+  return nil
+end
+
+-- preserve compatiblity of completion_chain_complete_list
+local function getChainCompleteList()
+
+  local chain_complete_list = chain_list_to_tree(api.nvim_get_var('completion_chain_complete_list'))
+  -- check if chain_complete_list is a array
+  
+  local filetype = api.nvim_buf_get_option(0, 'filetype')
+
+  if chain_complete_list[filetype] then
+      return getScopedChain(chain_complete_list[filetype])
+      or getScopedChain(chain_complete_list.default)
+      or chain_complete_list[filetype].default
+      or chain_complete_list.default.default
+  else
+      return getScopedChain(chain_complete_list.default) or chain_complete_list.default.default
+  end
+
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
@@ -66,9 +129,12 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
   M.chain_complete_length = #M.chain_complete_list
   if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
     local complete_source = M.chain_complete_list[M.chain_complete_index]
-    if complete_source.ins_complete then
+
+    if complete_source == nil then return end
+
+    if vim.fn.has_key(complete_source, "mode") > 0 then
       ins.triggerCompletion(manager, complete_source.mode)
-    else
+    elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
       local callback_array = {}
       local items_array = {}
       for _, item in ipairs(complete_source.complete_items) do

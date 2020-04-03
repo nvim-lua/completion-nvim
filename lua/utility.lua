@@ -3,6 +3,10 @@ local vim = vim
 local api = vim.api
 local M = {}
 
+function M.is_list(thing)
+    return vim.fn.type(thing) == api.nvim_get_vvar("t_list")
+end
+
 ------------------------------------------------------------------------
 --      utility function that are modified from neovim's source       --
 ------------------------------------------------------------------------
