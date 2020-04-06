@@ -1,3 +1,5 @@
+[![Gitter](https://badges.gitter.im/completion-nvim/community.svg)](https://gitter.im/completion-
+nvim/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 # completion-nvim
 
 completion-nvim is a auto completion framework aims to provide a better completion experience with neovim's built-in LSP.
