@@ -22,7 +22,7 @@ local function remove_unmatch_completion_items(items, prefix)
 end
 
 function M.sort_completion_items(items)
-  table.sort(items, function(a, b) return (a.score or string.len(a.word)) < (b.score or string.len(a.word))
+  table.sort(items, function(a, b) return (string.len(a.word)) < (string.len(b.word))
   end)
 end
 
