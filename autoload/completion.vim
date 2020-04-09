@@ -1,6 +1,9 @@
 " Perform a Hack to confirm completion
 function! completion#completion_confirm() abort
-    call nvim_feedkeys("\<c-y>", 'n', v:true)
+    call nvim_input("<C-Y>")
+    if g:completion_enable_auto_paren == 1
+        lua require'completion'.autoAddParens()
+    endif
 endfunction
 
 function! completion#wrap_completion() abort

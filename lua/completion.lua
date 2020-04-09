@@ -45,7 +45,8 @@ end
 local autoOpenHoverInPopup = function(bufnr)
   if api.nvim_call_function('pumvisible', {}) == 1 then
     -- Auto open hover
-    local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items"}})
+    local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items", "user_data"}})
+    print(item['selected'])
     if item['selected'] ~= manager.selected then
       manager.textHover = true
       if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
@@ -116,6 +117,18 @@ end
 --                          member function                           --
 ------------------------------------------------------------------------
 
+function M.autoAddParens()
+  local complete_info = vim.fn.complete_info()
+  local complete_items = complete_info['items']
+  local index = complete_info['selected']
+  if index < 0 then return end
+  local complete_item = complete_items[index+1]
+  if complete_item.kind == nil then return end
+  if string.match(complete_item.kind, '.*Function.*') ~= nil or string.match(complete_item.kind, '.*Method.*') then
+    api.nvim_input("()<ESC>i")
+  end
+end
+
 function M.confirmCompletion()
   local complete_item = api.nvim_get_vvar('completed_item')
   if complete_item.kind == 'UltiSnips' then
@@ -178,7 +191,7 @@ function M.on_InsertEnter()
   source.stop_complete = false
   local l_complete_index = source.chain_complete_index
 
-  timer:start(100, 50, vim.schedule_wrap(function()
+  timer:start(100, 80, vim.schedule_wrap(function()
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
@@ -236,7 +249,7 @@ M.on_attach = function()
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
-    api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
+    api.nvim_command("autocmd CompleteDonePre <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})

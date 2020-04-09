@@ -17,6 +17,10 @@ if ! exists('g:completion_confirm_key_rhs')
     let g:completion_confirm_key_rhs = ''
 endif
 
+if ! exists('g:completion_enable_auto_paren')
+    let g:completion_enable_auto_paren = 0
+endif
+
 if ! exists('g:completion_enable_auto_hover')
     let g:completion_enable_auto_hover = 1
 endif
