@@ -5,7 +5,7 @@ endfunction
 
 function! completion#wrap_completion() abort
     if pumvisible() != 0
-        lua require'completion'.confirmCompletion()
+        call completion#completion_confirm()
     else
         let key = g:completion_confirm_key
         let remap = 'n'

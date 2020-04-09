@@ -117,7 +117,6 @@ end
 ------------------------------------------------------------------------
 
 function M.confirmCompletion()
-  api.nvim_call_function('completion#completion_confirm', {})
   local complete_item = api.nvim_get_vvar('completed_item')
   if complete_item.kind == 'UltiSnips' then
     api.nvim_call_function('UltiSnips#ExpandSnippet', {})
@@ -160,7 +159,7 @@ end
 
 function M.on_InsertEnter()
   local enable = api.nvim_call_function('completion#get_buffer_variable', {'completion_enable'})
-  if enable == nil or enable == 0 then 
+  if enable == nil or enable == 0 then
     return
   end
   if api.nvim_get_var('completion_enable_auto_popup') == 0 then return end
@@ -237,6 +236,7 @@ M.on_attach = function()
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
+    api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
