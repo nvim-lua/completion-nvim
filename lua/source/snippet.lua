@@ -10,12 +10,13 @@ local getUltisnipItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) then
     return {}
   end
-  for key, _ in pairs(snippetsList) do
+  for key, val in pairs(snippetsList) do
     -- fix lua parsing issue
     if key == true then
       key = 'true'
     end
-	local score = score_func(prefix, key)
+    local score = score_func(prefix, key)
+    local user_data = {hover = val}
     if score < #prefix/2 then
       table.insert(complete_items, {
         word = key,
@@ -24,6 +25,7 @@ local getUltisnipItems = function(prefix, score_func)
         icase = 1,
         dup = 1,
         empty = 1,
+        user_data = vim.fn.json_encode(user_data)
       })
     end
   end

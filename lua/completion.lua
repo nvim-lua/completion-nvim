@@ -44,25 +44,24 @@ local autoCompletion = function(bufnr, line_to_cursor)
   end
 end
 
-
 local autoOpenHoverInPopup = function(bufnr)
   if api.nvim_call_function('pumvisible', {}) == 1 then
     -- Auto open hover
-    local item = api.nvim_call_function('complete_info', {{"eval", "selected", "items", "user_data"}})
-    print(item['selected'])
-    if item['selected'] ~= manager.selected then
+    local items = api.nvim_call_function('complete_info', {{"eval", "selected", "items", "user_data"}})
+    if items['selected'] ~= manager.selected then
       manager.textHover = true
       if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
         api.nvim_win_close(M.winnr, true)
       end
       M.winnr = nil
     end
-    if manager.textHover == true and item['selected'] ~= -1 then
-      if item['selected'] == -2 then
-        item['selected'] = 0
+    if manager.textHover == true and items['selected'] ~= -1 then
+      if items['selected'] == -2 then
+        items['selected'] = 0
       end
-      if item['items'][item['selected']+1]['kind'] ~= 'UltiSnips' and
-          item['items'][item['selected']+1]['kind'] ~= 'Neosnippets' then
+      local item = items['items'][items['selected']+1]
+      if item['kind'] ~= 'UltiSnips' and
+          item['kind'] ~= 'Neosnippets' then
         local row, col = unpack(api.nvim_win_get_cursor(0))
         row = row - 1
         local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
@@ -71,11 +70,34 @@ local autoOpenHoverInPopup = function(bufnr)
           textDocument = vim.lsp.util.make_text_document_params();
           position = { line = row; character = col-1; }
         }
+        local winnr
         vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
+      elseif item['user_data'] ~= nil then
+        local user_data = vim.fn.json_decode(item['user_data'])
+        if user_data['hover'] ~= nil and #user_data['hover'] ~= 0 then
+          local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
+          markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
+          local bufnr, winnr
+          local position = vim.fn.pum_getpos()
+          -- Set max width option to avoid overlapping with popup menu
+          local total_column = api.nvim_get_option('columns')
+          local align
+          if position['col'] < total_column/2 then
+            align = 'right'
+          else
+            align = 'left'
+          end
+          bufnr, winnr = hover.fancy_floating_markdown(markdown_lines, {
+            pad_left = 1; pad_right = 1;
+            col = position['col']; width = position['width']; row = position['row']-1;
+            align = align
+          })
+          M.winnr = winnr
+        end
       end
       manager.textHover = false
     end
-    manager.selected = item['selected']
+    manager.selected = items['selected']
   end
 end
 
