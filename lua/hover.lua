@@ -21,7 +21,7 @@ local function find_window_by_var(name, value)
   end
 end
 
-local function focusable_float(unique_name, fn)
+M.focusable_float = function(unique_name, fn)
   if npcall(api.nvim_win_get_var, 0, unique_name) then
     return api.nvim_command("wincmd p")
   end
@@ -87,7 +87,7 @@ local make_floating_popup_options = function(width, height, opts)
   }
 end
 
-local fancy_floating_markdown = function(contents, opts)
+M.fancy_floating_markdown = function(contents, opts)
   local pad_left = opts and opts.pad_left
   local pad_right = opts and opts.pad_right
   local stripped = {}
@@ -228,7 +228,7 @@ function M.modifyCallback()
     -- if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
       -- api.nvim_win_close(M.winnr, true)
     -- end
-    focusable_float(method, function()
+    M.focusable_float(method, function()
       if not (result and result.contents) then
         -- return { 'No information available' }
         return
@@ -252,7 +252,7 @@ function M.modifyCallback()
           align = 'left'
         end
 
-        bufnr, winnr = fancy_floating_markdown(markdown_lines, {
+        bufnr, winnr = M.fancy_floating_markdown(markdown_lines, {
           pad_left = 1; pad_right = 1;
           col = position['col']; width = position['width']; row = position['row']-1;
           align = align

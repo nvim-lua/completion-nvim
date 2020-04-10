@@ -3,11 +3,14 @@ local api = vim.api
 local util = require 'utility'
 local source = require 'source'
 local signature = require'signature_help'
+local hover = require'hover'
 local M = {}
 
 ------------------------------------------------------------------------
 --                           local function                           --
 ------------------------------------------------------------------------
+
+M.completionConfirm = false
 
 -- Manager variable to keep all state accross completion
 local manager = {
@@ -52,7 +55,7 @@ local autoOpenHoverInPopup = function(bufnr)
       if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
         api.nvim_win_close(M.winnr, true)
       end
-      M.winner = nil
+      M.winnr = nil
     end
     if manager.textHover == true and item['selected'] ~= -1 then
       if item['selected'] == -2 then
@@ -117,24 +120,33 @@ end
 --                          member function                           --
 ------------------------------------------------------------------------
 
-function M.autoAddParens()
-  local complete_info = vim.fn.complete_info()
-  local complete_items = complete_info['items']
-  local index = complete_info['selected']
-  if index < 0 then return end
-  local complete_item = complete_items[index+1]
+function M.autoAddParens(complete_item)
   if complete_item.kind == nil then return end
   if string.match(complete_item.kind, '.*Function.*') ~= nil or string.match(complete_item.kind, '.*Method.*') then
     api.nvim_input("()<ESC>i")
   end
 end
 
+-- Workaround to avoid expand snippets when not confirm
+-- confirmCompletion is now triggered by CompleteDone autocmd to solve issue with noselect
+-- Will cause snippets to expand with not pressing confirm key
+-- Add a flag completionConfirm to avoid this issue
+function M.toggleConfirm()
+  M.completionConfirm = true
+end
+
 function M.confirmCompletion()
-  local complete_item = api.nvim_get_vvar('completed_item')
-  if complete_item.kind == 'UltiSnips' then
-    api.nvim_call_function('UltiSnips#ExpandSnippet', {})
-  elseif complete_item.kind == 'Neosnippet' then
-    api.nvim_input("<c-r>".."=neosnippet#expand('"..complete_item.word.."')".."<CR>")
+  if M.completionConfirm == true then
+    local complete_item = api.nvim_get_vvar('completed_item')
+    if api.nvim_get_var('completion_enable_auto_paren') then
+      M.autoAddParens(complete_item)
+    end
+    if complete_item.kind == 'UltiSnips' then
+      api.nvim_call_function('UltiSnips#ExpandSnippet', {})
+    elseif complete_item.kind == 'Neosnippet' then
+      api.nvim_input("<c-r>".."=neosnippet#expand('"..complete_item.word.."')".."<CR>")
+    end
+    M.completionConfirm = false
   end
   if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
     api.nvim_win_close(M.winnr, true)
@@ -244,12 +256,12 @@ M.completionToggle = function()
 end
 
 M.on_attach = function()
-  require 'hover'.modifyCallback()
+  hover.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
-    api.nvim_command("autocmd CompleteDonePre <buffer> lua require'completion'.confirmCompletion()")
+    api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command [[augroup end]]
   api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
