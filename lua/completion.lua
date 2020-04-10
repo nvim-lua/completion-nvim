@@ -61,7 +61,7 @@ local autoOpenHoverInPopup = function(bufnr)
       end
       local item = items['items'][items['selected']+1]
       if item['kind'] ~= 'UltiSnips' and
-          item['kind'] ~= 'Neosnippets' then
+          item['kind'] ~= 'Neosnippet' then
         local row, col = unpack(api.nvim_win_get_cursor(0))
         row = row - 1
         local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]

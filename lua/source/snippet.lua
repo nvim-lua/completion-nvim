@@ -38,22 +38,24 @@ local getNeosnippetItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
-  for key, _ in pairs(snippetsList) do
+  for key, val in pairs(snippetsList) do
     if key == true then
       key = 'true'
     end
-	local score = score_func(prefix, key)
-    if score < #prefix/2 then
-      table.insert(complete_items, {
-        word = key,
-        kind = 'Neosnippet',
-        score = score,
-        icase = 1,
-        dup = 1,
-        empty = 1,
-      })
+    local user_data = {hover = val.description}
+    local score = score_func(prefix, key)
+      if score < #prefix/2 then
+        table.insert(complete_items, {
+          word = key,
+          kind = 'Neosnippet',
+          score = score,
+          icase = 1,
+          dup = 1,
+          empty = 1,
+          user_data = vim.fn.json_encode(user_data)
+        })
+      end
     end
-  end
   return complete_items
 end
 
