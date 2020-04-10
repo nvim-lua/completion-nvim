@@ -134,6 +134,7 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
 
     if vim.fn.has_key(complete_source, "mode") > 0 then
       ins.triggerCompletion(manager, complete_source.mode)
+      M.stop_complete = true
     elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
       local callback_array = {}
       local items_array = {}
@@ -156,7 +157,9 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
             if api.nvim_get_var('completion_max_items') ~= nil then
               items = { unpack(items, 1, api.nvim_get_var('completion_max_items'))}
             end
+            -- local init_items = {unpack(items, 1, 2)}
             vim.fn.complete(textMatch+1, items)
+            -- vim.fn.complete_add(items[3])
             if #items ~= 0 then
               manager.insertChar = false
               manager.changeSource = false

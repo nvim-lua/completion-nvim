@@ -22,13 +22,17 @@ local ins_complete_table = {
 }
 
 local checkEmptyCompletion = function(manager)
-  local item = api.nvim_call_function('complete_info', {{"items"}})
-  if #item['items'] == 0 then
-    manager.insertChar = false
-    manager.changeSource = false
-  else
-    manager.changeSource = true
-  end
+  local item = api.nvim_call_function('complete_info', {})
+  local timer = vim.loop.new_timer()
+  timer:start(50, 0, vim.schedule_wrap(function()
+    if #item['items'] == 0 then
+      manager.changeSource = true
+    else
+      manager.changeSource = false
+    end
+    timer:stop()
+    timer:close()
+  end))
 end
 
 M.triggerCompletion = function(manager, mode)
@@ -37,8 +41,8 @@ M.triggerCompletion = function(manager, mode)
       api.nvim_input("<C-E>")
     end
     api.nvim_input(ins_complete_table[mode])
-    checkEmptyCompletion(manager)
   end
+  checkEmptyCompletion(manager)
 end
 
 return M
