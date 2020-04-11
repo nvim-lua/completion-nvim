@@ -234,8 +234,8 @@ function M.on_InsertEnter()
     end
     -- change source if no item is available
     if manager.changeSource and manager.autochange then
+      manager.changeSource = false
       if source.chain_complete_index ~= source.chain_complete_length then
-        source.stop_complete = false
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
         M.triggerCompletion(false)
@@ -245,7 +245,6 @@ function M.on_InsertEnter()
     end
     -- force trigger completion when manaully chaging source
     if l_complete_index ~= source.chain_complete_index then
-      source.stop_complete = false
       -- force clear completion
       if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
         vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})

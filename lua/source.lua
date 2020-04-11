@@ -134,7 +134,6 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
 
     if vim.fn.has_key(complete_source, "mode") > 0 then
       ins.triggerCompletion(manager, complete_source.mode)
-      M.stop_complete = true
     elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
       local callback_array = {}
       local items_array = {}

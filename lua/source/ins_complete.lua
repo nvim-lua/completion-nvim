@@ -17,17 +17,17 @@ local ins_complete_table = {
   ['tags'] = "<c-x><c-]>",
   ['thes'] = "<c-x><c-t>",
   ['user'] = "<c-x><c-u>",
-  ['<c-p>'] = "<c-p>",
-  ['<c-n>'] = "<c-n>",
+  ['<c-p>'] = "<c-g><c-g><c-p>",
+  ['<c-n>'] = "<c-g><c-g><c-n>",
 }
 
 local checkEmptyCompletion = function(manager)
-  local item = api.nvim_call_function('complete_info', {})
   local timer = vim.loop.new_timer()
-  timer:start(50, 0, vim.schedule_wrap(function()
-    if #item['items'] == 0 then
+  timer:start(200, 0, vim.schedule_wrap(function()
+    if vim.fn.pumvisible() == 0 then
       manager.changeSource = true
     else
+      manager.insertChar = false
       manager.changeSource = false
     end
     timer:stop()
@@ -37,12 +37,9 @@ end
 
 M.triggerCompletion = function(manager, mode)
   if manager.insertChar == true and vim.fn.pumvisible() == 0 then
-    if api.nvim_get_mode()['mode'] == 'ic' then
-      api.nvim_input("<C-E>")
-    end
     api.nvim_input(ins_complete_table[mode])
+    checkEmptyCompletion(manager)
   end
-  checkEmptyCompletion(manager)
 end
 
 return M
