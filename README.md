@@ -57,6 +57,9 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " Set completeopt to have a better completion experience
 set completeopt=menuone,noinsert,noselect
+
+" Avoid showing message extra message when using completion
+set shortmess+=c
 ```
 
 ### Enable/Disable auto popup
@@ -158,5 +161,9 @@ augroup CompleteionTriggerCharacter
 augroup end
 ```
 
-## WARNING
-This plugin is in early stage, might have unexpected issues.
+## Trouble Shooting
+
+- This plugin is in early stage, might have unexpected issues. Please follow ![wiki](https://github.com/haorenW1025/completion-nvim/wiki/trouble-shooting)
+for trouble shooting.
+
+- Feel free to post issues on any unexpected behavior or feature request!
