@@ -11,6 +11,7 @@ local M = {}
 ------------------------------------------------------------------------
 
 M.completionConfirm = false
+M.prefixLength = 0
 
 -- Manager variable to keep all state accross completion
 local manager = {
@@ -29,6 +30,14 @@ local autoCompletion = function(bufnr, line_to_cursor)
   local prefix = line_to_cursor:sub(textMatch+1)
   local length = api.nvim_get_var('completion_trigger_keyword_length')
   -- force reset chain completion if entering a new word
+  if #prefix < M.prefixLength then
+    if vim.fn.pumvisible() > 0 then
+      api.nvim_input("<c-g><C-g>")
+    end
+    source.chain_complete_index = 1
+    source.stop_complete = false
+  end
+  M.prefixLength = #prefix
   if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
     source.chain_complete_index = 1
     source.stop_complete = false
@@ -36,7 +45,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
   end
   if source.stop_complete == true then return end
   local triggerCharacter = util.checkTriggerCharacter(line_to_cursor)
-  if (#prefix >= length or triggerCharacter == true) and vim.fn.pumvisible() == 0 then
+  if (#prefix >= length or triggerCharacter == true) then
     if triggerCharacter == true then
       source.chain_complete_index = 1
     end
@@ -238,7 +247,6 @@ function M.on_InsertEnter()
       if source.chain_complete_index ~= source.chain_complete_length then
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
-        M.triggerCompletion(false)
       else
         source.stop_complete = true
       end
