@@ -29,8 +29,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
   local length = api.nvim_get_var('completion_trigger_keyword_length')
-  -- force reset chain completion if entering a new word
-  if #prefix < M.prefixLength then
+  if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
     if vim.fn.pumvisible() > 0 then
       api.nvim_input("<c-g><C-g>")
     end
@@ -38,6 +37,7 @@ local autoCompletion = function(bufnr, line_to_cursor)
     source.stop_complete = false
   end
   M.prefixLength = #prefix
+  -- force reset chain completion if entering a new word
   if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
     source.chain_complete_index = 1
     source.stop_complete = false
@@ -83,7 +83,7 @@ local autoOpenHoverInPopup = function(bufnr)
         vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       elseif item['user_data'] ~= nil then
         local user_data = vim.fn.json_decode(item['user_data'])
-        if user_data['hover'] ~= nil and #user_data['hover'] ~= 0 then
+        if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
           local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
           markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
           local bufnr, winnr
