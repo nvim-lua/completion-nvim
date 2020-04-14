@@ -130,9 +130,8 @@ local function getChainCompleteList()
 
 end
 
-M.chain_complete_list = getChainCompleteList()
-
 function M.getTriggerCharacter()
+  M.chain_complete_list = getChainCompleteList()
   local triggerCharacter = {}
   local complete_source = M.chain_complete_list[M.chain_complete_index]
   if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then
@@ -149,6 +148,7 @@ function M.getTriggerCharacter()
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
+  M.chain_complete_list = getChainCompleteList()
   if manager.insertChar == false then return end
   M.chain_complete_list = getChainCompleteList()
   M.chain_complete_length = #M.chain_complete_list
