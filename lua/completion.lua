@@ -69,19 +69,7 @@ local autoOpenHoverInPopup = function(bufnr)
         items['selected'] = 0
       end
       local item = items['items'][items['selected']+1]
-      if item['kind'] ~= 'UltiSnips' and
-          item['kind'] ~= 'Neosnippet' then
-        local row, col = unpack(api.nvim_win_get_cursor(0))
-        row = row - 1
-        local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
-        col = vim.str_utfindex(line, col)
-        local params = {
-          textDocument = vim.lsp.util.make_text_document_params();
-          position = { line = row; character = col-1; }
-        }
-        local winnr
-        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
-      elseif item['user_data'] ~= nil then
+      if item['user_data'] ~= nil and #item['user_data'] ~= 0 then
         local user_data = vim.fn.json_decode(item['user_data'])
         if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
           local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
@@ -103,6 +91,18 @@ local autoOpenHoverInPopup = function(bufnr)
           })
           M.winnr = winnr
         end
+      elseif item['kind'] ~= 'UltiSnips' and
+          item['kind'] ~= 'Neosnippet' then
+        local row, col = unpack(api.nvim_win_get_cursor(0))
+        row = row - 1
+        local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
+        col = vim.str_utfindex(line, col)
+        local params = {
+          textDocument = vim.lsp.util.make_text_document_params();
+          position = { line = row; character = col-1; }
+        }
+        local winnr
+        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       end
       manager.textHover = false
     end
