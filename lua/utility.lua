@@ -106,8 +106,8 @@ function M.fuzzy_score(str1, str2)
     for j = 1, len2, 1 do
       if (str1:byte(i) == str2:byte(j)) then
         cost = 0
-	else
-		cost=1
+      else
+        cost=1
       end
       matrix[i][j] = min(matrix[i-1][j] + 2, matrix[i][j-1], matrix[i-1][j-1] + cost)
     end
@@ -120,8 +120,13 @@ end
 
 
 -- Check trigger character
-M.checkTriggerCharacter = function(line_to_cursor)
+M.checkTriggerCharacter = function(line_to_cursor, source_trigger_character)
   local trigger_character = api.nvim_get_var('completion_trigger_character')
+  if source_trigger_character ~= nil then
+    for _,val in ipairs(source_trigger_character) do
+      table.insert(trigger_character, val)
+    end
+  end
   for _, ch in ipairs(trigger_character) do
     local current_char = string.sub(line_to_cursor, #line_to_cursor-#ch+1, #line_to_cursor)
     if current_char == ch then

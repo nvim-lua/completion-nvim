@@ -3,6 +3,7 @@ local api = vim.api
 local util = require 'utility'
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
+local path = require 'source.path'
 local ins = require 'source.ins_complete'
 
 local M = {}
@@ -15,6 +16,12 @@ local complete_items_map = {
   },
   ['snippet'] = {
     item = snippet.getCompletionItems
+  },
+  ['path'] = {
+    item = path.getCompletionItems,
+    callback = path.getCallback,
+    trigger = path.triggerFunction,
+    trigger_character = {'/'}
   },
 }
 
@@ -121,6 +128,24 @@ local function getChainCompleteList()
       return getScopedChain(chain_complete_list.default) or chain_complete_list.default.default
   end
 
+end
+
+M.chain_complete_list = getChainCompleteList()
+
+function M.getTriggerCharacter()
+  local triggerCharacter = {}
+  local complete_source = M.chain_complete_list[M.chain_complete_index]
+  if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then
+    for _, item in ipairs(complete_source.complete_items) do
+      local complete_items = complete_items_map[item]
+      if complete_items.trigger_character ~= nil then
+        for _,val in ipairs(complete_items.trigger_character) do
+          table.insert(triggerCharacter, val)
+        end
+      end
+    end
+  end
+  return triggerCharacter
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)

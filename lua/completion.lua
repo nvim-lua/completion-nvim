@@ -44,8 +44,9 @@ local autoCompletion = function(bufnr, line_to_cursor)
     manager.changeSource = false
   end
   if source.stop_complete == true then return end
-  local triggerCharacter = util.checkTriggerCharacter(line_to_cursor)
-  if (#prefix >= length or triggerCharacter == true) then
+  local source_trigger_character = source.getTriggerCharacter()
+  local triggerCharacter = util.checkTriggerCharacter(line_to_cursor, source_trigger_character)
+  if #prefix >= length or triggerCharacter == true then
     if triggerCharacter == true then
       source.chain_complete_index = 1
     end
