@@ -49,16 +49,27 @@ M.triggerFunction = function(_, _, _, manager)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   local textMatch = vim.fn.match(line_to_cursor, '\\f*$')
-  local keyword = line_to_cursor:match("%s*(%S+)%w*/.*$")
+  local keyword = line_to_cursor:sub(textMatch+1)
+  keyword = keyword:match("%s*(%S+)%w*/.*$")
   local path = vim.fn.expand('%:p:h')
   if keyword ~= nil then
     -- dealing with special case in matching
-    if string.sub(keyword, 1, 1) == "\"" or string.sub(keyword, 1, 1) == "'" then
+    if keyword == "/" and line:sub(pos[2], pos[2]) then
+      path = keyword
+      goto continue
+    elseif string.sub(keyword, 1, 1) == "\"" or string.sub(keyword, 1, 1) == "'" then
       keyword = string.sub(keyword, 2, #keyword)
     end
-    path = path..'/'..keyword
+    local expanded_keyword = vim.fn.glob(keyword)
+    local home = vim.fn.expand("$HOME")
+    if expanded_keyword ~= nil and (expanded_keyword:find(home) or expanded_keyword:sub(1, 1) == "/") then
+      path = expanded_keyword
+    else
+      path = vim.fn.expand('%:p:h')
+      path = path..'/'..keyword
+    end
   end
-  path = vim.fn.glob(path)
+  ::continue::
   M.items = {}
   local stdout = vim.loop.new_pipe(false)
   local stderr = vim.loop.new_pipe(false)
