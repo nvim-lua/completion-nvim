@@ -49,6 +49,10 @@ if ! exists('g:completion_auto_change_source')
     let g:completion_auto_change_source = 0
 endif
 
+if !exists('g:completion_timer_cycle')
+    let g:completion_timer_cycle = 80
+endif
+
 if ! exists('g:completion_max_items')
     let g:completion_max_items = v:null
 endif

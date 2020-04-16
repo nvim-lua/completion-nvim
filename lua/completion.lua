@@ -234,8 +234,9 @@ function M.on_InsertEnter()
   source.chain_complete_index = 1
   source.stop_complete = false
   local l_complete_index = source.chain_complete_index
+  local timer_cycle = api.nvim_get_var('completion_timer_cycle')
 
-  timer:start(100, 80, vim.schedule_wrap(function()
+  timer:start(100, timer_cycle, vim.schedule_wrap(function()
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
