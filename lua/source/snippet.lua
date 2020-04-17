@@ -5,6 +5,7 @@ local M = {}
 
 
 local getUltisnipItems = function(prefix, score_func)
+  if vim.fn.exists("*UltiSnips#SnippetsInCurrentScope") == 0 then return end
   local snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) then
@@ -33,6 +34,7 @@ local getUltisnipItems = function(prefix, score_func)
 end
 
 local getNeosnippetItems = function(prefix, score_func)
+  if vim.fn.exists("*neosnippet#helpers#get_completion_snippets") == 0 then return end
   local snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
