@@ -14,6 +14,15 @@ end
 ------------------------
 --  completion items  --
 ------------------------
+local function get_completion_word(item)
+  if item.textEdit ~= nil and item.textEdit.newText ~= nil then
+    return item.textEdit.newText
+  elseif item.insertText ~= nil then
+    return item.insertText
+  end
+  return item.label
+end
+
 local function remove_unmatch_completion_items(items, prefix)
   return vim.tbl_filter(function(item)
     local word = item.insertText or item.label
@@ -57,7 +66,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
         end
       end
 
-      local word = completion_item.insertText or completion_item.label
+      local word = get_completion_word(completion_item)
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
