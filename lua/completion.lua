@@ -290,7 +290,7 @@ M.on_attach = function()
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command [[augroup end]]
-  if not api.nvim_get_var('completion_confirm_key') == '' then
+  if string.len(api.nvim_get_var('completion_confirm_key')) ~= 0 then
     api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
   end
