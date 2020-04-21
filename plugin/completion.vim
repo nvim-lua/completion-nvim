@@ -69,6 +69,10 @@ if ! exists('g:completion_chain_complete_list')
                 \}
 endif
 
+if ! exists('g:completion_customize_lsp_label')
+    let g:completion_customize_lsp_label = {}
+endif
+
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
 
 let &cpo = s:save_cpo

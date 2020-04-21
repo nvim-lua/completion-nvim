@@ -42,6 +42,7 @@ end
 
 function M.text_document_completion_list_to_complete_items(result, prefix)
   local items = vim.lsp.util.extract_completion_items(result)
+  local customize_label = api.nvim_get_var('completion_customize_lsp_label')
   if vim.tbl_isempty(items) then
     return {}
   end
@@ -67,10 +68,11 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
       end
 
       local word = get_completion_word(completion_item)
+      local kind = protocol.CompletionItemKind[completion_item.kind]
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
-        kind = protocol.CompletionItemKind[completion_item.kind] or '',
+        kind = customize_label[kind] or kind or '',
         menu = completion_item.detail or '',
         info = info,
         icase = 1,
