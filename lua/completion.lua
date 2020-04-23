@@ -170,7 +170,7 @@ end
 function M.confirmCompletion()
   if M.completionConfirm == true then
     local complete_item = api.nvim_get_vvar('completed_item')
-    if api.nvim_get_var('completion_enable_auto_paren') then
+    if api.nvim_get_var('completion_enable_auto_paren') == 1 then
       M.autoAddParens(complete_item)
     end
     if complete_item.kind == 'UltiSnips' then
