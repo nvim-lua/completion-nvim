@@ -285,6 +285,7 @@ end
 M.on_attach = function()
   hover.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
+    api.nvim_command("autocmd!")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
