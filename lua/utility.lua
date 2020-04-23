@@ -15,17 +15,17 @@ end
 --  completion items  --
 ------------------------
 local function get_completion_word(item)
-  if item.textEdit ~= nil and item.textEdit.newText ~= nil then
-    return item.textEdit.newText
-  elseif item.insertText ~= nil then
+  if item.insertText ~= nil then
     return item.insertText
+  elseif item.textEdit ~= nil and item.textEdit.newText ~= nil and item.insertTextFormat ~= 2 then
+    return item.textEdit.newText
   end
   return item.label
 end
 
 local function remove_unmatch_completion_items(items, prefix)
   return vim.tbl_filter(function(item)
-    local word = item.insertText or item.label
+    local word = get_completion_word(item)
     return vim.startswith(word, prefix)
   end, items)
 end
@@ -54,7 +54,8 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
 
   for _, completion_item in ipairs(items) do
     -- skip snippets items
-    if protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
+    if api.nvim_get_var('completion_enable_snippet') == nil or
+      protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
       local info = ' '
       local documentation = completion_item.documentation
       if documentation then
@@ -68,6 +69,9 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
       end
 
       local word = get_completion_word(completion_item)
+      local user_data = {
+        lsp = completion_item
+      }
       local kind = protocol.CompletionItemKind[completion_item.kind]
       table.insert(matches, {
         word = word,
@@ -76,6 +80,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
         menu = completion_item.detail or '',
         info = info,
         icase = 1,
+        user_data = vim.fn.json_encode(user_data),
         dup = 1,
         empty = 1,
       })
