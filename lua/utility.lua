@@ -70,7 +70,9 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
 
       local word = get_completion_word(completion_item)
       local user_data = {
-        lsp = completion_item
+        lsp = {
+          completion_item = completion_item
+        }
       }
       local kind = protocol.CompletionItemKind[completion_item.kind]
       table.insert(matches, {
