@@ -160,6 +160,11 @@ augroup CompleteionTriggerCharacter
     autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
 augroup end
 ```
+### Timer Adjust
+- completion-nvim use a timer to control the rate of complete, you can adjust the timer rate by
+```.vim
+let g:completion_timer_cycle = 200 "default value is 80
+```
 
 ## Trouble Shooting
 
