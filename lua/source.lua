@@ -137,7 +137,7 @@ function M.getTriggerCharacter()
   if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then
     for _, item in ipairs(complete_source.complete_items) do
       local complete_items = complete_items_map[item]
-      if complete_items.trigger_character ~= nil then
+      if complete_items ~= nil and complete_items.trigger_character ~= nil then
         for _,val in ipairs(complete_items.trigger_character) do
           table.insert(triggerCharacter, val)
         end
@@ -164,6 +164,9 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
       local items_array = {}
       for _, item in ipairs(complete_source.complete_items) do
         local complete_items = complete_items_map[item]
+        if complete_items == nil then
+          goto continue
+        end
         if complete_items.callback == nil then
           table.insert(callback_array, true)
         else
@@ -171,6 +174,7 @@ function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
           complete_items.trigger(prefix, textMatch, bufnr, manager)
         end
         table.insert(items_array, complete_items.item)
+        ::continue::
       end
       local timer = vim.loop.new_timer()
       timer:start(20, 50, vim.schedule_wrap(function()
