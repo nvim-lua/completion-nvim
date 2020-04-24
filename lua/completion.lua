@@ -70,7 +70,11 @@ local autoOpenHoverInPopup = function(bufnr)
         items['selected'] = 0
       end
       local item = items['items'][items['selected']+1]
-      if item['user_data'] ~= nil and #item['user_data'] ~= 0 then
+      local user_data = item['user_data']
+      if user_data ~= nil then
+        user_data = vim.fn.json_decode(item['user_data'])
+      end
+      if  user_data ~= nil and user_data['lsp'] == nil then
         local user_data = vim.fn.json_decode(item['user_data'])
         if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
           local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
@@ -92,8 +96,7 @@ local autoOpenHoverInPopup = function(bufnr)
           })
           M.winnr = winnr
         end
-      elseif item['kind'] ~= 'UltiSnips' and
-          item['kind'] ~= 'Neosnippet' then
+      else
         local row, col = unpack(api.nvim_win_get_cursor(0))
         row = row - 1
         local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
@@ -285,6 +288,7 @@ end
 M.on_attach = function()
   hover.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
+    api.nvim_command("autocmd! * <buffer>")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
