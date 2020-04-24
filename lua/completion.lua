@@ -71,11 +71,10 @@ local autoOpenHoverInPopup = function(bufnr)
       end
       local item = items['items'][items['selected']+1]
       local user_data = item['user_data']
-      if user_data ~= nil then
+      if user_data ~= nil and #user_data ~= 0 then
         user_data = vim.fn.json_decode(item['user_data'])
       end
       if  user_data ~= nil and user_data['lsp'] == nil then
-        local user_data = vim.fn.json_decode(item['user_data'])
         if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
           local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
           markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
