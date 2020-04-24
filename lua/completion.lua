@@ -158,7 +158,7 @@ end
 function M.autoAddParens(complete_item)
   if complete_item.kind == nil then return end
   if string.match(complete_item.kind, '.*Function.*') ~= nil or string.match(complete_item.kind, '.*Method.*') then
-    api.nvim_input("()<ESC>i")
+    api.nvim_input("()<left>")
   end
 end
 
