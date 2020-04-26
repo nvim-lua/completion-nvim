@@ -29,6 +29,7 @@ M.chain_complete_index = 1
 M.stop_complete = false
 
 
+
 local function checkCallback(callback_array)
   for _,val in ipairs(callback_array) do
     if val == false then return false end
@@ -112,12 +113,10 @@ local function getScopedChain(ft_subtree)
 end
 
 -- preserve compatiblity of completion_chain_complete_list
-local function getChainCompleteList()
+local function getChainCompleteList(filetype)
 
   local chain_complete_list = chain_list_to_tree(api.nvim_get_var('completion_chain_complete_list'))
   -- check if chain_complete_list is a array
-  
-  local filetype = api.nvim_buf_get_option(0, 'filetype')
 
   if chain_complete_list[filetype] then
       return getScopedChain(chain_complete_list[filetype])
@@ -148,9 +147,8 @@ function M.getTriggerCharacter()
 end
 
 function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
-  M.chain_complete_list = getChainCompleteList()
   if manager.insertChar == false then return end
-  M.chain_complete_list = getChainCompleteList()
+  M.chain_complete_list = getChainCompleteList(api.nvim_buf_get_option(0, 'filetype'))
   M.chain_complete_length = #M.chain_complete_list
   if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
     local complete_source = M.chain_complete_list[M.chain_complete_index]
@@ -216,6 +214,39 @@ function M.prevCompletion()
     M.chain_complete_index = M.chain_complete_index - 1
   else
     M.chain_complete_index = #M.chain_complete_list
+  end
+end
+
+function M.checkHealth()
+  local completion_list = api.nvim_get_var('completion_chain_complete_list')
+  local chain_complete_list = getChainCompleteList('lua')
+  local health_ok = vim.fn['health#report_ok']
+  local health_error = vim.fn['health#report_error']
+  local error = false
+  for filetype, _ in pairs(completion_list) do
+    local chain_complete_list
+    if filetype ~= 'default' then
+      chain_complete_list = getChainCompleteList(filetype)
+    else
+      chain_complete_list = getScopedChain(completion_list.default) or completion_list.default.default
+    end
+    for _,complete_source in ipairs(chain_complete_list) do
+      if vim.fn.has_key(complete_source, "complete_items") > 0 then
+        for _,item in ipairs(complete_source.complete_items) do
+          if complete_items_map[item] == nil then
+            health_error(item.." is not a valid completion source")
+            error = true
+          end
+        end
+      else
+        if ins.checkHealth(complete_source.mode) then
+          health_error(complete_source.mode.." is not a valid insert complete mode")
+        end
+      end
+    end
+  end
+  if error == false then
+    health_ok("all completion source are valid")
   end
 end
 

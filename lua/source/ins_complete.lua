@@ -35,7 +35,14 @@ local checkEmptyCompletion = function(manager)
   end))
 end
 
+M.checkHealth = function(mode)
+  if ins_complete_table[mode] == nil then
+    return false
+  end
+end
+
 M.triggerCompletion = function(manager, mode)
+  if ins_complete_table[mode] == nil then return end
   if manager.insertChar == true and vim.fn.pumvisible() == 0 then
     api.nvim_input(ins_complete_table[mode])
     checkEmptyCompletion(manager)
