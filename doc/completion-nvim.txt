@@ -1,0 +1,305 @@
+*completion-nvim.txt*
+A async completion framework aims to provide completion to neovim's built in LSP written in Lua
+
+
+CONTENTS                                                            *completion-nvim*
+
+    0. Introduction ......... |completion-introduction|
+    1. Features ............. |completion-feature|
+    1. Prerequisite .......... |completion-prerequisite|
+    2. Setup ................ |completion-setup|
+    3. Options .............. |completion-option|
+
+===============================================================================================
+INTRODUCTION						                        *completion-introdction*
+
+completion-nvim is an auto completion framework that aims to provide a better
+completion experience with neovim's built-in LSP.  Other LSP functionality is not
+supported.
+
+===============================================================================================
+FEATURE                                                     *completion-features*
+
+- Asynchronous completion using libuv api.
+- Automatically open hover windows when popupmenu is available.
+- Automatically open signature help if it's available.
+- Snippets integration with UltiSnips and Neosnippet.
+- ins-complete method integration
+- Chain completion support inspired by vim-mucomplete
+
+==============================================================================================
+PREREQUISITES                                               *completion-prerequisites*
+
+- Neovim 5.0
+- You should be setting up language server with the help of nvim-lsp
+
+===============================================================================================
+SETUP                                                       *completion-setup*
+
+- completion-nvim require several autocommand set up to work properly, you should
+  set it up using the `on_attach` function like this.
+  >
+  lua require'nvim_lsp'.pyls.setup{on_attach=require'completion'.on_attach}
+
+- Change `pyls` to whichever language server you are using.
+
+- If you want completion-nvim to be set up for all buffers instead of only being
+  used when lsp is enabled, call the `on_attach` function directly:
+>
+    " Use completion-nvim in every buffer
+    autocmd BufEnter * lua require'completion'.on_attach()
+<
+    Note: It's okay to set up completion-nvim without lsp. It will simply use
+    another completion source instead(Ex: snippets).
+
+===============================================================================================
+OPTION                                                      *completion-option*
+
+g:completion_enable_auto_popup                  *g:completion_enable_auto_popup*
+
+        This variable enable automatically popup window for completion. Set
+        this value to 0 if you don't want automatically popup window.
+
+        If you disable auto popup menu, you can manually trigger completion by
+        mapping keys. For example: 
+>
+        " map <c-p> to manually trigger completion 
+        inoremap <silent><expr> <c-p> completion#trigger_completion()
+<
+        Or you want to use <tab> to trigger completion without modifying the
+        usage to <tab> keys.
+>
+        function! s:check_back_space() abort
+            let col = col('.') - 1
+            return !col || getline('.')[col - 1]  =~ '\s'
+        endfunction
+
+        inoremap <silent><expr> <TAB>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<TAB>" :
+            \ completion#trigger_completion()
+<
+
+        default value: 1
+
+g:completion_enable_snippet                     *g:completion_enable_snippet*
+
+        You can specify what snippet engines you want to use. Possible value
+        are |UltiSnips| and |Neosnippet|.
+
+        Note: Snippets engine will not work without setting this variables.
+
+        default value: v:null
+
+g:completion_confirm_key                        *g:completion_confirm_key*
+
+        You can specify what keys to use for confirm completion(which will
+        select the completion items and expand snippets if available).
+
+        Note: Make sure to use proper escape sequence to avoid parsing issue,
+        for example:
+>
+        " Change confirm key to <C-y>
+        let g:completion_confirm_key = "\<C-y>"
+<
+
+        default value: "\<CR>"
+
+g:completion_confirm_key_rhs                    *g:completion_confirm_key_rhs*
+
+        If the confirm key have a fallback mapping, for example, using auto
+        pair plugins that map to "\<CR>", you can provide it like it in this
+        options. For example:
+>
+        " Fallback for https://github.com/Raimondi/delimitMate expanding on enter
+        let g:completion_confirm_key_rhs = "\<Plug>delimitMateCR"
+<
+g:completion_enable_auto_hover                  *g:completion_enable_auto_hover*
+
+        By default, completion-nvim will automatically open up hover window
+        when you navigate through the complete items(including basic
+        information of snippets). You can turn it off by specify this option
+        to zero.
+
+        default value: 1
+
+g:completion_enable_auto_signature              *g:completion_enable_auto_signature*
+
+        By default signature help opens automatically whenever it is availabe.
+        You can turn it off by specify this option to zero.
+
+        default value: 1
+
+g:completion_enable_auto_paren			*g:completion_enable_auto_paren*
+
+	Enable the auto insert parenthesis feature. completion-nvim will
+	insert parenthesis when complete method or functions.
+
+	default value: 0
+
+g:completion_max_items                          *g:completion_max_items*
+
+        You can set a number limit for the maximum completion items. For
+        example, if you just want at most 10 items in your popup menu, set is
+        option equals to 10.
+
+        Note: this option only works for non ins-complete sources.
+
+        default value: v:null
+
+
+g:completion_trigger_character                  *g:completion_trigger_character*
+        You can add or disable a trigger character that will trigger completion.
+
+        For example, disable trigger character
+>
+        let g:completion_trigger_character = []
+<
+        Or having multiple trigger characters
+>
+        let g:completion_trigger_character = ['.', '::']
+<
+        Use autocmd if you want different trigger character for different
+        lanugages.
+>
+        augroup CompleteionTriggerCharacter
+            autocmd!
+            autocmd BufEnter * let g:completion_trigger_character = ['.']
+            autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
+        augroup end
+<
+
+        default value: ['.']
+
+g:completion_timer_cycle                        *g:completion_timer_cycle*
+
+        completion-nvim uses a timer to control the rate of completion. Adjust
+        the timer rate by setting this value.
+
+        Note: any values lower than the default is not recommended.
+
+        default value: 80
+
+g:completion_chain_complete_list	     *g:completion_chain_complete_list*
+
+	completion-nvim has chain completion support inspired by vim-mucomplete.
+	In short, you can divide completion sources in group and having 
+	ins-completion method as backup completion.
+
+	You can specify different completion list for different filetype. By
+	default, possible sources are 'lsp', 'snippet', 'path' and various
+	ins-complete sources. Specify 'mode' as your key for ins-complete
+	sources, 'complete_items' for other sources. For example:
+>
+	let g:completion_chain_complete_list = {
+	    \'default' : [
+	    \	{'complete_items': ['lsp', 'snippet']},
+	    \	{'mode': '<c-p>'},
+	    \	{'mode': '<c-n>'}
+	    \]
+	}
+<
+	You can easily switch to next or previous sources by mapping keys in
+	insert mode. For example, using <c-j> to switch to previous sources
+	and <c-k> to switch to next sources:
+>
+	imap <c-j> <cmd>lua require'source'.prevCompletion()<CR>
+	imap <c-k> <cmd>lua require'source'.nextCompletion()<CR>
+<
+	Customizing your completion sources is easy, for non ins-complete
+	items, you can choose to put them in the same source or separate them.
+	For example, if you want to separate lsp and snippet into two different
+	sources:
+>
+	let g:completion_chain_complete_list = {
+	    \'default' : [
+	    \	{'complete_items': ['lsp']},
+	    \	{'complete_items': ['snippet']}
+	    \	{'mode': '<c-p>'},
+	    \	{'mode': '<c-n>'}
+	    \]
+	}
+<
+	For ins-complete sources, possible 'mode' to the actual key in vim are
+	listed below.
+>
+	"c-n" : i_CTRL-N
+	"c-p" : i_CTRL-P
+	"cmd" : i_CTRL-X_CTRL-V
+	"defs": i_CTRL-X_CTRL-D
+	"dict": i_CTRL-X_CTRL-K
+	"file": i_CTRL-X_CTRL-F
+	"incl": i_CTRL-X_CTRL-I
+	"keyn": i_CTRL-X_CTRL-N
+	"keyp": i_CTRL-X_CTRL-P
+	"line": i_CTRL-X_CTRL-L
+	"spel": i_CTRL-X_s
+	"tags": i_CTRL-X_CTRL-]
+	"thes": i_CTRL-X_CTRL-T
+	"user": i_CTRL-X_CTRL-U
+<
+	You can also specify different completion list for different filetype,
+	for example:
+
+>
+	let g:completion_chain_complete_list = {
+	    \ 'vim': [
+	    \   {'mode': '<c-p>'},
+	    \   {'mode': '<c-n>'}
+	    \],
+	    \ 'lua': [
+	    \   {'mode': '<c-p>'},
+	    \   {'mode': '<c-n>'}
+	    \],
+	    \ 'default': [
+	    \   {'complete_items': ['lsp', 'snippet']},
+	    \   {'mode': '<c-p>'},
+	    \   {'mode': '<c-n>'}
+	    \]
+	    \}
+<
+	You can take a step further to specified different 'scope' of different
+	filetype. 'scope' is literally syntax in your file. Say that you want
+	different completion list in comment and function call, string and etc,
+	you can have it done easily. Here is an example
+>
+	let g:completion_chain_complete_list = {
+	    \ 'lua': [
+	    \    'string': [
+	    \        {'mode': '<c-p>'},
+	    \        {'mode': '<c-n>'}],
+	    \    'func' : [
+	    \        {'complete_items': ['lsp']}],
+	    \    'default': [
+	    \       {'complete_items': ['lsp', 'snippet']},
+	    \       {'mode': '<c-p>'},
+	    \       {'mode': '<c-n>'}],
+	    \],
+	    \ 'default' : {
+	    \   'default': [
+	    \       {'complete_items': ['lsp', 'snippet']},
+	    \       {'mode': '<c-p>'},
+	    \       {'mode': '<c-n>'}],
+	    \   'comment': []
+	    \   }
+	    \}
+<
+	Note: Every syntax highlighter have different syntax name defined(most
+	of them are similar though). You can check your syntax name under your
+	cursor by this command:
+>
+	:echo synIDattr(synID(line('.'), col('.'), 1), "name")
+<
+	You just need to specify a part of a result in the scope since it use
+	regex pattern to match it ( For example: if the result is 'luaComment' 
+	you only need to specified 'comment', case doesn't matter).
+
+g:completion_auto_change_source		*g:completion_auto_change_source*	
+
+	You can let completion-nvim changes source whenever current source has
+	no complete items by setting this option to 1.
+
+	default value: 0
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
