@@ -25,6 +25,10 @@ if ! exists('g:completion_enable_auto_hover')
     let g:completion_enable_auto_hover = 1
 endif
 
+if ! exists('g:completion_docked_hover')
+    let g:completion_docked_hover = 1
+endif
+
 if ! exists('g:completion_enable_focusable_hover')
     let g:completion_enable_focusable_hover = 0
 endif
@@ -53,6 +57,10 @@ if !exists('g:completion_timer_cycle')
     let g:completion_timer_cycle = 80
 endif
 
+if !exists('g:completion_timer_cycle')
+    let g:completion_timer_cycle = 80
+endif
+
 if ! exists('g:completion_max_items')
     let g:completion_max_items = v:null
 endif
@@ -72,6 +80,11 @@ endif
 if ! exists('g:completion_customize_lsp_label')
     let g:completion_customize_lsp_label = {}
 endif
+
+if ! exists('g:completion_items_priority')
+    let g:completion_items_priority = {}
+endif
+
 
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
 
