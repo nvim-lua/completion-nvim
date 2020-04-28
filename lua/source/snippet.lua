@@ -11,7 +11,7 @@ local getUltisnipItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) then
     return {}
   end
-  local piority = api.nvim_get_var('completion_items_priority')['UltiSnips'] or 0
+  local priority = api.nvim_get_var('completion_items_priority')['UltiSnips'] or 0
   for key, val in pairs(snippetsList) do
     -- fix lua parsing issue
     if key == true then
@@ -24,7 +24,7 @@ local getUltisnipItems = function(prefix, score_func)
         word = key,
         kind = 'UltiSnips',
         score = score,
-        piority = piority,
+        priority = priority,
         icase = 1,
         dup = 1,
         empty = 1,
@@ -42,7 +42,7 @@ local getNeosnippetItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
-  local piority = api.nvim_get_var('completion_items_priority')['Neosnippet'] or 0
+  local priority = api.nvim_get_var('completion_items_priority')['Neosnippet'] or 0
   for key, val in pairs(snippetsList) do
     if key == true then
       key = 'true'
@@ -54,7 +54,7 @@ local getNeosnippetItems = function(prefix, score_func)
           word = key,
           kind = 'Neosnippet',
           score = score,
-          piority = piority,
+          priority = priority,
           icase = 1,
           dup = 1,
           empty = 1,
