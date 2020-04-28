@@ -33,6 +33,7 @@ end
 function M.sort_completion_items(items)
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
+      print(vim.inspect(a.priority))
       return a.priority > b.priority
     elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
       return a.score < b.score
@@ -77,7 +78,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
         }
       }
       local kind = protocol.CompletionItemKind[completion_item.kind]
-      local priority = api.nvim_get_var('completion_items_priority')[kind] or 0
+      local priority = api.nvim_get_var('completion_items_priority')[kind] or 1
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
