@@ -26,7 +26,15 @@ if ! exists('g:completion_enable_auto_hover')
 endif
 
 if ! exists('g:completion_docked_hover')
-    let g:completion_docked_hover = 1
+    let g:completion_docked_hover = 0
+endif
+
+if ! exists('g:completion_docked_minimum_size')
+    let g:completion_docked_minimum_size = 5
+endif
+
+if ! exists('g:completion_docked_maximum_size')
+    let g:completion_docked_maximum_size = 20
 endif
 
 if ! exists('g:completion_enable_focusable_hover')

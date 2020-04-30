@@ -194,7 +194,31 @@ M.fancy_floating_markdown = function(contents, opts)
   -- Make the floating window.
   local height = #stripped
   local bufnr = api.nvim_create_buf(false, true)
-  local winnr = api.nvim_open_win(bufnr, false, make_floating_popup_options(width, height, opts))
+  local winnr
+  if api.nvim_get_var('completion_docked_hover') == 1 then
+    if height > vim.g.completion_docked_maximum_size then
+      height = vim.g.completion_docked_maximum_size
+    elseif height < vim.g.completion_docked_minimum_size then
+      height = vim.g.completion_docked_minimum_size
+    end
+    local row
+    if vim.fn.winline() > api.nvim_get_option('lines')/2 then
+      row = 0
+    else
+      row = api.nvim_get_option('lines') - height
+    end
+    winnr = api.nvim_open_win(bufnr, false, {
+        col = 0,
+        height = height,
+        relative = 'editor',
+        row = row,
+        focusable = true,
+        style = 'minimal',
+        width = api.nvim_get_option('columns'),
+      })
+  else
+    winnr = api.nvim_open_win(bufnr, false, make_floating_popup_options(width, height, opts))
+  end
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, stripped)
 
   local cwin = vim.api.nvim_get_current_win()
