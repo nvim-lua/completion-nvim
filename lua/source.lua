@@ -66,6 +66,13 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
   local triggered
   triggered = util.checkTriggerCharacter(line_to_cursor, source_trigger_character) or
               util.checkTriggerCharacter(line_to_cursor, vim.g.completion_trigger_character)
+
+  -- handle user defined only triggered character
+  if complete_source['triggered_only'] ~= nil then
+    triggered = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
+    if not triggered then return end
+  end
+
   local length = vim.g.completion_trigger_keyword_length
   if #prefix < length and not triggered and not force then
     return
