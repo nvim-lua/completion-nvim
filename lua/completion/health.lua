@@ -15,7 +15,7 @@ local checkCompletionSource = function()
 end
 
 local checkSnippetSource = function()
-  local snippet_source = api.nvim_get_var('completion_enable_snippet')
+  local snippet_source = vim.g.completion_enable_snippet
   if snippet_source == nil then
     health_info("You haven't setup any snippet source.")
   elseif snippet_source == 'UltiSnips' then

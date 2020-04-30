@@ -1,3 +1,3 @@
 function! health#completion_nvim#check()
-  lua require 'completion-nvim.health'.checkHealth()
+  lua require 'completion.health'.checkHealth()
 endfunction

@@ -1,6 +1,6 @@
 local vim = vim
 local api = vim.api
-local util = require 'utility'
+local util = require 'completion.util'
 local M = {}
 
 M.callback = false

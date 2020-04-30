@@ -21,6 +21,7 @@ local ins_complete_table = {
   ['<c-n>'] = "<c-g><c-g><c-n>",
 }
 
+-- HACK workaround to handle delay of ins-complete
 local checkEmptyCompletion = function(manager)
   local timer = vim.loop.new_timer()
   timer:start(200, 0, vim.schedule_wrap(function()

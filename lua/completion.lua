@@ -1,9 +1,9 @@
 local vim = vim
 local api = vim.api
-local util = require 'utility'
+local util = require 'completion.util'
 local source = require 'source'
-local signature = require'signature_help'
-local hover = require'hover'
+local signature = require'completion.signature_help'
+local hover = require'completion.hover'
 local M = {}
 
 ------------------------------------------------------------------------
@@ -11,144 +11,24 @@ local M = {}
 ------------------------------------------------------------------------
 
 M.completionConfirm = false
-M.prefixLength = 0
+
 
 -- Manager variable to keep all state accross completion
 local manager = {
+  -- Handle insertCharPre event, turn off imediately when preforming completion
   insertChar = false,
+  -- Handle insertLeave event
   insertLeave = false,
+  -- Handle auto hover
   textHover = false,
+  -- Handle selected items in v:complete-items for auto hover
   selected = -1,
+  -- Handle changeTick
   changedTick = 0,
+  -- handle auto changing source
   changeSource = false,
   autochange = false
 }
-
-local autoCompletion = function(bufnr, line_to_cursor)
-  -- Get the start position of the current keyword
-  local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
-  local prefix = line_to_cursor:sub(textMatch+1)
-  local length = api.nvim_get_var('completion_trigger_keyword_length')
-  if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
-    if vim.fn.pumvisible() > 0 then
-      api.nvim_input("<c-g><C-g>")
-    end
-    source.chain_complete_index = 1
-    source.stop_complete = false
-  end
-  M.prefixLength = #prefix
-  -- force reset chain completion if entering a new word
-  if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
-    source.chain_complete_index = 1
-    source.stop_complete = false
-    manager.changeSource = false
-  end
-  if source.stop_complete == true then return end
-  local source_trigger_character = source.getTriggerCharacter()
-  local triggerCharacter = util.checkTriggerCharacter(line_to_cursor, source_trigger_character)
-  if #prefix >= length or triggerCharacter == true then
-    if triggerCharacter == true then
-      source.chain_complete_index = 1
-    end
-    source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
-  end
-end
-
-local autoOpenHoverInPopup = function(bufnr)
-  if api.nvim_call_function('pumvisible', {}) == 1 then
-    -- Auto open hover
-    local items = api.nvim_call_function('complete_info', {{"eval", "selected", "items", "user_data"}})
-    if items['selected'] ~= manager.selected then
-      manager.textHover = true
-      if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
-        api.nvim_win_close(M.winnr, true)
-      end
-      M.winnr = nil
-    end
-    if manager.textHover == true and items['selected'] ~= -1 then
-      if items['selected'] == -2 then
-        items['selected'] = 0
-      end
-      local item = items['items'][items['selected']+1]
-      local user_data = item['user_data']
-      if user_data ~= nil and #user_data ~= 0 then
-        user_data = vim.fn.json_decode(item['user_data'])
-      end
-      if  user_data ~= nil and user_data['lsp'] == nil then
-        if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
-          local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
-          markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-          local bufnr, winnr
-          local position = vim.fn.pum_getpos()
-          -- Set max width option to avoid overlapping with popup menu
-          local total_column = api.nvim_get_option('columns')
-          local align
-          if position['col'] < total_column/2 then
-            align = 'right'
-          else
-            align = 'left'
-          end
-          bufnr, winnr = hover.fancy_floating_markdown(markdown_lines, {
-            pad_left = 1; pad_right = 1;
-            col = position['col']; width = position['width']; row = position['row']-1;
-            align = align
-          })
-          M.winnr = winnr
-        end
-      else
-        local row, col = unpack(api.nvim_win_get_cursor(0))
-        row = row - 1
-        local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
-        col = vim.str_utfindex(line, col)
-        local params = {
-          textDocument = vim.lsp.util.make_text_document_params();
-          position = { line = row; character = col-1; }
-        }
-        local winnr
-        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
-      end
-      manager.textHover = false
-    end
-    manager.selected = items['selected']
-  end
-end
-
-local autoOpenSignatureHelp = function(bufnr, line_to_cursor)
-  local params = vim.lsp.util.make_position_params()
-  if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
-    vim.lsp.buf_request(bufnr, 'textDocument/signatureHelp', params, function(_, method, result)
-      if not (result and result.signatures and result.signatures[1]) then
-        return
-      else
-        signature.focusable_preview(method, function()
-          local lines = signature.signature_help_to_preview_contents(result)
-          lines = vim.lsp.util.trim_empty_lines(lines)
-          if vim.tbl_isempty(lines) then
-            return { 'No signature available' }
-          end
-          return lines, vim.lsp.util.try_trim_markdown_code_blocks(lines)
-        end)
-      end
-    end)
-  end
-end
-
-local completionManager = function()
-  local bufnr = api.nvim_get_current_buf()
-  local pos = api.nvim_win_get_cursor(0)
-  local line = api.nvim_get_current_line()
-  local line_to_cursor = line:sub(1, pos[2])
-
-  autoCompletion(bufnr, line_to_cursor)
-
-  if api.nvim_get_var('completion_enable_auto_hover') == 1 then
-    autoOpenHoverInPopup(bufnr)
-  end
-  if api.nvim_get_var('completion_enable_auto_signature') == 1 then
-    autoOpenSignatureHelp(bufnr, line_to_cursor)
-  end
-end
-
 
 ------------------------------------------------------------------------
 --                          member function                           --
@@ -172,7 +52,7 @@ end
 function M.confirmCompletion()
   if M.completionConfirm == true then
     local complete_item = api.nvim_get_vvar('completed_item')
-    if api.nvim_get_var('completion_enable_auto_paren') == 1 then
+    if vim.g.completion_enable_auto_paren == 1 then
       M.autoAddParens(complete_item)
     end
     if complete_item.kind == 'UltiSnips' then
@@ -182,32 +62,17 @@ function M.confirmCompletion()
     end
     M.completionConfirm = false
   end
-  if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
-    api.nvim_win_close(M.winnr, true)
+  if hover.winnr ~= nil and api.nvim_win_is_valid(hover.winnr) then
+    api.nvim_win_close(hover.winnr, true)
   end
 end
 
-
-M.triggerCompletion = function(force)
-  local bufnr = api.nvim_get_current_buf()
-  local pos = api.nvim_win_get_cursor(0)
-  local line = api.nvim_get_current_line()
-  local line_to_cursor = line:sub(1, pos[2])
-  local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
-  local prefix = line_to_cursor:sub(textMatch+1)
-  manager.insertChar = true
-  -- force is used when manually trigger, so it doesn't repect the trigger word length
-  local length = api.nvim_get_var('completion_trigger_keyword_length')
-  if force == true or (#prefix >= length or util.checkTriggerCharacter(line_to_cursor)) then
-    source.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
-  end
-end
 
 function M.on_InsertCharPre()
   manager.insertChar = true
   manager.textHover = true
   manager.selected = -1
-  if api.nvim_get_var('completion_auto_change_source') == 1 then
+  if vim.g.completion_auto_change_source == 1 then
     manager.autochange = true
   end
 end
@@ -221,14 +86,14 @@ function M.on_InsertEnter()
   if enable == nil or enable == 0 then
     return
   end
-  if api.nvim_get_var('completion_enable_auto_popup') == 0 then return end
+  if vim.g.completion_enable_auto_popup == 0 then return end
   local timer = vim.loop.new_timer()
   -- setup variable
   manager.changedTick = api.nvim_buf_get_changedtick(0)
   manager.insertLeave = false
   manager.insertChar = false
   manager.changeSource = false
-  if api.nvim_get_var('completion_auto_change_source') == 1 then
+  if vim.g.completion_auto_change_source == 1 then
     manager.autochange = true
   end
 
@@ -236,14 +101,20 @@ function M.on_InsertEnter()
   source.chain_complete_index = 1
   source.stop_complete = false
   local l_complete_index = source.chain_complete_index
-  local timer_cycle = api.nvim_get_var('completion_timer_cycle')
+  local timer_cycle = vim.g.completion_timer_cycle
 
   timer:start(100, timer_cycle, vim.schedule_wrap(function()
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
       manager.changedTick = l_changedTick
-      completionManager()
+      source.autoCompletion(manager)
+      if vim.g.completion_enable_auto_hover == 1 then
+        hover.autoOpenHoverInPopup(manager)
+      end
+      if vim.g.completion_enable_auto_signature == 1 then
+        signature.autoOpenSignatureHelp()
+      end
     end
     -- change source if no item is available
     if manager.changeSource and manager.autochange then
@@ -261,7 +132,7 @@ function M.on_InsertEnter()
       if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
         vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
       end
-      M.triggerCompletion(false)
+      source.triggerCompletion(false, manager)
       manager.autochange = false
       l_complete_index = source.chain_complete_index
     end
@@ -271,6 +142,10 @@ function M.on_InsertEnter()
       timer:close()
     end
   end))
+end
+
+M.triggerCompletion = function()
+  source.triggerCompletion(true, manager)
 end
 
 M.completionToggle = function()
@@ -293,8 +168,8 @@ M.on_attach = function()
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command [[augroup end]]
-  if string.len(api.nvim_get_var('completion_confirm_key')) ~= 0 then
-    api.nvim_buf_set_keymap(0, 'i', api.nvim_get_var('completion_confirm_key'),
+  if string.len(vim.g.completion_confirm_key) ~= 0 then
+    api.nvim_buf_set_keymap(0, 'i', vim.g.completion_confirm_key,
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
   end
   api.nvim_buf_set_var(0, 'completion_enable', 1)

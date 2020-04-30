@@ -1,10 +1,11 @@
 local vim = vim
 local api = vim.api
-local util = require 'utility'
+local util = require 'completion.util'
+local complete = require 'completion.complete'
+local chain_completion = require 'completion.chain_completion'
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local path = require 'source.path'
-local ins = require 'source.ins_complete'
 
 local M = {}
 
@@ -25,112 +26,16 @@ local complete_items_map = {
   },
 }
 
+M.prefixLength = 0
 M.chain_complete_index = 1
 M.stop_complete = false
 
 
+---------------------------
+--  local util function  --
+---------------------------
 
-local function checkCallback(callback_array)
-  for _,val in ipairs(callback_array) do
-    if val == false then return false end
-    if type(val) == 'function' then
-      if val() == false then return end
-    end
-  end
-  return true
-end
-
-function M.addCompleteItems(key, complete_item)
-  complete_items_map[key] = complete_item
-end
-
-local function getCompletionItems(items_array, prefix)
-  local complete_items = {}
-  for _,func in ipairs(items_array) do
-    vim.list_extend(complete_items, func(prefix, util.fuzzy_score))
-  end
-  return complete_items
-end
-
-local function chain_list_to_tree(complete_list)
-    if util.is_list(complete_list) then
-        return {
-            default = {
-                default= complete_list
-            }
-        }
-    else
-        local complete_tree = {}
-        for ft, c_list in pairs(complete_list) do
-            if util.is_list(c_list) then
-                complete_tree[ft] = {
-                    default=c_list
-                }
-            else
-                complete_tree[ft] = c_list
-            end
-        end
-
-        -- Be sure that default.default exists
-        if not complete_tree.default then
-            complete_tree.default = {
-                default = {
-                    { complete_items={ 'lsp', 'snippet' } }
-                }
-            }
-        end
-
-        return complete_tree
-    end
-end
-
-local function getScopedChain(ft_subtree)
-
-  local function syntaxGroupAtPoint()
-      local pos = api.nvim_win_get_cursor(0)
-      return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
-  end
-
-  local VAR_NAME = "completion_syntax_at_point"
-
-  local syntax_getter
-
-  -- If this option is effectively a function, use it to determine syntax group at point
-  if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
-      syntax_getter = api.nvim_get_var(VAR_NAME)
-  else
-      syntax_getter = syntaxGroupAtPoint
-  end
-
-  local atPoint = syntax_getter():lower()
-  for syntax_regex, complete_list in pairs(ft_subtree) do
-      if string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
-          return complete_list
-      end
-  end
-
-  return nil
-end
-
--- preserve compatiblity of completion_chain_complete_list
-local function getChainCompleteList(filetype)
-
-  local chain_complete_list = chain_list_to_tree(api.nvim_get_var('completion_chain_complete_list'))
-  -- check if chain_complete_list is a array
-
-  if chain_complete_list[filetype] then
-      return getScopedChain(chain_complete_list[filetype])
-      or getScopedChain(chain_complete_list.default)
-      or chain_complete_list[filetype].default
-      or chain_complete_list.default.default
-  else
-      return getScopedChain(chain_complete_list.default) or chain_complete_list.default.default
-  end
-
-end
-
-function M.getTriggerCharacter()
-  M.chain_complete_list = getChainCompleteList()
+local getTriggerCharacter = function(complete_source)
   local triggerCharacter = {}
   local complete_source = M.chain_complete_list[M.chain_complete_index]
   if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then
@@ -146,59 +51,85 @@ function M.getTriggerCharacter()
   return triggerCharacter
 end
 
-function M.triggerCurrentCompletion(manager, bufnr, prefix, textMatch)
+local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix, textMatch, force)
+  -- avoid rebundant calling of completion
   if manager.insertChar == false then return end
-  M.chain_complete_list = getChainCompleteList(api.nvim_buf_get_option(0, 'filetype'))
+
+  -- get current completion source
+  M.chain_complete_list = chain_completion.getChainCompleteList(api.nvim_buf_get_option(0, 'filetype'))
   M.chain_complete_length = #M.chain_complete_list
-  if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-    local complete_source = M.chain_complete_list[M.chain_complete_index]
+  local complete_source = M.chain_complete_list[M.chain_complete_index]
+  if complete_source == nil then return end
 
-    if complete_source == nil then return end
-
-    if vim.fn.has_key(complete_source, "mode") > 0 then
-      ins.triggerCompletion(manager, complete_source.mode)
-    elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
-      local callback_array = {}
-      local items_array = {}
-      for _, item in ipairs(complete_source.complete_items) do
-        local complete_items = complete_items_map[item]
-        if complete_items == nil then
-          goto continue
-        end
-        if complete_items.callback == nil then
-          table.insert(callback_array, true)
-        else
-          table.insert(callback_array, complete_items.callback)
-          complete_items.trigger(prefix, textMatch, bufnr, manager)
-        end
-        table.insert(items_array, complete_items.item)
-        ::continue::
-      end
-      local timer = vim.loop.new_timer()
-      timer:start(20, 50, vim.schedule_wrap(function()
-        if checkCallback(callback_array) == true and timer:is_closing() == false then
-          if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-            local items = getCompletionItems(items_array, prefix)
-            util.sort_completion_items(items)
-            if api.nvim_get_var('completion_max_items') ~= nil then
-              items = { unpack(items, 1, api.nvim_get_var('completion_max_items'))}
-            end
-            -- local init_items = {unpack(items, 1, 2)}
-            vim.fn.complete(textMatch+1, items)
-            -- vim.fn.complete_add(items[3])
-            if #items ~= 0 then
-              manager.insertChar = false
-              manager.changeSource = false
-            else
-              manager.changeSource = true
-            end
-          end
-          timer:stop()
-          timer:close()
-        end
-      end))
-    end
+  -- handle source trigger character and user defined trigger character
+  local source_trigger_character = getTriggerCharacter(complete_source)
+  local triggered
+  triggered = util.checkTriggerCharacter(line_to_cursor, source_trigger_character) or
+              util.checkTriggerCharacter(line_to_cursor, vim.g.completion_trigger_character)
+  local length = vim.g.completion_trigger_keyword_length
+  if #prefix < length and not triggered and not force then
+    return
   end
+  if triggered then
+    M.chain_complete_index = 1
+  end
+
+  complete.performComplete(complete_source, complete_items_map, manager, bufnr, prefix, textMatch)
+end
+
+local getPositionParam = function()
+  local bufnr = api.nvim_get_current_buf()
+  local pos = api.nvim_win_get_cursor(0)
+  local line = api.nvim_get_current_line()
+  local line_to_cursor = line:sub(1, pos[2])
+  return bufnr, line_to_cursor
+end
+
+-----------------------
+--  Method function  --
+-----------------------
+
+-- Activate when manually triggered completion or manually changing completion source
+function M.triggerCompletion(force, manager)
+  local bufnr, line_to_cursor = getPositionParam()
+  local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
+  local prefix = line_to_cursor:sub(textMatch+1)
+  manager.insertChar = true
+  -- force is used when manually trigger, so it doesn't repect the trigger word length
+  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, force)
+end
+
+-- Handler for auto completion
+function M.autoCompletion(manager)
+  local bufnr, line_to_cursor = getPositionParam()
+  local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
+  local prefix = line_to_cursor:sub(textMatch+1)
+  local length = vim.g.completion_trigger_keyword_length
+
+  -- reset completion when deleting character in insert mode
+  if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
+    M.chain_complete_index = 1
+    M.stop_complete = false
+  end
+  M.prefixLength = #prefix
+
+  -- force reset chain completion if entering a new word
+  if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
+    M.chain_complete_index = 1
+    M.stop_complete = false
+    manager.changeSource = false
+  end
+
+  -- stop auto completion when all sources return no complete-items
+  if M.stop_complete == true then return end
+
+  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch)
+
+end
+
+-- provide api for custom complete items
+function M.addCompleteItems(key, complete_item)
+  complete_items_map[key] = complete_item
 end
 
 function M.nextCompletion()
@@ -217,38 +148,9 @@ function M.prevCompletion()
   end
 end
 
-function M.checkHealth()
-  local completion_list = api.nvim_get_var('completion_chain_complete_list')
-  local chain_complete_list = getChainCompleteList('lua')
-  local health_ok = vim.fn['health#report_ok']
-  local health_error = vim.fn['health#report_error']
-  local error = false
-  for filetype, _ in pairs(completion_list) do
-    local chain_complete_list
-    if filetype ~= 'default' then
-      chain_complete_list = getChainCompleteList(filetype)
-    else
-      chain_complete_list = getScopedChain(completion_list.default) or completion_list.default.default
-    end
-    for _,complete_source in ipairs(chain_complete_list) do
-      if vim.fn.has_key(complete_source, "complete_items") > 0 then
-        for _,item in ipairs(complete_source.complete_items) do
-          if complete_items_map[item] == nil then
-            health_error(item.." is not a valid completion source")
-            error = true
-          end
-        end
-      else
-        if ins.checkHealth(complete_source.mode) then
-          health_error(complete_source.mode.." is not a valid insert complete mode")
-        end
-      end
-    end
-  end
-  if error == false then
-    health_ok("all completion source are valid")
-  end
-end
 
+function M.checkHealth()
+  chain_completion.checkHealth(complete_items_map)
+end
 
 return M

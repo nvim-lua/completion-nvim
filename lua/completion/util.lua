@@ -44,7 +44,7 @@ end
 
 function M.text_document_completion_list_to_complete_items(result, prefix)
   local items = vim.lsp.util.extract_completion_items(result)
-  local customize_label = api.nvim_get_var('completion_customize_lsp_label')
+  local customize_label = vim.g.completion_customize_lsp_label
   if vim.tbl_isempty(items) then
     return {}
   end
@@ -55,8 +55,8 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
   local matches = {}
 
   for _, completion_item in ipairs(items) do
-    -- skip snippets items
-    if api.nvim_get_var('completion_enable_snippet') == nil or
+    -- skip snippets items if snippet source are enabled
+    if vim.g.completion_enable_snippet == nil or
       protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
       local info = ' '
       local documentation = completion_item.documentation
@@ -77,7 +77,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
         }
       }
       local kind = protocol.CompletionItemKind[completion_item.kind]
-      local priority = api.nvim_get_var('completion_items_priority')[kind] or 1
+      local priority = vim.g.completion_items_priority[kind] or 1
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
@@ -140,15 +140,9 @@ function M.fuzzy_score(str1, str2)
 end
 
 
-
 -- Check trigger character
-M.checkTriggerCharacter = function(line_to_cursor, source_trigger_character)
-  local trigger_character = api.nvim_get_var('completion_trigger_character')
-  if source_trigger_character ~= nil then
-    for _,val in ipairs(source_trigger_character) do
-      table.insert(trigger_character, val)
-    end
-  end
+M.checkTriggerCharacter = function(line_to_cursor, trigger_character)
+  if trigger_character == nil then return end
   for _, ch in ipairs(trigger_character) do
     local current_char = string.sub(line_to_cursor, #line_to_cursor-#ch+1, #line_to_cursor)
     if current_char == ch then

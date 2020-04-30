@@ -1,6 +1,6 @@
 local vim = vim
 local api = vim.api
-local util = require 'utility'
+local util = require 'completion.util'
 local M = {}
 
 
@@ -11,7 +11,7 @@ local getUltisnipItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) then
     return {}
   end
-  local priority = api.nvim_get_var('completion_items_priority')['UltiSnips'] or 1
+  local priority = vim.g.completion_items_priority['UltiSnips'] or 1
   for key, val in pairs(snippetsList) do
     -- fix lua parsing issue
     if key == true then
@@ -42,7 +42,7 @@ local getNeosnippetItems = function(prefix, score_func)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
-  local priority = api.nvim_get_var('completion_items_priority')['Neosnippet'] or 1
+  local priority = vim.g.completion_items_priority['Neosnippet'] or 1
   for key, val in pairs(snippetsList) do
     if key == true then
       key = 'true'
@@ -66,7 +66,7 @@ local getNeosnippetItems = function(prefix, score_func)
 end
 
 M.getCompletionItems = function(prefix, score_func, _)
-  local source = api.nvim_get_var('completion_enable_snippet')
+  local source = vim.g.completion_enable_snippet
   local snippet_list = {}
   if source == 'UltiSnips' then
     snippet_list = getUltisnipItems(prefix, score_func)
@@ -74,20 +74,6 @@ M.getCompletionItems = function(prefix, score_func, _)
     snippet_list = getNeosnippetItems(prefix, score_func)
   end
   return snippet_list
-end
-
-M.triggerCompletion = function(manager, _, prefix, textMatch)
-  local snippet_list = M.getCompletionItemsItem(prefix)
-  util.sort_completion_items(snippet_list)
-  if manager.insertChar == true then
-    vim.fn.complete(textMatch+1, snippet_list)
-    if #snippet_list ~= 0 then
-      manager.insertChar = false
-      manager.changeSource = false
-    else
-      manager.changeSource = true
-    end
-  end
 end
 
 return M

@@ -29,7 +29,7 @@ M.focusable_float = function(unique_name, fn)
   do
     local win = find_window_by_var(unique_name, bufnr)
     if win then
-      if api.nvim_get_var('completion_enable_focusable_hover') == 0 then
+      if vim.g.completion_enable_focusable_hover == 0 then
         api.nvim_win_close(win, true)
       else
         api.nvim_set_current_win(win)
@@ -87,7 +87,7 @@ local make_floating_popup_options = function(width, height, opts)
   }
 end
 
-M.fancy_floating_markdown = function(contents, opts)
+local fancy_floating_markdown = function(contents, opts)
   local pad_left = opts and opts.pad_left
   local pad_right = opts and opts.pad_right
   local stripped = {}
@@ -195,7 +195,7 @@ M.fancy_floating_markdown = function(contents, opts)
   local height = #stripped
   local bufnr = api.nvim_create_buf(false, true)
   local winnr
-  if api.nvim_get_var('completion_docked_hover') == 1 then
+  if vim.g.completion_docked_hover == 1 then
     if height > vim.g.completion_docked_maximum_size then
       height = vim.g.completion_docked_maximum_size
     elseif height < vim.g.completion_docked_minimum_size then
@@ -276,7 +276,7 @@ function M.modifyCallback()
           align = 'left'
         end
 
-        bufnr, winnr = M.fancy_floating_markdown(markdown_lines, {
+        bufnr, winnr = fancy_floating_markdown(markdown_lines, {
           pad_left = 1; pad_right = 1;
           col = position['col']; width = position['width']; row = position['row']-1;
           align = align
@@ -290,6 +290,66 @@ function M.modifyCallback()
       vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
       return bufnr, winnr
     end)
+  end
+end
+
+M.autoOpenHoverInPopup = function(manager)
+  local bufnr = api.nvim_get_current_buf()
+  if api.nvim_call_function('pumvisible', {}) == 1 then
+    -- Auto open hover
+    local items = api.nvim_call_function('complete_info', {{"eval", "selected", "items", "user_data"}})
+    if items['selected'] ~= manager.selected then
+      manager.textHover = true
+      if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
+        api.nvim_win_close(M.winnr, true)
+      end
+      M.winnr = nil
+    end
+    if manager.textHover == true and items['selected'] ~= -1 then
+      if items['selected'] == -2 then
+        items['selected'] = 0
+      end
+      local item = items['items'][items['selected']+1]
+      local user_data = item['user_data']
+      if user_data ~= nil and #user_data ~= 0 then
+        user_data = vim.fn.json_decode(item['user_data'])
+      end
+      if  user_data ~= nil and user_data['lsp'] == nil then
+        if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
+          local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
+          markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
+          local bufnr, winnr
+          local position = vim.fn.pum_getpos()
+          -- Set max width option to avoid overlapping with popup menu
+          local total_column = api.nvim_get_option('columns')
+          local align
+          if position['col'] < total_column/2 then
+            align = 'right'
+          else
+            align = 'left'
+          end
+          bufnr, winnr = fancy_floating_markdown(markdown_lines, {
+            pad_left = 1; pad_right = 1;
+            col = position['col']; width = position['width']; row = position['row']-1;
+            align = align
+          })
+          M.winnr = winnr
+        end
+      else
+        local row, col = unpack(api.nvim_win_get_cursor(0))
+        row = row - 1
+        local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
+        col = vim.str_utfindex(line, col)
+        local params = {
+          textDocument = vim.lsp.util.make_text_document_params();
+          position = { line = row; character = col-1; }
+        }
+        local winnr
+        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
+      end
+      manager.textHover = false
+    end
+    manager.selected = items['selected']
   end
 end
 

@@ -85,13 +85,13 @@ function M.open_floating_preview(contents, filetype, opts)
   return floating_bufnr, floating_winnr
 end
 
-M.focusable_preview = function(unique_name, fn)
+local focusable_preview = function(unique_name, fn)
   return focusable_float(unique_name, function()
     return M.open_floating_preview(fn())
   end)
 end
 
-M.signature_help_to_preview_contents = function(input)
+local signature_help_to_preview_contents = function(input)
   if not input.signatures then
     return
   end
@@ -122,5 +122,30 @@ M.signature_help_to_preview_contents = function(input)
   end
   return contents
 end
+
+M.autoOpenSignatureHelp = function(bufnr, line_to_cursor)
+  local bufnr = api.nvim_get_current_buf()
+  local pos = api.nvim_win_get_cursor(0)
+  local line = api.nvim_get_current_line()
+  local line_to_cursor = line:sub(1, pos[2])
+  if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
+    local params = vim.lsp.util.make_position_params()
+    vim.lsp.buf_request(bufnr, 'textDocument/signatureHelp', params, function(_, method, result)
+      if not (result and result.signatures and result.signatures[1]) then
+        return
+      else
+        focusable_preview(method, function()
+          local lines = signature_help_to_preview_contents(result)
+          lines = vim.lsp.util.trim_empty_lines(lines)
+          if vim.tbl_isempty(lines) then
+            return { 'No signature available' }
+          end
+          return lines, vim.lsp.util.try_trim_markdown_code_blocks(lines)
+        end)
+      end
+    end)
+  end
+end
+
 
 return M
