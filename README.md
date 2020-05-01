@@ -146,15 +146,6 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_auto_signature = 0
 ```
 
-### Enable/Disable completion in comment
-
-- By default completions will not activate when you're in a comment section, enable
-  it by
-
-```vim
-call completion#enable_in_comment()
-```
-
 ### Max Items for completion
 
 - You can set a number limit for the maximum completion items. For example, if you
@@ -168,18 +159,15 @@ let g:completion_max_items = 10
 
 ### Trigger Characters
 
-- You can add or disable a trigger character that will trigger a completion. By default
-  trigger character = ['.'], you can disable it by
-
-```vim
-let g:completion_trigger_character = []
-```
-
-- Or multiple trigger characters
+- By default, `completion-nvim` respect the trigger character of your language server, if you
+want more trigger characters, add it by
 
 ```vim
 let g:completion_trigger_character = ['.', '::']
 ```
+
+*NOTE* use `:lua print(vim.inspect(vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters))`
+to see the trigger character of your language server.
 
 - If you want different trigger character for different languages, wrap it in an autocommand like
 

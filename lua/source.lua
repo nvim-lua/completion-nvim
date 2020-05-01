@@ -31,9 +31,9 @@ M.chain_complete_index = 1
 M.stop_complete = false
 
 
----------------------------
---  local util function  --
----------------------------
+------------------------------------------------------------------------
+--                           local function                           --
+------------------------------------------------------------------------
 
 local getTriggerCharacter = function(complete_source)
   local triggerCharacter = {}
@@ -67,6 +67,17 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
   triggered = util.checkTriggerCharacter(line_to_cursor, source_trigger_character) or
               util.checkTriggerCharacter(line_to_cursor, vim.g.completion_trigger_character)
 
+  if complete_source.complete_items ~= nil then
+    for _, source in ipairs(complete_source.complete_items) do
+      if source == 'lsp' then
+        if vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider ~= nil then
+          triggered = triggered or util.checkTriggerCharacter(line_to_cursor, vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters)
+          break
+        end
+      end
+    end
+  end
+
   -- handle user defined only triggered character
   if complete_source['triggered_only'] ~= nil then
     triggered = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
@@ -92,9 +103,9 @@ local getPositionParam = function()
   return bufnr, line_to_cursor
 end
 
------------------------
---  Method function  --
------------------------
+------------------------------------------------------------------------
+--                          member function                           --
+------------------------------------------------------------------------
 
 -- Activate when manually triggered completion or manually changing completion source
 function M.triggerCompletion(force, manager)
