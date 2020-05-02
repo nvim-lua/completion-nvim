@@ -217,7 +217,9 @@ local fancy_floating_markdown = function(contents, opts)
         width = api.nvim_get_option('columns'),
       })
   else
-    winnr = api.nvim_open_win(bufnr, false, make_floating_popup_options(width, height, opts))
+    local opt = make_floating_popup_options(width, height, opts)
+    if opt.width < 0 then return end
+    winnr = api.nvim_open_win(bufnr, false, opt)
   end
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, stripped)
 
