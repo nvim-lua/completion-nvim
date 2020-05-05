@@ -59,10 +59,9 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
           if vim.g.completion_max_items ~= nil then
             items = { unpack(items, 1, vim.g.completion_max_items)}
           end
-          vim.fn.complete(textMatch+1, items)
-          -- vim.fn.complete_add(items[3])
           if #items ~= 0 then
             -- reset insertChar and handle auto changing source
+            vim.fn.complete(textMatch+1, items)
             manager.insertChar = false
             manager.changeSource = false
           else
