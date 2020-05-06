@@ -129,8 +129,13 @@ M.autoOpenSignatureHelp = function(bufnr, line_to_cursor)
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  if vim.lsp.buf_get_clients()[1].resolved_capabilities.signature_help == false then return end
-  if vim.lsp.buf_get_clients()[1].server_capabilities.signatureHelpProvider == nil then return end
+  if vim.lsp.buf_get_clients()[1] == nil then return end
+
+  if vim.lsp.buf_get_clients()[1].resolved_capabilities.signature_help == false or 
+    vim.lsp.buf_get_clients()[1].server_capabilities.signatureHelpProvider == nil then
+    return
+  end
+
   local triggered = util.checkTriggerCharacter(line_to_cursor,
       vim.lsp.buf_get_clients()[1].server_capabilities.signatureHelpProvider.triggerCharacters)
   if triggered then
