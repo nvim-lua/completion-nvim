@@ -23,13 +23,13 @@ local function onread(err, data)
 end
 
 local fileTypesMap = {
-    ['f'] = "[file]",
-    ['d'] = "[dir]",
-    ['c'] = "[char]",
-    ['l'] = "[link]",
-    ['b'] = "[block]",
-    ['p'] = "[pipe]",
-    ['s'] = "[socket]"
+    ['f'] = "(file)",
+    ['d'] = "(dir)",
+    ['c'] = "(char)",
+    ['l'] = "(link)",
+    ['b'] = "(block)",
+    ['p'] = "(pipe)",
+    ['s'] = "(socket)"
 }
 
 M.getCompletionItems = function(prefix, score_func)
@@ -39,7 +39,7 @@ M.getCompletionItems = function(prefix, score_func)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
         word = val.name,
-        kind = fileTypesMap[val.t],
+        kind = 'Path ' .. fileTypesMap[val.t],
         score = score,
         icase = 1,
         dup = 1,
