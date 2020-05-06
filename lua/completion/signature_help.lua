@@ -1,6 +1,7 @@
 local vim = vim
 local validate = vim.validate
 local api = vim.api
+local util = require 'completion.util'
 local M = {}
 
 ----------------------
@@ -128,7 +129,10 @@ M.autoOpenSignatureHelp = function(bufnr, line_to_cursor)
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  if string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == '(' then
+  if vim.lsp.buf_get_clients()[1].server_capabilities.signatureHelpProvider == nil then return end
+  local triggered = util.checkTriggerCharacter(line_to_cursor,
+      vim.lsp.buf_get_clients()[1].server_capabilities.signatureHelpProvider.triggerCharacters)
+  if triggered then
     local params = vim.lsp.util.make_position_params()
     vim.lsp.buf_request(bufnr, 'textDocument/signatureHelp', params, function(_, method, result)
       if not (result and result.signatures and result.signatures[1]) then
