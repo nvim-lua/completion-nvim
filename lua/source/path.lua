@@ -13,22 +13,33 @@ local function onread(err, data)
     -- TODO handle err
   end
   if data then
-    for i in string.gmatch(data, "%S+") do
+    local vals = vim.split(data, "\n")
+    for _,i in pairs(vals) do
       if #i ~= 0 then
-        table.insert(M.items, i)
+        table.insert(M.items, {t = i:sub(1,1), name = i:sub(3)})
       end
     end
   end
 end
 
+local fileTypesMap = {
+    ['f'] = "[file]",
+    ['d'] = "[dir]",
+    ['c'] = "[char]",
+    ['l'] = "[link]",
+    ['b'] = "[block]",
+    ['p'] = "[pipe]",
+    ['s'] = "[socket]"
+}
+
 M.getCompletionItems = function(prefix, score_func)
   local complete_items = {}
   for _, val in ipairs(M.items) do
-    local score = score_func(prefix, val)
+    local score = score_func(prefix, val.name)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
-        word = val,
-        kind = 'Path',
+        word = val.name,
+        kind = fileTypesMap[val.t],
         score = score,
         icase = 1,
         dup = 1,
@@ -55,7 +66,6 @@ M.triggerFunction = function(_, _, _, manager)
     keyword = keyword:match("%s*(%S+)%w*/.*$")
   end
   local path = vim.fn.expand('%:p:h')
-  print(keyword)
   if keyword ~= nil then
     -- dealing with special case in matching
     if keyword == "/" and line:sub(pos[2], pos[2]) then
@@ -80,11 +90,12 @@ M.triggerFunction = function(_, _, _, manager)
   ::continue::
   path = path..'/'
   M.items = {}
-  local stdout = vim.loop.new_pipe(false)
-  local stderr = vim.loop.new_pipe(false)
+  local stdout = vim.loop.new_pipe(true)
+  local stderr = vim.loop.new_pipe(true)
   local handle, pid
-  handle, pid = vim.loop.spawn('ls', {
-    args = {path, '-A'},
+  print(path)
+  handle, pid = vim.loop.spawn('find', {
+    args = {path, '-mindepth', '1', '-maxdepth', '1', '-printf', '%y %f\n'},
     stdio = {stdout,stderr}
     },
     vim.schedule_wrap(function()
