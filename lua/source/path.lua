@@ -90,8 +90,8 @@ M.triggerFunction = function(_, _, _, manager)
   ::continue::
   path = path..'/'
   M.items = {}
-  local stdout = vim.loop.new_pipe(true)
-  local stderr = vim.loop.new_pipe(true)
+  local stdout = vim.loop.new_pipe(false)
+  local stderr = vim.loop.new_pipe(false)
   local handle, pid
   print(path)
   handle, pid = vim.loop.spawn('find', {
