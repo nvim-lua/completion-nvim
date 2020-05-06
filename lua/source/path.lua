@@ -44,14 +44,18 @@ M.getCallback = function()
   return M.callback
 end
 
+
 M.triggerFunction = function(_, _, _, manager)
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   local textMatch = vim.fn.match(line_to_cursor, '\\f*$')
   local keyword = line_to_cursor:sub(textMatch+1)
-  keyword = keyword:match("%s*(%S+)%w*/.*$")
+  if keyword ~= '/' then
+    keyword = keyword:match("%s*(%S+)%w*/.*$")
+  end
   local path = vim.fn.expand('%:p:h')
+  print(keyword)
   if keyword ~= nil then
     -- dealing with special case in matching
     if keyword == "/" and line:sub(pos[2], pos[2]) then
@@ -60,16 +64,21 @@ M.triggerFunction = function(_, _, _, manager)
     elseif string.sub(keyword, 1, 1) == "\"" or string.sub(keyword, 1, 1) == "'" then
       keyword = string.sub(keyword, 2, #keyword)
     end
+
     local expanded_keyword = vim.fn.glob(keyword)
     local home = vim.fn.expand("$HOME")
-    if expanded_keyword ~= nil and (expanded_keyword:find(home) or expanded_keyword:sub(1, 1) == "/") then
+    if expanded_keyword == '/' then
+      goto continue
+    elseif expanded_keyword ~= nil and expanded_keyword ~= '/' then
       path = expanded_keyword
     else
       path = vim.fn.expand('%:p:h')
       path = path..'/'..keyword
     end
   end
+
   ::continue::
+  path = path..'/'
   M.items = {}
   local stdout = vim.loop.new_pipe(false)
   local stderr = vim.loop.new_pipe(false)
