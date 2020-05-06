@@ -338,6 +338,7 @@ M.autoOpenHoverInPopup = function(manager)
           M.winnr = winnr
         end
       else
+        if vim.lsp.buf_get_clients()[1].resolved_capabilities.hover == false then return end
         local row, col = unpack(api.nvim_win_get_cursor(0))
         row = row - 1
         local line = api.nvim_buf_get_lines(0, row, row+1, true)[1]
