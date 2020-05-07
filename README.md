@@ -166,6 +166,18 @@ want more trigger characters, add it by
 let g:completion_trigger_character = ['.', '::']
 ```
 
+### Sorting completion items
+
+- You can decide how your items being sorted in the popup menu. The default value
+is `"alphabet"`, change it by
+```.vim
+" possible value: "length", "alphabet", "none"
+let g:completion_sorting = "length"
+```
+
+- If you don't want any sorting, you can set this value to `"none"`, however, you
+shouldn't be setting this if you have multiple sources enable.
+
 *NOTE* use `:lua print(vim.inspect(vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters))`
 to see the trigger character of your language server.
 
@@ -185,6 +197,25 @@ augroup end
 
 ```vim
 let g:completion_timer_cycle = 200 "default value is 80
+```
+
+## Compatibility with diagnostic-nvim
+
+- This plugin only focus on the **completion** part of the built-in LSP. If you want setup in the diagnostic part
+(e.g. virtual text, jump through diagnostic, open line diagnostic automatically...), take a loot at [diagnostic-nvim]
+(https://github.com/haorenW1025/diagnostic-nvim).
+
+- Both diagnostic-nvim and completion-nvim require setting up via `on_attach`. To use them together, create a wrapper
+function like this.
+
+```vim
+lua << EOF
+local on_attach_vim = function()
+  require'completion'.on_attach()
+  require'diagnostic'.on_attach()
+end
+require'nvim_lsp'.pyls.setup{on_attach=on_attach}
+EOF
 ```
 
 ## Trouble Shooting
