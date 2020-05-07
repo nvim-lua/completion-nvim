@@ -46,10 +46,14 @@ end
 
 function M.text_document_completion_list_to_complete_items(result, prefix)
   local items = vim.lsp.util.extract_completion_items(result)
-  local customize_label = vim.g.completion_customize_lsp_label
   if vim.tbl_isempty(items) then
     return {}
   end
+
+  local customize_label = vim.g.completion_customize_lsp_label
+  local buf_customize_label = api.nvim_call_function(
+    'completion#get_buffer_variable', {'completion_buf_customize_lsp_label'})
+  if buf_customize_label == nil then buf_customize_label = {} end
 
   items = remove_unmatch_completion_items(items, prefix)
   -- sort_completion_items(items)
@@ -83,7 +87,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
-        kind = customize_label[kind] or kind or '',
+        kind = buf_customize_label[kind] or customize_label[kind] or kind or '',
         menu = completion_item.detail or '',
         info = info,
         priority = priority,
