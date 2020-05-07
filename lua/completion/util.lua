@@ -31,10 +31,13 @@ local function remove_unmatch_completion_items(items, prefix)
 end
 
 function M.sort_completion_items(items)
+  if vim.g.completion_sorting == 'none' then
+    return
+  end
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
-    elseif vim.g.completion_sorted_alphabetically then
+    elseif vim.g.completion_sorting == 'alphabet' then
       return a.word < b.word
     elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
       return a.score < b.score
@@ -54,7 +57,6 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
   local buf_customize_label = api.nvim_call_function(
     'completion#get_buffer_variable', {'completion_buf_customize_lsp_label'})
   if buf_customize_label == nil then buf_customize_label = {} end
-
   items = remove_unmatch_completion_items(items, prefix)
   -- sort_completion_items(items)
 
