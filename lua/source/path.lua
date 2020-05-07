@@ -93,7 +93,6 @@ M.triggerFunction = function(_, _, _, manager)
   local stdout = vim.loop.new_pipe(false)
   local stderr = vim.loop.new_pipe(false)
   local handle, pid
-  print(path)
   handle, pid = vim.loop.spawn('find', {
     args = {path, '-mindepth', '1', '-maxdepth', '1', '-printf', '%y %f\n'},
     stdio = {stdout,stderr}
