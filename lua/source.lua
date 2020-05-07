@@ -69,11 +69,15 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
 
   if complete_source.complete_items ~= nil then
     for _, source in ipairs(complete_source.complete_items) do
-      if source == 'lsp' and vim.lsp.buf_get_clients()[1] ~= nil then
-        if vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider ~= nil then
-          triggered = triggered or util.checkTriggerCharacter(line_to_cursor, vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters)
-          break
+      if source == 'lsp' and vim.lsp.buf_get_clients() ~= nil then
+        for _, value in pairs(vim.lsp.buf_get_clients()) do
+          if value.server_capabilities.completionProvider == nil then
+            break
+          end
+          triggered = triggered or util.checkTriggerCharacter(line_to_cursor,
+            value.server_capabilities.completionProvider.triggerCharacters)
         end
+        break
       end
     end
   end
