@@ -49,6 +49,8 @@ M.triggerCompletion = function(manager, mode)
       api.nvim_input(ins_complete_table[mode])
       checkEmptyCompletion(manager)
     end
+  else
+    insertChar = false
   end
 end
 

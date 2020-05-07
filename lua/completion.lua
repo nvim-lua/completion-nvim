@@ -122,6 +122,8 @@ function M.on_InsertEnter()
       if source.chain_complete_index ~= source.chain_complete_length then
         source.chain_complete_index = source.chain_complete_index + 1
         l_complete_index = source.chain_complete_index
+        manager.insertChar = true
+        source.triggerCompletion(false, manager)
       else
         source.stop_complete = true
       end
