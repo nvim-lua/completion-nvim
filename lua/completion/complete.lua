@@ -55,7 +55,9 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
       if checkCallback(callback_array) == true and timer:is_closing() == false then
         if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
           local items = getCompletionItems(items_array, prefix)
-          util.sort_completion_items(items)
+          if vim.g.completion_sorting ~= "none" then
+            util.sort_completion_items(items)
+          end
           if vim.g.completion_max_items ~= nil then
             items = { unpack(items, 1, vim.g.completion_max_items)}
           end

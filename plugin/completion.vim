@@ -66,7 +66,7 @@ if !exists('g:completion_timer_cycle')
 endif
 
 if ! exists('g:completion_sorting')
-    let g:completion_sorting = 'length'
+    let g:completion_sorting = 'alphabet'
 endif
 
 if ! exists('g:completion_sorted_alphabetically')

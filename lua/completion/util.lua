@@ -31,9 +31,6 @@ local function remove_unmatch_completion_items(items, prefix)
 end
 
 function M.sort_completion_items(items)
-  if vim.g.completion_sorting == 'none' then
-    return
-  end
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
