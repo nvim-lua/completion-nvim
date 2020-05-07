@@ -159,7 +159,7 @@ M.completionToggle = function()
   end
 end
 
-M.customisze_buf_label = function(label)
+M.customize_buf_label = function(label)
   api.nvim_buf_set_var(0, "completion_buf_customize_lsp_label", label)
 end
 
