@@ -75,7 +75,7 @@ M.triggerFunction = function(_, _, _, manager)
   if keyword ~= nil then
     local expanded_keyword = vim.fn.glob(keyword)
     local home = vim.fn.expand("$HOME")
-    if expanded_keyword ~= nil and string.find(expanded_keyword, '%.') == nil then
+    if expanded_keyword == '/' or string.find(expanded_keyword, home) ~= nil then
       path = expanded_keyword
     else
       path = vim.fn.expand('%:p:h')
