@@ -50,7 +50,7 @@ M.triggerCompletion = function(manager, mode)
       checkEmptyCompletion(manager)
     end
   else
-    insertChar = false
+    manager.insertChar = false
   end
 end
 

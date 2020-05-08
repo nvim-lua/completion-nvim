@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+--      utility function that are modified from neovim's source       --
+------------------------------------------------------------------------
+
 local protocol = require 'vim.lsp.protocol'
 local vim = vim
 local api = vim.api
@@ -7,9 +11,6 @@ function M.is_list(thing)
     return vim.fn.type(thing) == api.nvim_get_vvar("t_list")
 end
 
-------------------------------------------------------------------------
---      utility function that are modified from neovim's source       --
-------------------------------------------------------------------------
 
 ------------------------
 --  completion items  --
@@ -51,9 +52,6 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
   end
 
   local customize_label = vim.g.completion_customize_lsp_label
-  local buf_customize_label = api.nvim_call_function(
-    'completion#get_buffer_variable', {'completion_buf_customize_lsp_label'})
-  if buf_customize_label == nil then buf_customize_label = {} end
   items = remove_unmatch_completion_items(items, prefix)
   -- sort_completion_items(items)
 
@@ -86,12 +84,12 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
       table.insert(matches, {
         word = word,
         abbr = completion_item.label,
-        kind = buf_customize_label[kind] or customize_label[kind] or kind or '',
+        kind = customize_label[kind] or kind or '',
         menu = completion_item.detail or '',
         info = info,
         priority = priority,
         icase = 1,
-        user_data = vim.fn.json_encode(user_data),
+        user_data = user_data,
         dup = 1,
         empty = 1,
       })

@@ -37,7 +37,7 @@ local function chain_list_to_tree(complete_list)
   end
 end
 
-function getScopedChain(ft_subtree)
+local function getScopedChain(ft_subtree)
 
   local function syntaxGroupAtPoint()
     local pos = api.nvim_win_get_cursor(0)
@@ -112,7 +112,6 @@ function M.checkHealth(complete_items_map)
   if not error then
     health_ok("all completion source are valid")
   end
-  
 end
 
 return M

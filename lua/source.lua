@@ -35,7 +35,7 @@ M.stop_complete = false
 --                           local function                           --
 ------------------------------------------------------------------------
 
-local getTriggerCharacter = function(complete_source)
+local getTriggerCharacter = function()
   local triggerCharacter = {}
   local complete_source = M.chain_complete_list[M.chain_complete_index]
   if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then

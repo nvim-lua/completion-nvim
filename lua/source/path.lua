@@ -7,11 +7,7 @@ M.items = {}
 M.callback = false
 
 -- onDirScanned handler for vim.loop
-local function onDirScanned(err, data)
-  if err then
-    -- print('ERROR: ', err)
-    -- TODO handle err
-  end
+local function onDirScanned(_, data)
   if data then
     local function iter()
       return vim.loop.fs_scandir_next(data)
@@ -31,7 +27,7 @@ local fileTypesMap = setmetatable({
     ['block'] = "(block)",
     ['fifo'] = "(pipe)",
     ['socket'] = "(socket)"
-}, {__index = function() 
+}, {__index = function()
     return '(unknown)'
   end
 })
@@ -58,7 +54,7 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function(_, _, _, manager)
+M.triggerFunction = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
@@ -83,9 +79,8 @@ M.triggerFunction = function(_, _, _, manager)
     end
   end
 
-  ::continue::
   M.items = {}
-  vim.loop.fs_scandir(path, onDirScanned)
+  loop.fs_scandir(path, onDirScanned)
 end
 
 return M

@@ -1,3 +1,4 @@
+-- define some hover related function modified from neovim source code
 local vim = vim
 local validate = vim.validate
 local api = vim.api
@@ -320,7 +321,6 @@ M.autoOpenHoverInPopup = function(manager)
         if user_data['hover'] ~= nil and type(user_data['hover']) == 'string' and #user_data['hover'] ~= 0 then
           local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(user_data['hover'])
           markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-          local bufnr, winnr
           local position = vim.fn.pum_getpos()
           -- Set max width option to avoid overlapping with popup menu
           local total_column = api.nvim_get_option('columns')
@@ -330,7 +330,7 @@ M.autoOpenHoverInPopup = function(manager)
           else
             align = 'left'
           end
-          bufnr, winnr = fancy_floating_markdown(markdown_lines, {
+          local _, winnr = fancy_floating_markdown(markdown_lines, {
             pad_left = 1; pad_right = 1;
             col = position['col']; width = position['width']; row = position['row']-1;
             align = align
@@ -349,7 +349,6 @@ M.autoOpenHoverInPopup = function(manager)
           textDocument = vim.lsp.util.make_text_document_params();
           position = { line = row; character = col-1; }
         }
-        local winnr
         vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       end
       manager.textHover = false

@@ -13,7 +13,7 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function(prefix, _, bufnr, manager)
+M.triggerFunction = function(prefix, _, bufnr, _)
   local params = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}

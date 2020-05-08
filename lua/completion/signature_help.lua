@@ -81,8 +81,8 @@ function M.open_floating_preview(contents, filetype, opts)
   end
   api.nvim_buf_set_lines(floating_bufnr, 0, -1, true, contents)
   api.nvim_buf_set_option(floating_bufnr, 'modifiable', false)
-  api.nvim_command("autocmd CursorMovedI,BufHidden,TextChangedI,InsertLeave <buffer> ++once lua pcall(vim.api.nvim_win_close, "
-    ..floating_winnr..", true)")
+  api.nvim_command("autocmd CursorMovedI,BufHidden,TextChangedI,InsertLeave <buffer> ++once \
+    lua pcall(vim.api.nvim_win_close, "..floating_winnr..", true)")
   return floating_bufnr, floating_winnr
 end
 
@@ -124,7 +124,7 @@ local signature_help_to_preview_contents = function(input)
   return contents
 end
 
-M.autoOpenSignatureHelp = function(bufnr, line_to_cursor)
+M.autoOpenSignatureHelp = function()
   local bufnr = api.nvim_get_current_buf()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()

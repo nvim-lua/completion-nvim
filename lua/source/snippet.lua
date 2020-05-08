@@ -1,6 +1,5 @@
 local vim = vim
 local api = vim.api
-local util = require 'completion.util'
 local M = {}
 
 

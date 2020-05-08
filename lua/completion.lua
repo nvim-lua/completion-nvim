@@ -1,6 +1,5 @@
 local vim = vim
 local api = vim.api
-local util = require 'completion.util'
 local source = require 'source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
@@ -161,6 +160,7 @@ M.completionToggle = function()
   end
 end
 
+-- Deprecated
 M.customize_buf_label = function(label)
   api.nvim_buf_set_var(0, "completion_buf_customize_lsp_label", label)
 end
