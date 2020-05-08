@@ -6,29 +6,44 @@ local api = vim.api
 M.items = {}
 M.callback = false
 
--- onread handler for vim.loop
-local function onread(err, data)
+-- onDirScanned handler for vim.loop
+local function onDirScanned(err, data)
   if err then
     -- print('ERROR: ', err)
     -- TODO handle err
   end
   if data then
-    for i in string.gmatch(data, "%S+") do
-      if #i ~= 0 then
-        table.insert(M.items, i)
-      end
+    local function iter()
+      return vim.loop.fs_scandir_next(data)
+    end
+    for name, type in iter do
+        table.insert(M.items, {type = type, name=name})
     end
   end
+  M.callback = true
 end
+
+local fileTypesMap = setmetatable({
+    ['file'] = "(file)",
+    ['directory'] = "(dir)",
+    ['char'] = "(char)",
+    ['link'] = "(link)",
+    ['block'] = "(block)",
+    ['fifo'] = "(pipe)",
+    ['socket'] = "(socket)"
+}, {__index = function() 
+    return '(unknown)'
+  end
+})
 
 M.getCompletionItems = function(prefix, score_func)
   local complete_items = {}
   for _, val in ipairs(M.items) do
-    local score = score_func(prefix, val)
+    local score = score_func(prefix, val.name)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
-        word = val,
-        kind = 'Path',
+        word = val.name,
+        kind = 'Path ' .. fileTypesMap[val.type],
         score = score,
         icase = 1,
         dup = 1,
@@ -44,7 +59,6 @@ M.getCallback = function()
   return M.callback
 end
 
-
 M.triggerFunction = function(_, _, _, manager)
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
@@ -55,7 +69,6 @@ M.triggerFunction = function(_, _, _, manager)
     keyword = keyword:match("%s*(%S+)%w*/.*$")
   end
   local path = vim.fn.expand('%:p:h')
-  print(keyword)
   if keyword ~= nil then
     -- dealing with special case in matching
     if keyword == "/" and line:sub(pos[2], pos[2]) then
@@ -80,24 +93,7 @@ M.triggerFunction = function(_, _, _, manager)
   ::continue::
   path = path..'/'
   M.items = {}
-  local stdout = vim.loop.new_pipe(false)
-  local stderr = vim.loop.new_pipe(false)
-  local handle, pid
-  handle, pid = vim.loop.spawn('ls', {
-    args = {path, '-A'},
-    stdio = {stdout,stderr}
-    },
-    vim.schedule_wrap(function()
-      stdout:read_stop()
-      stderr:read_stop()
-      stdout:close()
-      stderr:close()
-      handle:close()
-      M.callback = true
-    end
-    ))
-  vim.loop.read_start(stdout, onread)
-  vim.loop.read_start(stderr, onread)
+  vim.loop.fs_scandir(path, onDirScanned)
 end
 
 return M
