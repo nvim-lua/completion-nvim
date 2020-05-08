@@ -65,8 +65,9 @@ M.triggerFunction = function(_, _, _, manager)
   local keyword = line_to_cursor:match("[^%s\"].*")
   if keyword ~= '/' then
     -- TODO rewrite this
-    local index = string.len(keyword) - string.find(keyword:reverse(), '/') + 1
-    keyword = string.sub(keyword, 1, index)
+    local index = string.find(keyword:reverse(), '/') or 1
+    local length = string.len(keyword) - index + 1
+    keyword = string.sub(keyword, 1, length)
     -- keyword = keyword:match("%s*(%S+)%w*/.*$")
   end
 
