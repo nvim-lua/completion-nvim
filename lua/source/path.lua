@@ -51,7 +51,6 @@ M.getCompletionItems = function(prefix, score_func)
       })
     end
   end
-  -- print(vim.inspect(complete_items))
   return complete_items
 end
 
@@ -63,26 +62,19 @@ M.triggerFunction = function(_, _, _, manager)
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  local textMatch = vim.fn.match(line_to_cursor, '\\f*$')
-  local keyword = line_to_cursor:sub(textMatch+1)
+  local keyword = line_to_cursor:match("[^%s\"].*")
   if keyword ~= '/' then
-    keyword = keyword:match("%s*(%S+)%w*/.*$")
+    -- TODO rewrite this
+    local index = string.len(keyword) - string.find(keyword:reverse(), '/') + 1
+    keyword = string.sub(keyword, 1, index)
+    -- keyword = keyword:match("%s*(%S+)%w*/.*$")
   end
+
   local path = vim.fn.expand('%:p:h')
   if keyword ~= nil then
-    -- dealing with special case in matching
-    if keyword == "/" and line:sub(pos[2], pos[2]) then
-      path = keyword
-      goto continue
-    elseif string.sub(keyword, 1, 1) == "\"" or string.sub(keyword, 1, 1) == "'" then
-      keyword = string.sub(keyword, 2, #keyword)
-    end
-
     local expanded_keyword = vim.fn.glob(keyword)
     local home = vim.fn.expand("$HOME")
-    if expanded_keyword == '/' then
-      goto continue
-    elseif expanded_keyword ~= nil and expanded_keyword ~= '/' then
+    if expanded_keyword ~= nil and string.find(expanded_keyword, '%.') == nil then
       path = expanded_keyword
     else
       path = vim.fn.expand('%:p:h')
@@ -91,7 +83,6 @@ M.triggerFunction = function(_, _, _, manager)
   end
 
   ::continue::
-  path = path..'/'
   M.items = {}
   vim.loop.fs_scandir(path, onDirScanned)
 end
