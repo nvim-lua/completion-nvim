@@ -36,17 +36,15 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
     -- collect getCompleteItems function of current completion source
     for _, item in ipairs(complete_source.complete_items) do
       local complete_items = complete_items_map[item]
-      if complete_items == nil then
-        goto continue
+      if complete_items ~= nil then
+        if complete_items.callback == nil then
+          table.insert(callback_array, true)
+        else
+          table.insert(callback_array, complete_items.callback)
+          complete_items.trigger(prefix, textMatch, bufnr, manager)
+        end
+        table.insert(items_array, complete_items.item)
       end
-      if complete_items.callback == nil then
-        table.insert(callback_array, true)
-      else
-        table.insert(callback_array, complete_items.callback)
-        complete_items.trigger(prefix, textMatch, bufnr, manager)
-      end
-      table.insert(items_array, complete_items.item)
-      ::continue::
     end
 
     local timer = vim.loop.new_timer()
