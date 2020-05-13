@@ -13,20 +13,21 @@ local function onDirScanned(_, data)
       return vim.loop.fs_scandir_next(data)
     end
     for name, type in iter do
-        table.insert(M.items, {type = type, name=name})
+      table.insert(M.items, {type = type, name=name})
     end
   end
   M.callback = true
 end
 
+
 local fileTypesMap = setmetatable({
-    ['file'] = "(file)",
-    ['directory'] = "(dir)",
-    ['char'] = "(char)",
-    ['link'] = "(link)",
-    ['block'] = "(block)",
-    ['fifo'] = "(pipe)",
-    ['socket'] = "(socket)"
+    file = "(file)",
+    directory = "(dir)",
+    char = "(char)",
+    link = "(link)",
+    block = "(block)",
+    fifo = "(pipe)",
+    socket = "(socket)"
 }, {__index = function()
     return '(unknown)'
   end
@@ -39,7 +40,8 @@ M.getCompletionItems = function(prefix, score_func)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
         word = val.name,
-        kind = 'Path ' .. fileTypesMap[val.type],
+        kind = 'Path',
+        menu = fileTypesMap[val.type],
         score = score,
         icase = 1,
         dup = 1,
@@ -58,13 +60,19 @@ M.triggerFunction = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  local keyword = line_to_cursor:match("[^%s\"].*")
-  if keyword ~= '/' then
-    -- TODO rewrite this
-    local index = string.find(keyword:reverse(), '/') or 1
+  local keyword
+  if vim.v.completed_item ~= nil and vim.v.completed_item.kind == 'Path' and line_to_cursor:find(vim.v.completed_item.word) then
+    keyword = M.keyword..vim.v.completed_item.word..'/'
+  else
+    M.keyword = nil
+    keyword = line_to_cursor:match("[^%s\"\']+%S*/?$")
+  end
+
+  if keyword ~= nil and keyword ~= '/' then
+    local index = string.find(keyword:reverse(), '/')
+    if index == nil then index = keyword:len() + 1 end
     local length = string.len(keyword) - index + 1
     keyword = string.sub(keyword, 1, length)
-    -- keyword = keyword:match("%s*(%S+)%w*/.*$")
   end
 
   local path = vim.fn.expand('%:p:h')
@@ -79,6 +87,7 @@ M.triggerFunction = function()
     end
   end
 
+  M.keyword = keyword
   M.items = {}
   loop.fs_scandir(path, onDirScanned)
 end
