@@ -97,6 +97,8 @@ if ! exists('g:completion_items_priority')
     let g:completion_items_priority = {}
 endif
 
+inoremap <silent> <Plug>(completion_confirm_completion)
+      \ <cmd>call completion#wrap_completion()<CR>
 
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
 
