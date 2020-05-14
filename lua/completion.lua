@@ -166,7 +166,6 @@ M.customize_buf_label = function(label)
 end
 
 M.on_attach = function()
-  hover.modifyCallback()
   api.nvim_command [[augroup CompletionCommand]]
     api.nvim_command("autocmd! * <buffer>")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
