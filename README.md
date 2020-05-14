@@ -201,12 +201,13 @@ let g:completion_timer_cycle = 200 "default value is 80
 
 ## Compatibility with diagnostic-nvim
 
-- This plugin only focus on the **completion** part of the built-in LSP. If you want setup in the diagnostic part
-(e.g. virtual text, jump through diagnostic, open line diagnostic automatically...), take a loot at [diagnostic-nvim]
-(https://github.com/haorenW1025/diagnostic-nvim).
+- This plugin only focuses on the **completion** part of the built-in LSP. If
+  you want similar help with diagnostics (e.g. virtual text, jump to diagnostic,
+  open line diagnostic automatically...), take a loot at [diagnostic-nvim]
+  (https://github.com/haorenW1025/diagnostic-nvim).
 
-- Both diagnostic-nvim and completion-nvim require setting up via `on_attach`. To use them together, create a wrapper
-function like this.
+- Both diagnostic-nvim and completion-nvim require setting up via `on_attach`.
+  To use them together, create a wrapper function like this.
 
 ```vim
 lua << EOF
