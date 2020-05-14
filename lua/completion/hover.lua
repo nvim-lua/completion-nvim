@@ -265,22 +265,31 @@ function M.modifyCallback()
         local bufnr, winnr
         -- modified to open hover window align to popupmenu
 
-          local position = vim.fn.pum_getpos()
-          -- Set max width option to avoid overlapping with popup menu
-          local total_column = api.nvim_get_option('columns')
-          local align
-          if position['col'] < total_column/2 then
-            align = 'right'
-          else
-            align = 'left'
-          end
-          bufnr, winnr = fancy_floating_markdown(markdown_lines, {
-            pad_left = 1; pad_right = 1;
-            col = position['col']; width = position['width']; row = position['row']-1;
-            align = align
-          })
-          M.winnr = winnr
+        local position = vim.fn.pum_getpos()
+        -- Set max width option to avoid overlapping with popup menu
+        local total_column = api.nvim_get_option('columns')
+        local align
+        if position['col'] < total_column/2 then
+          align = 'right'
+        else
+          align = 'left'
+        end
+        bufnr, winnr = fancy_floating_markdown(markdown_lines, {
+          pad_left = 1; pad_right = 1;
+          col = position['col']; width = position['width']; row = position['row']-1;
+          align = align
+        })
+        M.winnr = winnr
+
         vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
+        local hover_len = #vim.api.nvim_buf_get_lines(bufnr,0,-1,false)[1]
+        local win_width = vim.api.nvim_win_get_width(0)
+        print(hover_len, win_width)
+        if hover_len > win_width then
+          vim.api.nvim_win_set_width(winnr,math.min(hover_len,win_width))
+          vim.api.nvim_win_set_height(winnr,math.ceil(hover_len/win_width))
+          vim.wo[winnr].wrap = true
+        end
         return bufnr, winnr
       end)
     else
