@@ -30,13 +30,7 @@ M.focusable_float = function(unique_name, fn)
   do
     local win = find_window_by_var(unique_name, bufnr)
     if win then
-      if vim.g.completion_enable_focusable_hover == 0 then
-        api.nvim_win_close(win, true)
-      else
-        api.nvim_set_current_win(win)
-        api.nvim_command("stopinsert")
-        return
-      end
+      api.nvim_win_close(win, true)
     end
   end
   local pbufnr, pwinnr = fn()
