@@ -11,6 +11,7 @@ supported.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
 - Snippets integration with UltiSnips and Neosnippet.
+- Apply *additionalTextEdits* in LSP spec if it's available.
 - Chain completion support inspired by ![vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
 
 ## Demo
@@ -175,8 +176,7 @@ is `"alphabet"`, change it by
 let g:completion_sorting = "length"
 ```
 
-- If you don't want any sorting, you can set this value to `"none"`, however, you
-shouldn't be setting this if you have multiple sources enable.
+- If you don't want any sorting, you can set this value to `"none"`.
 
 *NOTE* use `:lua print(vim.inspect(vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters))`
 to see the trigger character of your language server.
