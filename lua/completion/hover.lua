@@ -245,7 +245,7 @@ end
 local callback = 'textDocument/hover'
 local default_callback = vim.lsp.callbacks[callback]
 
-function callback_function(_, method, result)
+local function callback_function(_, method, result)
   -- if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
     -- api.nvim_win_close(M.winnr, true)
   -- end
