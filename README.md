@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/haorenW1025/completion-nvim.svg?branch=master)](https://travis-ci.com/haorenW1025/completion-nvim)
 [![Gitter](https://badges.gitter.im/completion-nvim/community.svg)](https://gitter.im/completion-nvim/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 # completion-nvim
 
@@ -146,6 +147,18 @@ let g:completion_enable_auto_hover = 0
 ```vim
 let g:completion_enable_auto_signature = 0
 ```
+
+
+
+### Enable/Disable fuzzy match
+- By default fuzzy match is disable, you can enable it by
+
+```vim
+let g:completion_enable_fuzzy_match = 1
+```
+
+*NOTE* Fuzzy match highly dependent on what language server you're using. It might not
+work as you expect on some language server.
 
 ### Max Items for completion
 
