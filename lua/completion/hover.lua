@@ -284,7 +284,6 @@ function M.modifyCallback()
         vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
         local hover_len = #vim.api.nvim_buf_get_lines(bufnr,0,-1,false)[1]
         local win_width = vim.api.nvim_win_get_width(0)
-        print(hover_len, win_width)
         if hover_len > win_width then
           vim.api.nvim_win_set_width(winnr,math.min(hover_len,win_width))
           vim.api.nvim_win_set_height(winnr,math.ceil(hover_len/win_width))
