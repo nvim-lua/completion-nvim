@@ -3,6 +3,9 @@ local api = vim.api
 local source = require 'source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
+if vim.env.SNIPPETS then
+  vim.snippet = require 'snippet'
+end
 local M = {}
 
 ------------------------------------------------------------------------
@@ -51,7 +54,7 @@ end
 function M.confirmCompletion()
   if M.completionConfirm == true then
     local complete_item = api.nvim_get_vvar('completed_item')
-    local lnum, _ = api.nvim_win_get_cursor(0)
+    local lnum, _ = unpack(api.nvim_win_get_cursor(0))
     local item = complete_item.user_data.lsp.completion_item
     local bufnr = api.nvim_get_current_buf()
     if item.additionalTextEdits then
@@ -64,6 +67,9 @@ function M.confirmCompletion()
 
     if vim.g.completion_enable_auto_paren == 1 then
       M.autoAddParens(complete_item)
+    end
+    if complete_item.kind == 'Snippet' and vim.snippet ~= nil then
+      vim.snippet.expand_at_cursor(complete_item.word)
     end
     if complete_item.kind == 'UltiSnips' then
       api.nvim_call_function('UltiSnips#ExpandSnippet', {})
