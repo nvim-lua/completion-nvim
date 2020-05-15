@@ -61,7 +61,8 @@ M.triggerFunction = function()
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
   local keyword
-  if vim.v.completed_item ~= nil and vim.v.completed_item.kind == 'Path' and line_to_cursor:find(vim.v.completed_item.word) then
+  if vim.v.completed_item ~= nil and vim.v.completed_item.kind == 'Path' and
+    line_to_cursor:find(vim.v.completed_item.word) then
     keyword = M.keyword..vim.v.completed_item.word..'/'
   else
     M.keyword = nil

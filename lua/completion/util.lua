@@ -18,7 +18,8 @@ end
 local function get_completion_word(item)
   if item.insertText ~= nil and item.insertText ~= vim.NIL then
     return item.insertText
-  elseif item.textEdit ~= nil and item.textEdit ~= vim.NIL and item.textEdit.newText ~= nil and item.insertTextFormat ~= 2 then
+  elseif item.textEdit ~= nil and item.textEdit ~= vim.NIL
+    and item.textEdit.newText ~= nil and item.insertTextFormat ~= 2 then
     return item.textEdit.newText
   end
   return item.label
