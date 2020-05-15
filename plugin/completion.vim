@@ -74,7 +74,7 @@ if ! exists('g:completion_max_items')
 endif
 
 if ! exists('g:completion_fuzzy_match')
-    let g:completion_fuzzy_match = 1
+    let g:completion_enable_fuzzy_match = 0
 endif
 
 if ! exists('g:completion_chain_complete_list')

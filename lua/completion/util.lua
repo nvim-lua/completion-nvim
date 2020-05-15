@@ -75,7 +75,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix, score
       }
       local kind = protocol.CompletionItemKind[completion_item.kind]
       local priority = vim.g.completion_items_priority[kind] or 1
-      if vim.g.completion_fuzzy_match == 1 then
+      if vim.g.completion_enable_fuzzy_match == 1 then
         local score = score_func(prefix, word)
         if score <= 1 then
           table.insert(matches, {
