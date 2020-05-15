@@ -69,12 +69,12 @@ if ! exists('g:completion_sorting')
     let g:completion_sorting = 'alphabet'
 endif
 
-if ! exists('g:completion_sorted_alphabetically')
-    let g:completion_sorted_alphabetically = v:false
-endif
-
 if ! exists('g:completion_max_items')
     let g:completion_max_items = v:null
+endif
+
+if ! exists('g:completion_fuzzy_match')
+    let g:completion_fuzzy_match = 1
 endif
 
 if ! exists('g:completion_chain_complete_list')

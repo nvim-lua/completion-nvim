@@ -25,35 +25,28 @@ local function get_completion_word(item)
   return item.label
 end
 
-local function remove_unmatch_completion_items(items, prefix)
-  return vim.tbl_filter(function(item)
-    local word = get_completion_word(item)
-    return vim.startswith(word, prefix)
-  end, items)
-end
-
 function M.sort_completion_items(items)
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
-    elseif vim.g.completion_sorting == 'alphabet' then
-      return a.word < b.word
     elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
       return a.score < b.score
+    elseif vim.g.completion_sorting == 'alphabet' then
+      return a.word < b.word
     else
       return string.len(a.word) < string.len(b.word)
     end
   end)
 end
 
-function M.text_document_completion_list_to_complete_items(result, prefix)
+function M.text_document_completion_list_to_complete_items(result, prefix, score_func)
   local items = vim.lsp.util.extract_completion_items(result)
   if vim.tbl_isempty(items) then
     return {}
   end
 
   local customize_label = vim.g.completion_customize_lsp_label
-  items = remove_unmatch_completion_items(items, prefix)
+  -- items = remove_unmatch_completion_items(items, prefix)
   -- sort_completion_items(items)
 
   local matches = {}
@@ -82,18 +75,39 @@ function M.text_document_completion_list_to_complete_items(result, prefix)
       }
       local kind = protocol.CompletionItemKind[completion_item.kind]
       local priority = vim.g.completion_items_priority[kind] or 1
-      table.insert(matches, {
-        word = word,
-        abbr = completion_item.label,
-        kind = customize_label[kind] or kind or '',
-        menu = completion_item.detail or '',
-        info = info,
-        priority = priority,
-        icase = 1,
-        user_data = user_data,
-        dup = 1,
-        empty = 1,
-      })
+      if vim.g.completion_fuzzy_match == 1 then
+        local score = score_func(prefix, word)
+        if score <= 1 then
+          table.insert(matches, {
+            word = word,
+            abbr = completion_item.label,
+            kind = customize_label[kind] or kind or '',
+            menu = completion_item.detail or '',
+            info = info,
+            priority = priority,
+            score = score,
+            icase = 1,
+            user_data = user_data,
+            dup = 1,
+            empty = 1,
+          })
+        end
+      else
+        if vim.startswith(word, prefix) then
+          table.insert(matches, {
+            word = word,
+            abbr = completion_item.label,
+            kind = customize_label[kind] or kind or '',
+            menu = completion_item.detail or '',
+            info = info,
+            priority = priority,
+            icase = 1,
+            user_data = user_data,
+            dup = 1,
+            empty = 1,
+          })
+        end
+      end
     end
   end
 
