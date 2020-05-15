@@ -1,0 +1,21 @@
+language: generic
+
+os:
+  - linux
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install
+  - sudo apt install -y lua5.1 luarocks
+  - sudo luarocks install luacheck
+
+jobs:
+  include:
+    - stage: luacheck
+      # build plugin first, then run the test from neovim
+      script: luacheck lua/*
+      os: linux 
+
+git:
+  depth: 3
+
