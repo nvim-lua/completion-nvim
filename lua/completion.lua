@@ -55,14 +55,16 @@ function M.confirmCompletion()
   if M.completionConfirm == true then
     local complete_item = api.nvim_get_vvar('completed_item')
     local lnum, _ = unpack(api.nvim_win_get_cursor(0))
-    local item = complete_item.user_data.lsp.completion_item
-    local bufnr = api.nvim_get_current_buf()
-    if item.additionalTextEdits then
-      local edits = vim.tbl_filter(
-        function(x) return x.range.start.line ~= (lnum - 1) end,
-        item.additionalTextEdits
-      )
-      vim.lsp.util.apply_text_edits(edits, bufnr)
+    if complete_item.user_data.lsp ~= nil then
+      local item = complete_item.user_data.lsp.completion_item
+      local bufnr = api.nvim_get_current_buf()
+      if item.additionalTextEdits then
+        local edits = vim.tbl_filter(
+          function(x) return x.range.start.line ~= (lnum - 1) end,
+          item.additionalTextEdits
+        )
+        vim.lsp.util.apply_text_edits(edits, bufnr)
+      end
     end
 
     if vim.g.completion_enable_auto_paren == 1 then
