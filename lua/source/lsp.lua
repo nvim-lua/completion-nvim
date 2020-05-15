@@ -27,7 +27,7 @@ M.triggerFunction = function(prefix, _, bufnr, _)
       return
     end
     if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-      local matches = util.text_document_completion_list_to_complete_items(result, prefix)
+      local matches = util.text_document_completion_list_to_complete_items(result, prefix, util.fuzzy_score)
       M.items = matches
     end
     M.callback = true
