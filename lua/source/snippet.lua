@@ -22,6 +22,7 @@ local getUltisnipItems = function(prefix, score_func)
       table.insert(complete_items, {
         word = key,
         kind = 'UltiSnips',
+        menu = val,
         score = score,
         priority = priority,
         icase = 1,
@@ -52,6 +53,7 @@ local getNeosnippetItems = function(prefix, score_func)
         table.insert(complete_items, {
           word = key,
           kind = 'Neosnippet',
+          menu = val.description,
           score = score,
           priority = priority,
           icase = 1,
