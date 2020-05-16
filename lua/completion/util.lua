@@ -16,11 +16,11 @@ end
 --  completion items  --
 ------------------------
 local function get_completion_word(item)
-  if item.insertText ~= nil and item.insertText ~= vim.NIL then
-    return item.insertText
-  elseif item.textEdit ~= nil and item.textEdit ~= vim.NIL
-    and item.textEdit.newText ~= nil and item.insertTextFormat ~= 2 then
+  if item.textEdit ~= nil and item.textEdit ~= vim.NIL
+    and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
     return item.textEdit.newText
+  elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
+    return item.insertText
   end
   return item.label
 end
