@@ -62,7 +62,7 @@ function M.confirmCompletion()
         )
         vim.lsp.util.apply_text_edits(edits, bufnr)
       end
-      if vim.fn.exists('g:loaded_vsnip_integ') then
+      if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
         api.nvim_call_function('vsnip_integ#on_complete_done_for_lsp',
           { { completed_item = complete_item, completion_item = item } })
       end
