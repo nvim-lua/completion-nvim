@@ -101,9 +101,19 @@ inoremap <silent><expr> <TAB>
 - By default other snippets source support are disabled, turn them on by
 
 ```vim
+" possible value: 'UltiSnips', 'Neosnippet'
 let g:completion_enable_snippet = 'UltiSnips'
 ```
 - Support `UltiSnips` and `Neosnippet`
+
+### LSP Based Snippet parsing
+
+- Some language server have snippet support but neovim couldn't handle that for now, `completion-nvim` can integrate
+with other LSP snippet parsing plugin for this support.
+
+- Right now only support `vim-vsnip`(require `vim-vsnip-integ`), it should
+work out of the box if you have ![vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and
+![vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ) installed.
 
 ### Chain Completion Support
 

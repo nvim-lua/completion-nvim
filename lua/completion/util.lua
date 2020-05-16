@@ -53,7 +53,7 @@ function M.text_document_completion_list_to_complete_items(result, prefix, score
 
   for _, completion_item in ipairs(items) do
     -- skip snippets items if snippet source are enabled
-    if vim.g.completion_enable_snippet == nil or
+    if vim.fn.exists('g:loaded_vsnip_integ') or
       protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
       local info = ' '
       local documentation = completion_item.documentation

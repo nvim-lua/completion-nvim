@@ -3,9 +3,6 @@ local api = vim.api
 local source = require 'source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
-if vim.env.SNIPPETS then
-  vim.snippet = require 'snippet'
-end
 local M = {}
 
 ------------------------------------------------------------------------
@@ -65,13 +62,14 @@ function M.confirmCompletion()
         )
         vim.lsp.util.apply_text_edits(edits, bufnr)
       end
+      if vim.fn.exists('g:loaded_vsnip_integ') then
+        api.nvim_call_function('vsnip_integ#on_complete_done_for_lsp',
+          { { completed_item = complete_item, completion_item = item } })
+      end
     end
 
     if vim.g.completion_enable_auto_paren == 1 then
       M.autoAddParens(complete_item)
-    end
-    if complete_item.kind == 'Snippet' and vim.snippet ~= nil then
-      vim.snippet.expand_at_cursor(complete_item.word)
     end
     if complete_item.kind == 'UltiSnips' then
       api.nvim_call_function('UltiSnips#ExpandSnippet', {})
