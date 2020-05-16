@@ -243,7 +243,7 @@ local fancy_floating_markdown = function(contents, opts)
 end
 
 local callback = 'textDocument/hover'
-local default_callback = vim.lsp.callbacks[callback]
+M.default_callback = vim.lsp.callbacks[callback]
 
 local function callback_function(_, method, result)
   -- if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
@@ -291,13 +291,14 @@ local function callback_function(_, method, result)
       return bufnr, winnr
     end)
   else
-    default_callback(_, method, result, _)
+    M.default_callback(_, method, result, _)
   end
 end
 
 M.autoOpenHoverInPopup = function(manager)
+  if vim.fn.pumvisible() ~= 1 then return end
   for _, client in pairs(vim.lsp.buf_get_clients(0)) do
-    default_callback = client.config.callbacks['textDocument/hover'] or vim.lsp.callbacks['textDocument/hover']
+    local default_callback = client.config.callbacks['textDocument/hover'] or vim.lsp.callbacks['textDocument/hover']
     if default_callback ~= callback_function then
       client.config.callbacks['textDocument/hover'] = callback_function
     end
