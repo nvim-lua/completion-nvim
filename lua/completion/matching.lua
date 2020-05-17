@@ -45,6 +45,10 @@ local function fuzzy_score(str1, str2)
 end
 
 local function fuzzy_match(prefix, word)
+  if vim.g.completion_matching_ignore_case == 1 then
+    prefix = string.lower(prefix)
+    word = string.lower(word)
+  end
   local score = fuzzy_score(prefix, word)
   if score < 1 then
     return true, score
@@ -55,6 +59,10 @@ end
 
 
 local function substring_match(prefix, word)
+  if vim.g.completion_matching_ignore_case == 1 then
+    prefix = string.lower(prefix)
+    word = string.lower(word)
+  end
   if string.find(word, prefix) then
     return true
   else
@@ -63,6 +71,10 @@ local function substring_match(prefix, word)
 end
 
 local function exact_match(prefix, word)
+  if vim.g.completion_matching_ignore_case == 1 then
+    prefix = string.lower(prefix)
+    word = string.lower(word)
+  end
   if vim.startswith(word, prefix) then
     return true
   else
