@@ -2,7 +2,6 @@
 --      utility function that are modified from neovim's source       --
 ------------------------------------------------------------------------
 
-local protocol = require 'vim.lsp.protocol'
 local vim = vim
 local api = vim.api
 local M = {}
@@ -15,15 +14,6 @@ end
 ------------------------
 --  completion items  --
 ------------------------
-local function get_completion_word(item)
-  if item.textEdit ~= nil and item.textEdit ~= vim.NIL
-    and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
-    return item.textEdit.newText
-  elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
-    return item.insertText
-  end
-  return item.label
-end
 
 function M.sort_completion_items(items)
   table.sort(items, function(a, b)
@@ -39,79 +29,18 @@ function M.sort_completion_items(items)
   end)
 end
 
-function M.text_document_completion_list_to_complete_items(result, prefix, score_func)
-  local items = vim.lsp.util.extract_completion_items(result)
-  if vim.tbl_isempty(items) then
-    return {}
-  end
-
-  local customize_label = vim.g.completion_customize_lsp_label
-  -- items = remove_unmatch_completion_items(items, prefix)
-  -- sort_completion_items(items)
-
-  local matches = {}
-
-  for _, completion_item in ipairs(items) do
-    -- skip snippets items if snippet source are enabled
-    if vim.fn.exists('g:loaded_vsnip_integ') or
-      protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
-      local info = ' '
-      local documentation = completion_item.documentation
-      if documentation then
-        if type(documentation) == 'string' and documentation ~= '' then
-          info = documentation
-        elseif type(documentation) == 'table' and type(documentation.value) == 'string' then
-          info = documentation.value
-        -- else
-          -- TODO(ashkan) Validation handling here?
-        end
-      end
-
-      local word = get_completion_word(completion_item)
-      local user_data = {
-        lsp = {
-          completion_item = completion_item
-        }
-      }
-      local kind = protocol.CompletionItemKind[completion_item.kind]
-      local priority = vim.g.completion_items_priority[kind] or 1
-      if vim.g.completion_enable_fuzzy_match == 1 then
-        local score = score_func(prefix, word)
-        if score <= 1 then
-          table.insert(matches, {
-            word = word,
-            abbr = completion_item.label,
-            kind = customize_label[kind] or kind or '',
-            menu = completion_item.detail or '',
-            info = info,
-            priority = priority,
-            score = score,
-            icase = 1,
-            user_data = user_data,
-            dup = 1,
-            empty = 1,
-          })
-        end
-      else
-        if vim.startswith(word, prefix) then
-          table.insert(matches, {
-            word = word,
-            abbr = completion_item.label,
-            kind = customize_label[kind] or kind or '',
-            menu = completion_item.detail or '',
-            info = info,
-            priority = priority,
-            icase = 1,
-            user_data = user_data,
-            dup = 1,
-            empty = 1,
-          })
-        end
-      end
-    end
-  end
-
-  return matches
+function M.addCompletionItems(item_table, item)
+  table.insert(item_table, {
+      word = item.word,
+      abbr = item.abbr,
+      kind = item.kind,
+      menu = item.menu,
+      info = item.info,
+      icase = 1,
+      dup = 1,
+      empty = 1,
+      user_data = item.user_data,
+    })
 end
 
 -- Levenshtein algorithm for fuzzy matching
@@ -156,7 +85,6 @@ function M.fuzzy_score(str1, str2)
   -- return the last value - this is the Levenshtein distance
   return matrix[len1][len2]
 end
-
 
 -- Check trigger character
 M.checkTriggerCharacter = function(line_to_cursor, trigger_character)
