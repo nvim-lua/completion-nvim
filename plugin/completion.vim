@@ -77,6 +77,10 @@ if ! exists('g:completion_fuzzy_match')
     let g:completion_enable_fuzzy_match = 0
 endif
 
+if ! exists('g:completion_matching_strategy_list')
+    let g:completion_matching_strategy_list = ['exact']
+endif
+
 if ! exists('g:completion_chain_complete_list')
     let g:completion_chain_complete_list = {
                 \ 'default' : {
