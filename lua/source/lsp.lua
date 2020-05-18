@@ -63,7 +63,9 @@ local function text_document_completion_list_to_complete_items(result, prefix)
       item.priority = vim.g.completion_items_priority[item.kind] or 1
       item.menu = completion_item.detail or ''
       local matching_piroity = 1
-      for _, method in ipairs(vim.g.completion_matching_strategy_list) do
+
+      local matcher_list = vim.b.completion_matching_strategy_list or vim.g.completion_matching_strategy_list
+      for _, method in ipairs(matcher_list) do
         local is_match, score = match.matching_strategy[method](prefix, item.word)
         item.score = score
         if is_match then
