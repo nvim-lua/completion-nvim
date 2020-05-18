@@ -182,7 +182,7 @@ M.customize_buf_label = function(label)
   api.nvim_buf_set_var(0, "completion_buf_customize_lsp_label", label)
 end
 
-M.on_attach = function()
+M.on_attach = function(opt)
   api.nvim_command [[augroup CompletionCommand]]
     api.nvim_command("autocmd! * <buffer>")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
@@ -195,8 +195,18 @@ M.on_attach = function()
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
   end
   api.nvim_buf_set_var(0, 'completion_enable', 1)
+  if opt == nil then return end
+  local sorter = opt.sorter
+  local matcher = opt.matcher
+  if sorter ~= nil then
+    vim.validate{sorter={sorter, 'string'}}
+    vim.b.completion_sorting = sorter
+  end
+  if matcher ~= nil then
+    vim.validate{matcher={matcher, 'table'}}
+    vim.b.completion_matching_strategy_list = matcher
+  end
 end
 
 return M
-
 
