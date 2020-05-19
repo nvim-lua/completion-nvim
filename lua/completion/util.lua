@@ -30,16 +30,19 @@ function M.sort_completion_items(items)
 end
 
 function M.addCompletionItems(item_table, item)
+  -- word cannot be nil
+  if item.word == nil then return end
   table.insert(item_table, {
       word = item.word,
-      abbr = item.abbr,
-      kind = item.kind,
-      menu = item.menu,
-      info = item.info,
+      abbr = item.abbr or '',
+      kind = item.kind or '',
+      menu = item.menu or '',
+      info = item.info or '',
+      priority = item.priority or 1,
       icase = 1,
       dup = 1,
       empty = 1,
-      user_data = item.user_data,
+      user_data = item.user_data or {},
     })
 end
 
