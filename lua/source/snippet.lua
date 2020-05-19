@@ -1,9 +1,10 @@
 local vim = vim
 local api = vim.api
+local match = require'completion.matching'
 local M = {}
 
 
-local getUltisnipItems = function(prefix, score_func)
+local getUltisnipItems = function(prefix)
   if vim.fn.exists("*UltiSnips#SnippetsInCurrentScope") == 0 then return {} end
   local snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
   local complete_items = {}
@@ -16,51 +17,37 @@ local getUltisnipItems = function(prefix, score_func)
     if key == true then
       key = 'true'
     end
-    local score = score_func(prefix, key)
+    local item = {}
+    item.word = key
+    item.kind = 'UltiSnips'
+    item.priority = priority
     local user_data = {hover = val}
-    if score < #prefix/2 then
-      table.insert(complete_items, {
-        word = key,
-        kind = 'UltiSnips',
-        score = score,
-        priority = priority,
-        icase = 1,
-        dup = 1,
-        empty = 1,
-        user_data = vim.fn.json_encode(user_data)
-      })
-    end
+    item.user_data = user_data
+    match.matching(complete_items, prefix, item)
   end
   return complete_items
 end
 
-local getNeosnippetItems = function(prefix, score_func)
+local getNeosnippetItems = function(prefix)
   if vim.fn.exists("*neosnippet#helpers#get_completion_snippets") == 0 then return {} end
   local snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
-  local priority = vim.g.completion_items_priority['Neosnippet'] or 1
+  local priority = vim.g.completion_items_priority['Neosnippet']
   for key, val in pairs(snippetsList) do
     if key == true then
       key = 'true'
     end
     local user_data = {hover = val.description}
-    local score = score_func(prefix, key)
-      if score < #prefix/2 then
-        table.insert(complete_items, {
-          word = key,
-          kind = 'Neosnippet',
-          score = score,
-          priority = priority,
-          icase = 1,
-          dup = 1,
-          empty = 1,
-          user_data = vim.fn.json_encode(user_data)
-        })
-      end
-    end
+    local item = {}
+    item.word = key
+    item.kind = 'Neosnippet'
+    item.priority = priority
+    item.user_data = user_data
+    match.matching(complete_items, prefix, item)
+  end
   return complete_items
 end
 

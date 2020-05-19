@@ -1,5 +1,6 @@
 local vim = vim
 local api = vim.api
+local match = require'completion.matching'
 local source = require 'source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
@@ -180,6 +181,14 @@ end
 -- Deprecated
 M.customize_buf_label = function(label)
   api.nvim_buf_set_var(0, "completion_buf_customize_lsp_label", label)
+end
+
+M.insertCompletionItems = function(complete_items, prefix, item)
+  match.matching(complete_items, prefix, item)
+end
+
+M.addCompletionSource = function(key, complete_item)
+  source.addCompleteItems(key, complete_item)
 end
 
 M.on_attach = function(opt)
