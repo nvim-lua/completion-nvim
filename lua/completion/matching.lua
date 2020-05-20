@@ -48,15 +48,20 @@ local matching_strategy = {
 
 M.matching = function(complete_items, prefix, item)
   local matcher_list = vim.b.completion_matching_strategy_list or vim.g.completion_matching_strategy_list
-  local matching_piroity = 1
+  local matching_priority = 2
   for _, method in ipairs(matcher_list) do
     local is_match, score = matching_strategy[method](prefix, item.word)
     if is_match then
-      item.user_data.matching_piroity = matching_piroity
       item.score = score
+      if item.priority ~= nil then
+        item.priority = item.priority + 10*matching_priority
+      else
+        item.priority = 10*matching_priority
+      end
       util.addCompletionItems(complete_items, item)
       break
     end
+    matching_priority = matching_priority - 1
   end
 end
 
