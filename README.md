@@ -181,25 +181,43 @@ let g:completion_max_items = 10
 
 *NOTE* that this only works for non `ins-complete` completion source.
 
-### Trigger Characters
-
-- By default, `completion-nvim` respect the trigger character of your language server, if you
-want more trigger characters, add it by
-
-```vim
-let g:completion_trigger_character = ['.', '::']
-```
-
 ### Sorting completion items
 
 - You can decide how your items being sorted in the popup menu. The default value
 is `"alphabet"`, change it by
-```.vim
+```vim
 " possible value: "length", "alphabet", "none"
 let g:completion_sorting = "length"
 ```
 
 - If you don't want any sorting, you can set this value to `"none"`.
+
+### Matching Strategy
+
+- There are three different kind of matching technique implement in
+completion-nvim: `substr`, `fuzzy` or `exact`.
+
+- You can specify a list of matching strategy, completion-nvim will loop through the list and
+assign priority from high to low. For example
+
+```vim
+let g:completion_matching_strategy_list = ['exact', 'substr', fuzzy]
+```
+
+- You can also enable ignore case matching by
+```vim
+g:completion_matching-strategy_list	= 1
+```
+
+### Trigger Characters
+
+- By default, `completion-nvim` respect the trigger character of your language server, if you
+want more trigger characters, add it by
+
+
+```vim
+let g:completion_trigger_character = ['.', '::']
+```
 
 *NOTE* use `:lua print(vim.inspect(vim.lsp.buf_get_clients()[1].server_capabilities.completionProvider.triggerCharacters))`
 to see the trigger character of your language server.
