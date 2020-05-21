@@ -48,7 +48,12 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
     end
 
     local timer = vim.loop.new_timer()
+    manager.insertChar = false
     timer:start(20, 50, vim.schedule_wrap(function()
+      if manager.insertChar == true and not timer:is_closing() then
+        timer:stop()
+        timer:close()
+      end
       -- only perform complete when callback_array are all true
       if checkCallback(callback_array) == true and timer:is_closing() == false then
         if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
@@ -62,7 +67,6 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
           if #items ~= 0 then
             -- reset insertChar and handle auto changing source
             vim.fn.complete(textMatch+1, items)
-            manager.insertChar = false
             manager.changeSource = false
           else
             manager.changeSource = true
