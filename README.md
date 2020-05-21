@@ -195,18 +195,18 @@ let g:completion_sorting = "length"
 ### Matching Strategy
 
 - There are three different kind of matching technique implement in
-completion-nvim: `substr`, `fuzzy` or `exact`.
+completion-nvim: `substring`, `fuzzy` or `exact`.
 
 - You can specify a list of matching strategy, completion-nvim will loop through the list and
 assign priority from high to low. For example
 
 ```vim
-let g:completion_matching_strategy_list = ['exact', 'substr', fuzzy]
+let g:completion_matching_strategy_list = ['exact', 'substring', fuzzy]
 ```
 
 - You can also enable ignore case matching by
 ```vim
-g:completion_matching-strategy_list	= 1
+g:completion_matching_ignore_case = 1
 ```
 
 ### Trigger Characters
