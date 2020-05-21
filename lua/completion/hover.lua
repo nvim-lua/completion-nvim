@@ -213,7 +213,7 @@ local fancy_floating_markdown = function(contents, opts)
       })
   else
     local opt = make_floating_popup_options(width, height, opts)
-    if opt.width < 0 then return end
+    if opt.width <= 0 then return end
     winnr = api.nvim_open_win(bufnr, false, opt)
   end
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, stripped)
@@ -280,7 +280,9 @@ local function callback_function(_, method, result)
       })
       M.winnr = winnr
 
-      vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
+      if winnr ~= nil and api.nvim_win_is_valid(winnr) then
+        vim.lsp.util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
+      end
       local hover_len = #vim.api.nvim_buf_get_lines(bufnr,0,-1,false)[1]
       local win_width = vim.api.nvim_win_get_width(0)
       if hover_len > win_width then
