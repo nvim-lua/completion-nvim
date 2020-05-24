@@ -255,7 +255,7 @@ local on_attach_vim = function()
   require'completion'.on_attach()
   require'diagnostic'.on_attach()
 end
-require'nvim_lsp'.pyls.setup{on_attach=on_attach}
+require'nvim_lsp'.pyls.setup{on_attach=on_attach_vim}
 EOF
 ```
 
