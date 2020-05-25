@@ -11,7 +11,7 @@ supported.
 - Asynchronous completion using the `libuv` api.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
-- Snippets integration with UltiSnips and Neosnippet.
+- Snippets integration with UltiSnips and Neosnippet and Vsnip.
 - Apply *additionalTextEdits* in LSP spec if it's available.
 - Chain completion support inspired by ![vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
 
@@ -101,10 +101,10 @@ inoremap <silent><expr> <TAB>
 - By default other snippets source support are disabled, turn them on by
 
 ```vim
-" possible value: 'UltiSnips', 'Neosnippet'
+" possible value: 'UltiSnips', 'Neosnippet', 'Vsnip'
 let g:completion_enable_snippet = 'UltiSnips'
 ```
-- Support `UltiSnips` and `Neosnippet`
+- Support `UltiSnips` and `Neosnippet` and `Vsnip`
 
 ### LSP Based Snippet parsing
 

@@ -76,6 +76,8 @@ function M.confirmCompletion()
       api.nvim_call_function('UltiSnips#ExpandSnippet', {})
     elseif complete_item.kind == 'Neosnippet' then
       api.nvim_input("<c-r>".."=neosnippet#expand('"..complete_item.word.."')".."<CR>")
+    elseif complete_item.kind == 'Vsnip' then
+      api.nvim_call_function('vsnip#expand', {})
     end
     M.completionConfirm = false
   end

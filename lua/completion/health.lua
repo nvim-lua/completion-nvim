@@ -29,8 +29,14 @@ local checkSnippetSource = function()
     else
       health_error("Neosnippet is not available! Check if you install Neosnippet correctly.")
     end
+  elseif snippet_source == 'Vsnip' then
+    if string.match(api.nvim_get_option("rtp"), ".*vsnip.*") then
+      health_ok("You are using Vsnip as your snippet source")
+    else
+      health_error("Vsnip is not available! Check if you install Vsnip correctly.")
+    end
   else
-    health_error("You're snippet source is not available! possible value are: UltiSnips, Neosnippet")
+    health_error("You're snippet source is not available! possible value are: UltiSnips, Neosnippet, Vsnip")
   end
 end
 
