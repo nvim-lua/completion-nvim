@@ -1,6 +1,5 @@
 local vim = vim
 local protocol = require 'vim.lsp.protocol'
-local api = vim.api
 local util = require 'completion.util'
 local match = require 'completion.matching'
 local M = {}
@@ -87,10 +86,8 @@ M.triggerFunction = function(prefix, _, bufnr, _)
       M.callback = true
       return
     end
-    if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-      local matches = text_document_completion_list_to_complete_items(result, prefix, util.fuzzy_score)
-      M.items = matches
-    end
+    local matches = text_document_completion_list_to_complete_items(result, prefix, util.fuzzy_score)
+    M.items = matches
     M.callback = true
   end)
 end
