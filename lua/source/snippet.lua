@@ -65,6 +65,7 @@ local getVsnipItems = function(prefix)
       local item = {}
       item.word = snippet.prefix[1]
       item.kind = 'vim-vsnip'
+      item.menu = snippet.label
       item.priority = priority
       item.user_data = user_data
       match.matching(complete_items, prefix, item)
