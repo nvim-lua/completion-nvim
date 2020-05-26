@@ -53,6 +53,10 @@ if ! exists('g:completion_enable_auto_popup')
     let g:completion_enable_auto_popup = 1
 endif
 
+if ! exists('g:completion_trigger_on_delete')
+    let g:completion_trigger_on_delete = 0
+end
+
 if ! exists('g:completion_trigger_keyword_length')
     let g:completion_trigger_keyword_length = 1
 endif

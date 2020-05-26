@@ -131,6 +131,9 @@ function M.autoCompletion(manager)
   -- reset completion when deleting character in insert mode
   if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
     M.chain_complete_index = 1
+    if vim.g.completion_trigger_on_delete == 1 then
+      M.triggerCompletion(false, manager)
+    end
     M.stop_complete = false
   end
   M.prefixLength = #prefix
