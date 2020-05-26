@@ -61,15 +61,13 @@ local getVsnipItems = function(prefix)
   local priority = vim.g.completion_items_priority['Vsnip']
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
-      for _, word in pairs(snippet.prefix) do
-        local user_data = {hover = snippet.description}
-        local item = {}
-        item.word = word
-        item.kind = 'Vsnip'
-        item.priority = priority
-        item.user_data = user_data
-        match.matching(complete_items, prefix, item)
-      end
+      local user_data = {hover = snippet.description}
+      local item = {}
+      item.word = snippet.prefix[1]
+      item.kind = 'Vsnip'
+      item.priority = priority
+      item.user_data = user_data
+      match.matching(complete_items, prefix, item)
     end
   end
   return complete_items
