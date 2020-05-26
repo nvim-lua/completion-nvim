@@ -24,7 +24,7 @@ FEATURE                                                  *completion-features*
 - Asynchronous completion using libuv api.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
-- Snippets integration with UltiSnips and Neosnippet and Vsnip.
+- Snippets integration with UltiSnips and Neosnippet and vim-vsnip.
 - ins-complete method integration
 - Apply additionalTextEdits in LSP spec if it's available.
 - Chain completion support inspired by vim-mucomplete
@@ -87,7 +87,7 @@ g:completion_enable_auto_popup               *g:completion_enable_auto_popup*
 g:completion_enable_snippet                      *g:completion_enable_snippet*
 
         You can specify which snippet engines you want to use. Possible values
-        are |UltiSnips| and |Neosnippet| and |Vsnip|.
+        are |UltiSnips| and |Neosnippet| and |vim-vsnip|.
 
         Note: Snippet engines will not work without setting this variables.
 

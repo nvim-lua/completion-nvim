@@ -58,13 +58,13 @@ local getVsnipItems = function(prefix)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
-  local priority = vim.g.completion_items_priority['Vsnip']
+  local priority = vim.g.completion_items_priority['vim-vsnip']
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
       local user_data = {hover = snippet.description}
       local item = {}
       item.word = snippet.prefix[1]
-      item.kind = 'Vsnip'
+      item.kind = 'vim-vsnip'
       item.priority = priority
       item.user_data = user_data
       match.matching(complete_items, prefix, item)
@@ -80,7 +80,7 @@ M.getCompletionItems = function(prefix, score_func, _)
     snippet_list = getUltisnipItems(prefix, score_func)
   elseif source == 'Neosnippet' then
     snippet_list = getNeosnippetItems(prefix, score_func)
-  elseif source == 'Vsnip' then
+  elseif source == 'vim-vsnip' then
     snippet_list = getVsnipItems(prefix, score_func)
   end
   return snippet_list
