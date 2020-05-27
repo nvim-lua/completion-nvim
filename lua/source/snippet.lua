@@ -52,7 +52,7 @@ local getNeosnippetItems = function(prefix)
 end
 
 local getVsnipItems = function(prefix)
-  if vim.fn.exists("*vsnip#source#find") == 0 then return {} end
+  if vim.fn.exists('g:loaded_vsnip') == 0 then return {} end
   local snippetsList = api.nvim_call_function('vsnip#source#find', {api.nvim_buf_get_option(0, 'filetype')})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
