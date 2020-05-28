@@ -51,6 +51,31 @@ local getNeosnippetItems = function(prefix)
   return complete_items
 end
 
+local getVsnipItems = function(prefix)
+  if vim.fn.exists('g:loaded_vsnip') == 0 then return {} end
+  local snippetsList = api.nvim_call_function('vsnip#source#find', {api.nvim_buf_get_option(0, 'filetype')})
+  local complete_items = {}
+  if vim.tbl_isempty(snippetsList) == 0 then
+    return {}
+  end
+  local priority = vim.g.completion_items_priority['vim-vsnip']
+  for _, source in pairs(snippetsList) do
+    for _, snippet in pairs(source) do
+      for _, word in pairs(snippet.prefix) do
+        local user_data = {hover = snippet.description}
+        local item = {}
+        item.word = word
+        item.kind = 'vim-vsnip'
+        item.menu = snippet.label
+        item.priority = priority
+        item.user_data = user_data
+        match.matching(complete_items, prefix, item)
+      end
+    end
+  end
+  return complete_items
+end
+
 M.getCompletionItems = function(prefix, score_func, _)
   local source = vim.g.completion_enable_snippet
   local snippet_list = {}
@@ -58,6 +83,8 @@ M.getCompletionItems = function(prefix, score_func, _)
     snippet_list = getUltisnipItems(prefix, score_func)
   elseif source == 'Neosnippet' then
     snippet_list = getNeosnippetItems(prefix, score_func)
+  elseif source == 'vim-vsnip' then
+    snippet_list = getVsnipItems(prefix, score_func)
   end
   return snippet_list
 end
