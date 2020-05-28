@@ -158,8 +158,6 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_auto_signature = 0
 ```
 
-
-
 ### Enable/Disable fuzzy match
 - By default fuzzy match is disable, you can enable it by
 
@@ -201,7 +199,7 @@ completion-nvim: `substring`, `fuzzy` or `exact`.
 assign priority from high to low. For example
 
 ```vim
-let g:completion_matching_strategy_list = ['exact', 'substring', fuzzy]
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 ```
 
 - You can also enable ignore case matching by
@@ -230,6 +228,14 @@ augroup CompleteionTriggerCharacter
     autocmd BufEnter * let g:completion_trigger_character = ['.']
     autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
 augroup end
+```
+### Trigger on delete
+
+- `completion-nvim` doesn't trigger completion on delete by default because sometimes I've found it annoying. However,
+you can enable it by
+
+```vim
+let g:completion_tigger_on_delete = 1
 ```
 
 ### Timer Adjustment
