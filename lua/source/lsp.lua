@@ -35,7 +35,7 @@ local function text_document_completion_list_to_complete_items(result, prefix)
   for _, completion_item in ipairs(items) do
     local item = {}
     -- skip snippets items if snippet parsing source in unavailable
-    if vim.fn.exists('g:loaded_vsnip_integ') or
+    if vim.fn.exists('g:loaded_vsnip_integ') == 1 or
       protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
       local info = ' '
       local documentation = completion_item.documentation
