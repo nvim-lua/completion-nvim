@@ -223,7 +223,7 @@ to see the trigger character of your language server.
 - If you want different trigger character for different languages, wrap it in an autocommand like
 
 ```vim
-augroup CompleteionTriggerCharacter
+augroup CompletionTriggerCharacter
     autocmd!
     autocmd BufEnter * let g:completion_trigger_character = ['.']
     autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
@@ -235,7 +235,7 @@ augroup end
 you can enable it by
 
 ```vim
-let g:completion_tigger_on_delete = 1
+let g:completion_trigger_on_delete = 1
 ```
 
 ### Timer Adjustment
