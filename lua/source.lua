@@ -84,8 +84,12 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
 
   -- handle user defined only triggered character
   if complete_source['triggered_only'] ~= nil then
-    triggered = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
-    if not triggered then return end
+    local triggered_only = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
+    if not triggered_only then
+      if manager.autoChange then
+        manager.changeSource = true
+      end
+    end
   end
 
   local length = vim.g.completion_trigger_keyword_length
@@ -139,7 +143,7 @@ function M.autoCompletion(manager)
   M.prefixLength = #prefix
 
   -- force reset chain completion if entering a new word
-  if (#prefix < length) and string.sub(line_to_cursor, #line_to_cursor, #line_to_cursor) == ' ' then
+  if (#prefix < length) then
     M.chain_complete_index = 1
     M.stop_complete = false
     manager.changeSource = false
