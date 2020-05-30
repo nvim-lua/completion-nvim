@@ -165,7 +165,7 @@ g:completion_trigger_character                *g:completion_trigger_character*
 	Use an autocmd if you want a different trigger character for different
 	lanugages.
 >
-        augroup CompleteionTriggerCharacter
+        augroup CompletionTriggerCharacter
             autocmd!
             autocmd BufEnter * let g:completion_trigger_character = ['.']
             autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
