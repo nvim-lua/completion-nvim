@@ -89,6 +89,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
       if manager.autoChange then
         manager.changeSource = true
       end
+      return
     end
   end
 
