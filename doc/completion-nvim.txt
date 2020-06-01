@@ -233,6 +233,13 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	    \]
 	}
 <
+	There is a few completion source built in for now, here's a list.
+>
+	"lsp": lsp completion
+	"snippet": snippet sources based on g:completion_enable_snippet
+	"path": path completion relative to the current file.
+<
+
 	For ins-complete sources, possible 'mode' to the actual key in vim are
 	listed below.
 >
@@ -297,6 +304,22 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	    \   }
 	    \}
 <
+	For every completion source, you can specify `triggered_only` key.
+	This completion source will only trigger when this key is press. For
+	example
+>
+	let g:completion_chain_complete_list = {
+	    \ 'default' : {
+	    \   'default': [
+	    \       {'complete_items': ['lsp', 'snippet']},
+	    \	    {'complete_items': ['path'], 'triggered_only' = ['/']},
+	    \       {'mode': '<c-p>'},
+	    \       {'mode': '<c-n>'}],
+	    \   'comment': []
+	    \   }
+	    \}
+<
+
 	Note: Every syntax highlighter has a different syntax name
 	defined(most of them are similar though). You can check your syntax
 	name under your cursor by this command:
