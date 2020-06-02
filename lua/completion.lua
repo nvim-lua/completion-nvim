@@ -105,7 +105,6 @@ function M.on_InsertEnter()
   if enable == nil or enable == 0 then
     return
   end
-  if vim.g.completion_enable_auto_popup == 0 then return end
   local timer = vim.loop.new_timer()
   -- setup variable
   manager.changedTick = api.nvim_buf_get_changedtick(0)
@@ -127,7 +126,9 @@ function M.on_InsertEnter()
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
       manager.changedTick = l_changedTick
-      source.autoCompletion(manager)
+      if vim.g.completion_enable_auto_popup == 1 then
+        source.autoCompletion(manager)
+      end
       if vim.g.completion_enable_auto_hover == 1 then
         hover.autoOpenHoverInPopup(manager)
       end
@@ -194,13 +195,13 @@ M.addCompletionSource = function(key, complete_item)
 end
 
 M.on_attach = function(opt)
-  api.nvim_command [[augroup CompletionCommand]]
+  api.nvim_command("augroup CompletionCommand")
     api.nvim_command("autocmd! * <buffer>")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
     api.nvim_command("autocmd InsertLeave <buffer> lua require'completion'.on_InsertLeave()")
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
-  api.nvim_command [[augroup end]]
+  api.nvim_command("augroup end")
   if string.len(vim.g.completion_confirm_key) ~= 0 then
     api.nvim_buf_set_keymap(0, 'i', vim.g.completion_confirm_key,
       '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
