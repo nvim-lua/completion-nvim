@@ -52,6 +52,27 @@ autocmd BufEnter * lua require'completion'.on_attach()
 *NOTE* It's okay to set up completion-nvim without lsp. It will simply use
 another completion source instead(Ex: snippets).
 
+## Supported Completion Source
+
+- built-in sources
+
+    * lsp: completion source for neovim's built-in LSP.
+    * snippet: completion source for snippet.
+    * path: completion source for path from current file.
+
+- ins-complete sources
+
+    * See `:h ins-completion` and [wiki](https://github.com/haorenW1025/completion-nvim/wiki/chain-complete-support)
+
+- external sources
+
+    * [completion-buffers](https://github.com/steelsojka/completion-buffers): completion for
+    buffers word.
+    * [completion-treesitter](https://github.com/nvim-treesitter/completion-treesitter): treesitter
+    based completion sources.
+    * [vim-dadbod-completion](https://github.com/kristijanhusak/vim-dadbod-completion): completion sources
+    for `vim-dadbod`.
+
 ## Configuration
 
 ### Recommended Setting
