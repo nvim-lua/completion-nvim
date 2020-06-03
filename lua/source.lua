@@ -6,6 +6,7 @@ local chain_completion = require 'completion.chain_completion'
 local lsp = require 'source.lsp'
 local snippet = require 'source.snippet'
 local path = require 'source.path'
+local buffers = require 'source.buffers'
 
 local M = {}
 
@@ -23,6 +24,12 @@ local complete_items_map = {
     callback = path.getCallback,
     trigger = path.triggerFunction,
     trigger_character = {'/'}
+  },
+  ['buffers'] = {
+    item = buffers.getBuffersCompletionItems
+  },
+  ['buffer'] = {
+    item = buffers.getBufferCompletionItems
   },
 }
 

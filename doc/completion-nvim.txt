@@ -200,7 +200,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	and have an ins-completion method as backup completion.
 
 	You can specify different completion list for different filetypes. By
-	default, possible sources are 'lsp', 'snippet', 'path' and various
+	default, possible sources are 'lsp', 'snippet', 'path', 'buffer', 'buffers' and various
 	ins-complete sources. Specify 'mode' as your key for ins-complete
 	sources, 'complete_items' for other sources. For example:
 >
@@ -238,6 +238,8 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	"lsp": lsp completion
 	"snippet": snippet sources based on g:completion_enable_snippet
 	"path": path completion relative to the current file.
+	"buffer": words in the current buffer
+	"buffers": words in all listed buffers
 <
 
 	For ins-complete sources, possible 'mode' to the actual key in vim are
