@@ -46,7 +46,10 @@ M.triggerCompletion = function(manager, mode)
   if ins_complete_table[mode] == nil then return end
   if manager.insertChar == true and vim.fn.pumvisible() == 0 then
     if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
-      api.nvim_input(ins_complete_table[mode])
+      local mode_keys = ins_complete_table[mode]
+      -- See https://github.com/neovim/neovim/issues/12297.
+      mode_keys = api.nvim_replace_termcodes(mode_keys, true, false, true)
+      api.nvim_feedkeys(mode_keys, 'n', true)
       checkEmptyCompletion(manager)
     end
   else

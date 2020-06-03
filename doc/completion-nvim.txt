@@ -206,11 +206,11 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 >
 	let g:completion_chain_complete_list = {
 	    \'default' : [
-	    \	{'complete_items': ['lsp', 'snippet']},
-	    \	{'mode': '<c-p>'},
-	    \	{'mode': '<c-n>'}
+	    \    {'complete_items': ['lsp', 'snippet']},
+	    \    {'mode': '<c-p>'},
+	    \    {'mode': '<c-n>'}
 	    \]
-	}
+	    \}
 <
 	You can easily switch to next or previous sources by mapping keys in
 	insert mode. For example, using <c-j> to switch to previous sources
@@ -226,12 +226,12 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 >
 	let g:completion_chain_complete_list = {
 	    \'default' : [
-	    \	{'complete_items': ['lsp']},
-	    \	{'complete_items': ['snippet']}
-	    \	{'mode': '<c-p>'},
-	    \	{'mode': '<c-n>'}
+	    \    {'complete_items': ['lsp']},
+	    \    {'complete_items': ['snippet']}
+	    \    {'mode': '<c-p>'},
+	    \    {'mode': '<c-n>'}
 	    \]
-	}
+	    \}
 <
 	There is a few completion source built in for now, here's a list.
 >
@@ -312,7 +312,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	    \ 'default' : {
 	    \   'default': [
 	    \       {'complete_items': ['lsp', 'snippet']},
-	    \	    {'complete_items': ['path'], 'triggered_only' = ['/']},
+	    \       {'complete_items': ['path'], 'triggered_only' = ['/']},
 	    \       {'mode': '<c-p>'},
 	    \       {'mode': '<c-n>'}],
 	    \   'comment': []
