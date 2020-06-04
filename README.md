@@ -13,7 +13,7 @@ supported.
 - Automatically open signature help if it's available.
 - Snippets integration with UltiSnips and Neosnippet and vim-vsnip.
 - Apply *additionalTextEdits* in LSP spec if it's available.
-- Chain completion support inspired by ![vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
+- Chain completion support inspired by [vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
 
 ## Demo
 
@@ -133,15 +133,15 @@ let g:completion_enable_snippet = 'UltiSnips'
 with other LSP snippet parsing plugin for this support.
 
 - Right now only support `vim-vsnip`(require `vim-vsnip-integ`), it should
-work out of the box if you have ![vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and
-![vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ) installed.
+work out of the box if you have [vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and
+[vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ) installed.
 
 ### Chain Completion Support
 
 - completion-nvim supports chain completion, which use other completion sources
   and `ins-completion` as a fallback for lsp completion.
 
-- See ![wiki](https://github.com/haorenW1025/completion-nvim/wiki/chain-complete-support) for
+- See [wiki](https://github.com/haorenW1025/completion-nvim/wiki/chain-complete-support) for
   details on how to set this up.
 
 ### Changing Completion Confirm key
@@ -271,7 +271,7 @@ let g:completion_timer_cycle = 200 "default value is 80
 
 - This plugin only focuses on the **completion** part of the built-in LSP. If
   you want similar help with diagnostics (e.g. virtual text, jump to diagnostic,
-  open line diagnostic automatically...), take a loot at ![diagnostic-nvim](https://github.com/haorenW1025/diagnostic-nvim).
+  open line diagnostic automatically...), take a loot at [diagnostic-nvim](https://github.com/haorenW1025/diagnostic-nvim).
 
 - Both diagnostic-nvim and completion-nvim require setting up via `on_attach`.
   To use them together, create a wrapper function like this.
@@ -289,6 +289,6 @@ EOF
 ## Trouble Shooting
 
 - This plugin is in the early stages and might have unexpected issues.
-  Please follow ![wiki](https://github.com/haorenW1025/completion-nvim/wiki/trouble-shooting)
+  Please follow [wiki](https://github.com/haorenW1025/completion-nvim/wiki/trouble-shooting)
   for trouble shooting.
 - Feel free to post issues on any unexpected behavior or open a feature request!
