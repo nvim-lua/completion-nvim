@@ -179,16 +179,6 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_auto_signature = 0
 ```
 
-### Enable/Disable fuzzy match
-- By default fuzzy match is disable, you can enable it by
-
-```vim
-let g:completion_enable_fuzzy_match = 1
-```
-
-*NOTE* Fuzzy match highly dependent on what language server you're using. It might not
-work as you expect on some language server.
-
 ### Max Items for completion
 
 - You can set a number limit for the maximum completion items. For example, if you
@@ -222,6 +212,9 @@ assign priority from high to low. For example
 ```vim
 let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 ```
+
+*NOTE* Fuzzy match highly dependent on what language server you're using. It might not
+work as you expect on some language server.
 
 - You can also enable ignore case matching by
 ```vim
