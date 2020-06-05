@@ -5,17 +5,12 @@ function! completion#completion_confirm() abort
 endfunction
 
 function! completion#wrap_completion() abort
-    if pumvisible() != 0
+    if pumvisible() != 0 && complete_info()["selected"] != "-1"
         call completion#completion_confirm()
     else
+        call nvim_feedkeys("\<c-g>\<c-g>", "n", v:true)
         let key = g:completion_confirm_key
-        let remap = 'n'
-        if !empty(g:completion_confirm_key_rhs)
-            let key = g:completion_confirm_key_rhs
-            let remap = 'm'
-        endif
-
-        call nvim_feedkeys(key, remap, v:true)
+        call nvim_feedkeys(key, "n", v:true)
     endif
 endfunction
 
