@@ -174,6 +174,18 @@ g:completion_trigger_character                *g:completion_trigger_character*
 
         default value: ['.']
 
+g:completion_trigger_keyword_length		    *g:completion_trigger_keyword_length*
+	
+	You can specify keyword length for triggering completion, if the
+	current word is less than keyword length, completion won't be
+	triggered.
+
+	Note: completion-nvim will ignore keyword length if you're on trigger
+	character.
+
+	default value: 1
+
+
 g:completion_trigger_on_delete			    *g:completion_trigger_on_delete*
 
 

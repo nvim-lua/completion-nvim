@@ -250,6 +250,18 @@ augroup CompletionTriggerCharacter
     autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
 augroup end
 ```
+
+### Trigger keyword length
+
+- You can specify keyword length for triggering completion, if the current word is less then keyword length, completion won't be
+triggered.
+
+```vim
+let g:completion_trigger_keyword_length = 3 " default = 1
+```
+
+**NOTE** `completion-nvim` will ignore keyword length if you're on trigger character.
+
 ### Trigger on delete
 
 - `completion-nvim` doesn't trigger completion on delete by default because sometimes I've found it annoying. However,
