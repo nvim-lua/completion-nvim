@@ -28,7 +28,6 @@ local checkEmptyCompletion = function(manager)
     if vim.fn.pumvisible() == 0 then
       manager.changeSource = true
     else
-      manager.insertChar = false
       manager.changeSource = false
     end
     timer:stop()

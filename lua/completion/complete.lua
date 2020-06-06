@@ -26,6 +26,7 @@ end
 -- perform completion
 M.performComplete = function(complete_source, complete_items_map, manager, bufnr, prefix, textMatch)
 
+  manager.insertChar = false
   if vim.fn.has_key(complete_source, "mode") > 0 then
     -- ins-complete source
     ins.triggerCompletion(manager, complete_source.mode)
@@ -48,7 +49,6 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
     end
 
     local timer = vim.loop.new_timer()
-    manager.insertChar = false
     timer:start(20, 50, vim.schedule_wrap(function()
       if manager.insertChar == true and not timer:is_closing() then
         timer:stop()
