@@ -134,8 +134,9 @@ function M.autoCompletion(manager)
   local length = vim.g.completion_trigger_keyword_length
 
   -- reset completion when deleting character in insert mode
-  if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
+  if #prefix < M.prefixLength then
     M.chain_complete_index = 1
+    api.nvim_input("<c-g><c-g>")
     if vim.g.completion_trigger_on_delete == 1 then
       M.triggerCompletion(false, manager)
     end
