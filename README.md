@@ -154,11 +154,13 @@ let g:completion_confirm_key = "\<C-y>"
 
 - Make sure to use `" "` and add escape key `\` to avoid parsing issues.
 - If the confirm key has a fallback mapping, for example when using the auto
-  pairs plugin, it maps to `<CR>`. Provide it like this:
+  pairs plugin, it maps to `<CR>`. You can avoid using the default confirm key option and
+  use a mapping like this instead.
 
 ```.vim
-"Fallback for https://github.com/Raimondi/delimitMate expanding on enter
-let g:completion_confirm_key_rhs = "\<Plug>delimitMateCR"
+let g:completion_confirm_key = ""
+imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
+                 \ "\<Plug>(completion_confirm_completion)"  : "\<c-e>\<CR>" :  "\<CR>"
 ```
 
 ### Enable/Disable auto hover

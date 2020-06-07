@@ -107,14 +107,14 @@ g:completion_confirm_key                            *g:completion_confirm_key*
 
         default value: "\<CR>"
 
-g:completion_confirm_key_rhs                    *g:completion_confirm_key_rhs*
-
-	If the confirm key has a fallback mapping, for example, using auto
-	pair plugins that map to "\<CR>", you can provide it like it in this
-	options. For example:
+	If the confirm key has a fallback mapping, for example when using the auto
+	pairs plugin, it maps to `<cr>`. you can avoid using the default confirm key
+	option and use a mapping like this instead.
 >
-	" Fallback for https://github.com/Raimondi/delimitMate expanding on
-	enter let g:completion_confirm_key_rhs = "\<Plug>delimitMateCR"
+	let g:completion_confirm_key = ""
+	imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
+			\ "\<Plug>(completion_confirm_completion)"  :
+			\ "\<c-e>\<CR>" : "\<CR>"
 <
 g:completion_enable_auto_hover                *g:completion_enable_auto_hover*
 
