@@ -11,11 +11,28 @@ M.getCompletionItems = function(_, _)
 end
 
 local function get_completion_word(item)
-  if item.textEdit ~= nil and item.textEdit ~= vim.NIL
-    and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
-    return item.textEdit.newText
-  elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
-    return item.insertText
+  if item.textEdit ~= nil and item.textEdit.newText ~= nil then
+    if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
+      return item.textEdit.newText
+    else
+      -- workaround to prevent compatibility issue
+      if vim.lsp.util.parse_snippet ~= nil then
+        return vim.lsp.util.parse_snippet(item.textEdit.newText)
+      else
+        return item.textEdit.newText
+      end
+    end
+  elseif item.insertText ~= nil then
+    if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
+      return item.insertText
+    else
+      -- workaround to prevent compatibility issue
+      if vim.lsp.util.parse_snippet ~= nil then
+        return vim.lsp.util.parse_snippet(item.insertText)
+      else
+        return item.insertText
+      end
+    end
   end
   return item.label
 end
@@ -34,9 +51,7 @@ local function text_document_completion_list_to_complete_items(result, prefix)
 
   for _, completion_item in ipairs(items) do
     local item = {}
-    -- skip snippets items if snippet parsing source in unavailable
-    if vim.fn.exists('g:loaded_vsnip_integ') == 1 or
-      protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
+    if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
       local info = ' '
       local documentation = completion_item.documentation
       if documentation then
