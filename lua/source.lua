@@ -118,6 +118,9 @@ end
 
 -- Activate when manually triggered completion or manually changing completion source
 function M.triggerCompletion(force, manager)
+  if force then
+    M.chain_complete_index = 1
+  end
   local bufnr, line_to_cursor = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
