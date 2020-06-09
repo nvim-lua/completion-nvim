@@ -27,7 +27,7 @@ local manager = {
   changedTick = 0,
   -- handle auto changing source
   changeSource = false,
-  autochange = false
+  autoChange = false
 }
 
 ------------------------------------------------------------------------
@@ -92,7 +92,7 @@ function M.on_InsertCharPre()
   manager.textHover = true
   manager.selected = -1
   if vim.g.completion_auto_change_source == 1 then
-    manager.autochange = true
+    manager.autoChange = true
   end
 end
 
@@ -112,7 +112,7 @@ function M.on_InsertEnter()
   manager.insertChar = false
   manager.changeSource = false
   if vim.g.completion_auto_change_source == 1 then
-    manager.autochange = true
+    manager.autoChange = true
   end
 
   -- reset source
@@ -137,7 +137,7 @@ function M.on_InsertEnter()
       end
     end
     -- change source if no item is available
-    if manager.changeSource and manager.autochange then
+    if manager.changeSource and manager.autoChange then
       manager.changeSource = false
       if source.chain_complete_index ~= source.chain_complete_length then
         source.chain_complete_index = source.chain_complete_index + 1
@@ -155,7 +155,7 @@ function M.on_InsertEnter()
         vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
       end
       source.triggerCompletion(false, manager)
-      manager.autochange = false
+      manager.autoChange = false
       l_complete_index = source.chain_complete_index
     end
     -- closing timer if leaving insert mode
