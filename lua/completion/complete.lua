@@ -61,9 +61,6 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
           if vim.g.completion_sorting ~= "none" then
             util.sort_completion_items(items)
           end
-          if vim.g.completion_max_items ~= nil then
-            items = { unpack(items, 1, vim.g.completion_max_items)}
-          end
           if #items ~= 0 then
             -- reset insertChar and handle auto changing source
             vim.fn.complete(textMatch+1, items)

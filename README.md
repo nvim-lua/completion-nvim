@@ -181,17 +181,6 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_auto_signature = 0
 ```
 
-### Max Items for completion
-
-- You can set a number limit for the maximum completion items. For example, if you
-just want at most 10 items in your popup menu, set it by
-
-```vim
-let g:completion_max_items = 10
-```
-
-*NOTE* that this only works for non `ins-complete` completion source.
-
 ### Sorting completion items
 
 - You can decide how your items being sorted in the popup menu. The default value
