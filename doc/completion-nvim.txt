@@ -139,17 +139,6 @@ g:completion_enable_auto_paren		      *g:completion_enable_auto_paren*
 
 	default value: 0
 
-g:completion_max_items                                *g:completion_max_items*
-
-	You can set a number limit for the maximum completion items. For
-	example, if you just want at most 10 items in your popup menu, set is
-	option equal to 10.
-
-        Note: this option only works for non ins-complete sources.
-
-        default value: v:null
-
-
 g:completion_trigger_character                *g:completion_trigger_character*
 	You can add or disable a trigger character that will trigger
 	completion.
