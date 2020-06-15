@@ -345,7 +345,7 @@ g:completion_matching-strategy_list	*g:completion-matching-strategy-list*
 	of matching strategy, completion-nvim will loop through the list and
 	assign priority from high to low. For example
 >
-	let g:completion_matching_strategy_list = ['exact', 'substring', fuzzy]
+	let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 <
 	default value: ['exact']
 
