@@ -338,7 +338,7 @@ g:completion_auto_change_source		     *g:completion_auto_change_source*
 
 	default value: 0
 
-g:completion_matching-strategy_list	*g:completion-matching-strategy-list*
+g:completion_matching_strategy_list	*g:completion_matching_strategy_list*
 
 	There are three different kind of matching technique implement in
 	completion-nvim: 'substring', 'fuzzy' or 'exact'. You can specify a list
