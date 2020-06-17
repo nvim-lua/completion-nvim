@@ -313,7 +313,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	    \ 'default' : {
 	    \   'default': [
 	    \       {'complete_items': ['lsp', 'snippet']},
-	    \       {'complete_items': ['path'], 'triggered_only' = ['/']},
+	    \       {'complete_items': ['path'], 'triggered_only': ['/']},
 	    \       {'mode': '<c-p>'},
 	    \       {'mode': '<c-n>'}],
 	    \   'comment': []
