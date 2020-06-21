@@ -155,7 +155,6 @@ function M.on_InsertEnter()
         vim.fn.complete(vim.api.nvim_win_get_cursor(0)[2], {})
       end
       source.triggerCompletion(false, manager)
-      manager.autoChange = false
       l_complete_index = source.chain_complete_index
     end
     -- closing timer if leaving insert mode
