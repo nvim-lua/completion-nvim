@@ -193,6 +193,14 @@ M.addCompletionSource = function(key, complete_item)
   source.addCompleteItems(key, complete_item)
 end
 
+M.nextSource = function()
+  source.nextCompletion()
+end
+
+M.prevSource = function()
+  source.prevCompletion()
+end
+
 M.on_attach = function(opt)
   api.nvim_command("augroup CompletionCommand")
     api.nvim_command("autocmd! * <buffer>")

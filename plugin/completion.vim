@@ -108,6 +108,12 @@ endif
 inoremap <silent> <Plug>(completion_confirm_completion)
       \ <cmd>call completion#wrap_completion()<CR>
 
+inoremap <silent> <Plug>(completion_next_source)
+      \ <cmd>lua require'completion'.nextSource()<CR>
+
+inoremap <silent> <Plug>(completion_prev_source)
+      \ <cmd>lua require'completion'.prevSource()<CR>
+
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
 
 let &cpo = s:save_cpo
