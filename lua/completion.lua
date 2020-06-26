@@ -1,7 +1,7 @@
 local vim = vim
 local api = vim.api
 local match = require'completion.matching'
-local source = require 'source'
+local source = require 'source.source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
 local M = {}
