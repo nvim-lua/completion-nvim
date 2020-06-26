@@ -203,7 +203,8 @@ M.on_attach = function(opt)
   api.nvim_command("augroup end")
   if string.len(vim.g.completion_confirm_key) ~= 0 then
     api.nvim_buf_set_keymap(0, 'i', vim.g.completion_confirm_key,
-      '<cmd>call completion#wrap_completion()<CR>', {silent=true, noremap=true})
+      'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" : "\\<c-e>\\<CR>" : "\\<CR>"',
+      {silent=false, noremap=false, expr=true})
   end
   api.nvim_buf_set_var(0, 'completion_enable', 1)
   if opt == nil then return end
