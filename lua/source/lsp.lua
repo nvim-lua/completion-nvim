@@ -10,10 +10,10 @@ M.getCompletionItems = function(_, _)
   return M.items
 end
 
-local function get_completion_word(item)
+local function get_completion_word(item, prefix)
   if item.textEdit ~= nil and item.textEdit ~= vim.NIL
     and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
-    return item.textEdit.newText
+    return prefix .. item.textEdit.newText
   elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
     return item.insertText
   end
@@ -49,7 +49,7 @@ local function text_document_completion_list_to_complete_items(result, prefix)
       end
       item.info = info
 
-      item.word = get_completion_word(completion_item)
+      item.word = get_completion_word(completion_item, prefix)
       item.user_data = {
         lsp = {
           completion_item = completion_item
