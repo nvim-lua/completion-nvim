@@ -21,7 +21,11 @@ local function get_completion_word(item, prefix)
         return item.textEdit.newText
     end
   elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
-    return item.insertText
+    if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
+      return item.insertText
+    else
+      return vim.lsp.util.parse_snippet(item.insertText)
+    end
   end
   return item.label
 end
