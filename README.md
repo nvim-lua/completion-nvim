@@ -29,7 +29,7 @@ Demo using `sumneko_lua`
 - Install with any plugin manager by using the path on GitHub.
 
 ```vim
-Plug 'haorenW1025/completion-nvim'
+Plug 'nvim-lua/completion-nvim'
 ```
 
 ## Setup
