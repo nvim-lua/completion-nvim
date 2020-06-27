@@ -217,8 +217,8 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	insert mode. For example, using <c-j> to switch to previous sources
 	and <c-k> to switch to next sources:
 >
-	imap <c-j> <cmd>lua require'source'.prevCompletion()<CR>
-	imap <c-k> <cmd>lua require'source'.nextCompletion()<CR>
+	imap  <c-j> <Plug>(completion_next_source)
+	imap  <c-k> <Plug>(completion_prev_source)
 <
 	Customizing your completion sources is easy. For non ins-complete
 	items, you can choose to put them in the same source or separate them.
