@@ -53,8 +53,6 @@ local function text_document_completion_list_to_complete_items(result, prefix)
           info = documentation
         elseif type(documentation) == 'table' and type(documentation.value) == 'string' then
           info = documentation.value
-        -- else
-          -- TODO(ashkan) Validation handling here?
         end
       end
       item.info = info
@@ -95,7 +93,7 @@ M.triggerFunction = function(prefix, _, bufnr, _)
       M.callback = true
       return
     end
-    local matches = text_document_completion_list_to_complete_items(result, prefix, util.fuzzy_score)
+    local matches = text_document_completion_list_to_complete_items(result, prefix)
     M.items = matches
     M.callback = true
   end)
