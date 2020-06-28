@@ -3,9 +3,9 @@ local api = vim.api
 local util = require 'completion.util'
 local complete = require 'completion.complete'
 local chain_completion = require 'completion.chain_completion'
-local lsp = require 'source.lsp'
-local snippet = require 'source.snippet'
-local path = require 'source.path'
+local lsp = require 'completion.source.lsp'
+local snippet = require 'completion.source.snippet'
+local path = require 'completion.source.path'
 
 local M = {}
 
