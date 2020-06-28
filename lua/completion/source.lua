@@ -24,6 +24,15 @@ local complete_items_map = {
     trigger = path.triggerFunction,
     trigger_character = {'/'}
   },
+  ['UltiSnips'] = {
+    item = snippet.getUltisnipItems
+  },
+  ['vim-vsnip'] = {
+    item = snippet.getVsnipItems
+  },
+  ['Neosnippet'] = {
+    item = snippet.getNeosnippetItems
+  }
 }
 
 M.prefixLength = 0
