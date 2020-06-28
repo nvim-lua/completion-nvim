@@ -107,6 +107,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
     return
   end
   if triggered then
+    complete.clearCache()
     M.chain_complete_index = 1
   end
 
@@ -127,6 +128,7 @@ end
 
 -- Activate when manually triggered completion or manually changing completion source
 function M.triggerCompletion(force, manager)
+  complete.clearCache()
   if force then
     M.chain_complete_index = 1
   end
@@ -148,6 +150,8 @@ function M.autoCompletion(manager)
   -- reset completion when deleting character in insert mode
   if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
     M.chain_complete_index = 1
+    -- not sure if I should clear cache here
+    complete.clearCache()
     -- api.nvim_input("<c-g><c-g>")
     if vim.g.completion_trigger_on_delete == 1 then
       M.triggerCompletion(false, manager)
@@ -156,8 +160,9 @@ function M.autoCompletion(manager)
   end
   M.prefixLength = #prefix
 
-  -- force reset chain completion if entering a new word
+  -- force reset chain completion and clear completion cache if entering a new word
   if (#prefix < length) then
+    complete.clearCache()
     M.chain_complete_index = 1
     M.stop_complete = false
     manager.changeSource = false
