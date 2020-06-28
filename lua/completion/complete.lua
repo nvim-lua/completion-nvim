@@ -1,7 +1,7 @@
 local vim = vim
 local api = vim.api
 local util = require 'completion.util'
-local ins = require 'source.ins_complete'
+local ins = require 'completion.source.ins_complete'
 
 local M = {}
 

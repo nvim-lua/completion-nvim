@@ -1,6 +1,6 @@
 local vim = vim
 local api = vim.api
-local source = require'source'
+local source = require 'completion.source'
 
 local health_start = vim.fn["health#report_start"]
 local health_ok = vim.fn['health#report_ok']
