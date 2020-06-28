@@ -4,7 +4,7 @@ local match = require'completion.matching'
 local M = {}
 
 
-local getUltisnipItems = function(prefix)
+M.getUltisnipItems = function(prefix)
   if vim.fn.exists("*UltiSnips#SnippetsInCurrentScope") == 0 then return {} end
   local snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
   local complete_items = {}
@@ -28,7 +28,7 @@ local getUltisnipItems = function(prefix)
   return complete_items
 end
 
-local getNeosnippetItems = function(prefix)
+M.getNeosnippetItems = function(prefix)
   if vim.fn.exists("*neosnippet#helpers#get_completion_snippets") == 0 then return {} end
   local snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
   local complete_items = {}
@@ -51,7 +51,7 @@ local getNeosnippetItems = function(prefix)
   return complete_items
 end
 
-local getVsnipItems = function(prefix)
+M.getVsnipItems = function(prefix)
   if vim.fn.exists('g:loaded_vsnip') == 0 then return {} end
   local snippetsList = api.nvim_call_function('vsnip#source#find', {api.nvim_buf_get_option(0, 'filetype')})
   local complete_items = {}
@@ -76,15 +76,15 @@ local getVsnipItems = function(prefix)
   return complete_items
 end
 
-M.getCompletionItems = function(prefix, score_func, _)
+M.getCompletionItems = function(prefix)
   local source = vim.g.completion_enable_snippet
   local snippet_list = {}
   if source == 'UltiSnips' then
-    snippet_list = getUltisnipItems(prefix, score_func)
+    snippet_list = M.getUltisnipItems(prefix)
   elseif source == 'Neosnippet' then
-    snippet_list = getNeosnippetItems(prefix, score_func)
+    snippet_list = M.getNeosnippetItems(prefix)
   elseif source == 'vim-vsnip' then
-    snippet_list = getVsnipItems(prefix, score_func)
+    snippet_list = M.getVsnipItems(prefix)
   end
   return snippet_list
 end

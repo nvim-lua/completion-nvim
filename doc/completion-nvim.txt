@@ -239,6 +239,9 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	"lsp": lsp completion
 	"snippet": snippet sources based on g:completion_enable_snippet
 	"path": path completion relative to the current file.
+	"UltiSnips": ultisnips source
+	"Neosnippet": neosnippet source
+	"vim-vsnip": vim-vsnip source
 <
 
 	For ins-complete sources, possible 'mode' to the actual key in vim are
