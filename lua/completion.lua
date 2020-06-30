@@ -215,6 +215,12 @@ M.on_attach = function(opt)
       ' "\\<c-e>\\<CR>" : "\\<CR>"',
       {silent=false, noremap=false, expr=true})
   end
+  -- overwrite vsnip_integ autocmd since we handle it on ourself in confirmCompletion
+  if vim.fn.exists("#vsnip_integ") then
+    api.nvim_command("augroup vsnip_integ")
+      api.nvim_command("autocmd!")
+    api.nvim_command("augroup end")
+  end
   api.nvim_buf_set_var(0, 'completion_enable', 1)
   if opt == nil then return end
   local sorter = opt.sorter
