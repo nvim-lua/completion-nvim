@@ -31,7 +31,7 @@ M.clearCache = function()
 end
 
 -- perform completion
-M.performComplete = function(complete_source, complete_items_map, manager, bufnr, prefix, textMatch)
+M.performComplete = function(complete_source, complete_items_map, manager, opt)
 
   manager.insertChar = false
   if vim.fn.has_key(complete_source, "mode") > 0 then
@@ -50,7 +50,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
             table.insert(callback_array, true)
           else
             table.insert(callback_array, complete_items.callback)
-            complete_items.trigger(prefix, textMatch, bufnr, manager)
+            complete_items.trigger(manager, opt)
           end
           table.insert(items_array, complete_items.item)
         end
@@ -65,14 +65,14 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
         -- only perform complete when callback_array are all true
         if checkCallback(callback_array) == true and timer:is_closing() == false then
           if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-            local items = getCompletionItems(items_array, prefix)
+            local items = getCompletionItems(items_array, opt.prefix)
             if vim.g.completion_sorting ~= "none" then
               util.sort_completion_items(items)
             end
             if #items ~= 0 then
               -- reset insertChar and handle auto changing source
               cache_complete_items = items
-              vim.fn.complete(textMatch+1, items)
+              vim.fn.complete(opt.textMatch+1, items)
               manager.changeSource = false
             else
               manager.changeSource = true
@@ -86,7 +86,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
         local items = {}
         for _, item in ipairs(cache_complete_items) do
-          match.matching(items, prefix, item)
+          match.matching(items, opt.prefix, item)
         end
         if vim.g.completion_sorting ~= "none" then
           util.sort_completion_items(items)
@@ -94,7 +94,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
         if #items ~= 0 then
           -- reset insertChar and handle auto changing source
           cache_complete_items = items
-          vim.fn.complete(textMatch+1, items)
+          vim.fn.complete(opt.textMatch+1, items)
           manager.changeSource = false
         else
           cache_complete_items = {}

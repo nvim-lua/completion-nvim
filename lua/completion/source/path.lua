@@ -57,17 +57,14 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function()
-  local pos = api.nvim_win_get_cursor(0)
-  local line = api.nvim_get_current_line()
-  local line_to_cursor = line:sub(1, pos[2])
+M.triggerFunction = function(_, opt)
   local keyword
   if vim.v.completed_item ~= nil and vim.v.completed_item.kind == 'Path' and
-    line_to_cursor:find(vim.v.completed_item.word) then
+    opt.line_to_cursor:find(vim.v.completed_item.word) then
     keyword = M.keyword..vim.v.completed_item.word..'/'
   else
     M.keyword = nil
-    keyword = line_to_cursor:match("[^%s\"\']+%S*/?$")
+    keyword = opt.line_to_cursor:match("[^%s\"\']+%S*/?$")
   end
 
   if keyword ~= nil and keyword ~= '/' then

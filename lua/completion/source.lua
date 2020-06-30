@@ -60,7 +60,7 @@ local getTriggerCharacter = function()
   return triggerCharacter
 end
 
-local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix, textMatch, force)
+local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix, textMatch, suffix, force)
   -- avoid rebundant calling of completion
   if manager.insertChar == false then return end
 
@@ -111,7 +111,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
     M.chain_complete_index = 1
   end
 
-  complete.performComplete(complete_source, complete_items_map, manager, bufnr, prefix, textMatch)
+  complete.performComplete(complete_source, complete_items_map, manager, {bufnr=bufnr, prefix=prefix, textMatch=textMatch, suffix=suffix, line_to_cursor=line_to_cursor})
 end
 
 local getPositionParam = function()
@@ -119,7 +119,8 @@ local getPositionParam = function()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
-  return bufnr, line_to_cursor
+  local cursor_to_end = line:sub(pos[2]+1, #line)
+  return bufnr, line_to_cursor, cursor_to_end
 end
 
 ------------------------------------------------------------------------
@@ -132,19 +133,23 @@ function M.triggerCompletion(force, manager)
   if force then
     M.chain_complete_index = 1
   end
-  local bufnr, line_to_cursor = getPositionParam()
+  local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
+  local rev_textMatch = #cursor_to_end - vim.fn.match(cursor_to_end:reverse(), '\\k*$')
+  local suffix = cursor_to_end:sub(1, rev_textMatch)
   manager.insertChar = true
   -- force is used when manually trigger, so it doesn't repect the trigger word length
-  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, force)
+  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, suffix, force)
 end
 
 -- Handler for auto completion
 function M.autoCompletion(manager)
-  local bufnr, line_to_cursor = getPositionParam()
+  local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
+  local rev_textMatch = #cursor_to_end - vim.fn.match(cursor_to_end:reverse(), '\\k*$')
+  local suffix = cursor_to_end:sub(1, rev_textMatch)
   local length = vim.g.completion_trigger_keyword_length
 
   -- reset completion when deleting character in insert mode
@@ -171,7 +176,7 @@ function M.autoCompletion(manager)
   -- stop auto completion when all sources return no complete-items
   if M.stop_complete == true then return end
 
-  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch)
+  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, suffix)
 
 end
 
