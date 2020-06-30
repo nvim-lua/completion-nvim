@@ -52,6 +52,9 @@ M.matching = function(complete_items, prefix, item)
   for _, method in ipairs(matcher_list) do
     local is_match, score = matching_strategy[method](prefix, item.word)
     if is_match then
+      if item.abbr == nil then
+        item.abbr = item.word
+      end
       item.score = score
       if item.priority ~= nil then
         item.priority = item.priority + 10*matching_priority
