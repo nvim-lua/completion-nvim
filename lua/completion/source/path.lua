@@ -2,6 +2,7 @@ local M = {}
 local vim = vim
 local loop = vim.loop
 local api = vim.api
+local util = require 'completion.util'
 
 M.items = {}
 M.callback = false
@@ -33,10 +34,10 @@ local fileTypesMap = setmetatable({
   end
 })
 
-M.getCompletionItems = function(prefix, score_func)
+M.getCompletionItems = function(prefix)
   local complete_items = {}
   for _, val in ipairs(M.items) do
-    local score = score_func(prefix, val.name)
+    local score = util.fuzzy_score(prefix, val.name)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
         word = val.name,
