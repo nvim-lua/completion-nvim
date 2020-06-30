@@ -88,6 +88,9 @@ M.performComplete = function(complete_source, complete_items_map, manager, bufnr
         for _, item in ipairs(cache_complete_items) do
           match.matching(items, prefix, item)
         end
+        if vim.g.completion_sorting ~= "none" then
+          util.sort_completion_items(items)
+        end
         if #items ~= 0 then
           -- reset insertChar and handle auto changing source
           cache_complete_items = items
