@@ -42,7 +42,6 @@ local function get_context_aware_snippets(item, completion_item, line_to_cursor)
   end
   local line = vim.api.nvim_get_current_line()
   local nextWord = line:sub(#line_to_cursor+1, #line_to_cursor+1)
-  print(nextWord == " " or #nextWord == 0)
   if nextWord == " " or #nextWord == 0 then
     return
   else
@@ -53,6 +52,7 @@ local function get_context_aware_snippets(item, completion_item, line_to_cursor)
     end
     if matches ~= 0 then
       item.word = word
+      item.user_data = {}
     end
   end
 end
@@ -83,14 +83,6 @@ local function text_document_completion_list_to_complete_items(result, opt)
     item.info = info
 
     item.word = get_completion_word(completion_item, opt.prefix, opt.suffix)
-    if opt.suffix ~= nil and #opt.suffix ~= 0 then
-      local index = item.word:find(opt.suffix)
-      if index ~= nil then
-        local newWord = item.word
-        newWord = newWord:sub(1, index-1)
-        item.word = newWord
-      end
-    end
     item.user_data = {
       lsp = {
         completion_item = completion_item,
@@ -99,6 +91,15 @@ local function text_document_completion_list_to_complete_items(result, opt)
     local kind = protocol.CompletionItemKind[completion_item.kind]
     item.kind = customize_label[kind] or kind
     item.abbr = completion_item.label
+    if opt.suffix ~= nil and #opt.suffix ~= 0 then
+      local index = item.word:find(opt.suffix)
+      if index ~= nil then
+        local newWord = item.word
+        newWord = newWord:sub(1, index-1)
+        item.word = newWord
+        item.user_data = {}
+      end
+    end
     get_context_aware_snippets(item, completion_item, opt.line_to_cursor)
     item.priority = vim.g.completion_items_priority[item.kind]
     item.menu = completion_item.detail or ''
