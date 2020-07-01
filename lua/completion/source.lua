@@ -161,7 +161,7 @@ function M.autoCompletion(manager)
   M.prefixLength = #prefix
 
   -- force reset chain completion and clear completion cache if entering a new word
-  if (#prefix < length) then
+  if (#prefix <= length) then
     complete.clearCache()
     M.chain_complete_index = 1
     M.stop_complete = false
