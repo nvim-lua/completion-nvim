@@ -36,6 +36,27 @@ local function get_completion_word(item, prefix, suffix)
   return item.label
 end
 
+local function get_context_aware_snippets(item, completion_item, line_to_cursor)
+  if protocol.InsertTextFormat[completion_item.insertTextFormat] == "PlainText" then
+    return
+  end
+  local line = vim.api.nvim_get_current_line()
+  local nextWord = line:sub(#line_to_cursor+1, #line_to_cursor+1)
+  print(nextWord == " " or #nextWord == 0)
+  if nextWord == " " or #nextWord == 0 then
+    return
+  else
+    local matches
+    word, matches = item.word:gsub("%(.*%)$", "")
+    if matches == 0 then
+      word, matches = item.word:gsub("<.*>$", "")
+    end
+    if matches ~= 0 then
+      item.word = word
+    end
+  end
+end
+
 local function text_document_completion_list_to_complete_items(result, opt)
   local items = vim.lsp.util.extract_completion_items(result)
   if vim.tbl_isempty(items) then
@@ -50,42 +71,38 @@ local function text_document_completion_list_to_complete_items(result, opt)
 
   for _, completion_item in ipairs(items) do
     local item = {}
-    if vim.fn.exists('g:loaded_vsnip_integ') == 1 or
-      protocol.CompletionItemKind[completion_item.kind] ~= 'Snippet' then
-      local info = ' '
-      local documentation = completion_item.documentation
-      if documentation then
-        if type(documentation) == 'string' and documentation ~= '' then
-          info = documentation
-        elseif type(documentation) == 'table' and type(documentation.value) == 'string' then
-          info = documentation.value
-        end
+    local info = ' '
+    local documentation = completion_item.documentation
+    if documentation then
+      if type(documentation) == 'string' and documentation ~= '' then
+        info = documentation
+      elseif type(documentation) == 'table' and type(documentation.value) == 'string' then
+        info = documentation.value
       end
-      item.info = info
-
-      item.word = get_completion_word(completion_item, opt.prefix, opt.suffix)
-      if opt.suffix ~= nil and #opt.suffix ~= 0 then
-        local index = item.word:find(opt.suffix)
-        if index ~= nil then
-          local newWord = item.word
-          newWord = newWord:sub(1, index-1)
-          item.word = newWord
-          print(item.word, index, newWord)
-        end
-      end
-      item.user_data = {
-        lsp = {
-          completion_item = completion_item,
-        }
-      }
-      local kind = protocol.CompletionItemKind[completion_item.kind]
-      item.kind = customize_label[kind] or kind
-      item.abbr = completion_item.label
-      -- get_context_aware_snippets(item, completion_item, opt.textMatch)
-      item.priority = vim.g.completion_items_priority[item.kind]
-      item.menu = completion_item.detail or ''
-      match.matching(matches, opt.prefix, item)
     end
+    item.info = info
+
+    item.word = get_completion_word(completion_item, opt.prefix, opt.suffix)
+    if opt.suffix ~= nil and #opt.suffix ~= 0 then
+      local index = item.word:find(opt.suffix)
+      if index ~= nil then
+        local newWord = item.word
+        newWord = newWord:sub(1, index-1)
+        item.word = newWord
+      end
+    end
+    item.user_data = {
+      lsp = {
+        completion_item = completion_item,
+      }
+    }
+    local kind = protocol.CompletionItemKind[completion_item.kind]
+    item.kind = customize_label[kind] or kind
+    item.abbr = completion_item.label
+    get_context_aware_snippets(item, completion_item, opt.line_to_cursor)
+    item.priority = vim.g.completion_items_priority[item.kind]
+    item.menu = completion_item.detail or ''
+    match.matching(matches, opt.prefix, item)
   end
 
   return matches
