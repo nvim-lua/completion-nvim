@@ -13,12 +13,18 @@ end
 local function get_completion_word(item, prefix)
   if item.textEdit ~= nil and item.textEdit ~= vim.NIL
     and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
-    local start_range = item.textEdit.range["start"]
-    local end_range = item.textEdit.range["end"]
-    if start_range.line == end_range.line and start_range.character == end_range.character then
-        return prefix .. item.textEdit.newText
+      local start_range = item.textEdit.range["start"]
+      local end_range = item.textEdit.range["end"]
+      local newText
+      if start_range.line == end_range.line and start_range.character == end_range.character then
+          newText = prefix .. item.textEdit.newText
+      else
+          newText = item.textEdit.newText
+      end
+    if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
+      return newText
     else
-        return item.textEdit.newText
+      return vim.lsp.util.parse_snippet(newText)
     end
   elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
     if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
