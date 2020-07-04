@@ -1,6 +1,7 @@
 local vim = vim
 local api = vim.api
 local util = require 'completion.util'
+local opt = require 'completion.option'
 local M ={}
 
 --------------------------------------------------------------
@@ -68,7 +69,7 @@ end
 -- preserve compatiblity of completion_chain_complete_list
 function M.getChainCompleteList(filetype)
 
-  local chain_complete_list = chain_list_to_tree(vim.g.completion_chain_complete_list)
+  local chain_complete_list = chain_list_to_tree(opt.get_option('chain_complete_list'))
   -- check if chain_complete_list is a array
 
   if chain_complete_list[filetype] then

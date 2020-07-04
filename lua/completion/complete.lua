@@ -4,6 +4,7 @@ local util = require 'completion.util'
 local ins = require 'completion.source.ins_complete'
 local match = require'completion.matching'
 local lsp = require'completion.source.lsp'
+local opt = require 'completion.option'
 
 local M = {}
 
@@ -33,7 +34,7 @@ M.clearCache = function()
 end
 
 -- perform completion
-M.performComplete = function(complete_source, complete_items_map, manager, opt)
+M.performComplete = function(complete_source, complete_items_map, manager, params)
 
   manager.insertChar = false
   if vim.fn.has_key(complete_source, "mode") > 0 then
@@ -56,7 +57,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
           table.insert(callback_array, true)
         else
           table.insert(callback_array, complete_items.callback)
-          complete_items.trigger(manager, opt)
+          complete_items.trigger(manager, params)
         end
         table.insert(items_array, complete_items.item)
       end
@@ -73,14 +74,14 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
         -- only perform complete when callback_array are all true
         if checkCallback(callback_array) == true and timer:is_closing() == false then
           if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
-            local items = getCompletionItems(items_array, opt.prefix)
-            if vim.g.completion_sorting ~= "none" then
+            local items = getCompletionItems(items_array, params.prefix)
+            if opt.get_option('sorting') ~= "none" then
               util.sort_completion_items(items)
             end
             if #items ~= 0 then
               -- reset insertChar and handle auto changing source
               cache_complete_items = items
-              vim.fn.complete(opt.textMatch+1, items)
+              vim.fn.complete(params.textMatch+1, items)
               manager.changeSource = false
             else
               manager.changeSource = true
@@ -94,15 +95,15 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
         local items = {}
         for _, item in ipairs(cache_complete_items) do
-          match.matching(items, opt.prefix, item)
+          match.matching(items, params.prefix, item)
         end
-        if vim.g.completion_sorting ~= "none" then
+        if opt.get_option('sorting') ~= "none" then
           util.sort_completion_items(items)
         end
         if #items ~= 0 then
           -- reset insertChar and handle auto changing source
           cache_complete_items = items
-          vim.fn.complete(opt.textMatch+1, items)
+          vim.fn.complete(params.textMatch+1, items)
           manager.changeSource = false
         else
           cache_complete_items = {}

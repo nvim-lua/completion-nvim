@@ -1,6 +1,7 @@
 local vim = vim
 local api = vim.api
 local source = require 'completion.source'
+local opt = require 'completion.option'
 
 local health_start = vim.fn["health#report_start"]
 local health_ok = vim.fn['health#report_ok']
@@ -14,7 +15,7 @@ local checkCompletionSource = function()
 end
 
 local checkSnippetSource = function()
-  local snippet_source = vim.g.completion_enable_snippet
+  local snippet_source = opt.get_option('enable_snippet')
   if snippet_source == nil then
     health_info("You haven't setup any snippet source.")
   elseif snippet_source == 'UltiSnips' then

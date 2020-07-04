@@ -4,6 +4,7 @@
 
 local vim = vim
 local api = vim.api
+local opt = require 'completion.option'
 local M = {}
 
 function M.is_list(thing)
