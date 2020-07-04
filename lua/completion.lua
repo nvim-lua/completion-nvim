@@ -4,6 +4,7 @@ local match = require'completion.matching'
 local source = require 'completion.source'
 local signature = require'completion.signature_help'
 local hover = require'completion.hover'
+local opt = require'completion.option'
 local M = {}
 
 ------------------------------------------------------------------------
@@ -11,7 +12,6 @@ local M = {}
 ------------------------------------------------------------------------
 
 M.completionConfirm = false
-
 
 -- Manager variable to keep all state accross completion
 local manager = {
@@ -75,7 +75,7 @@ function M.confirmCompletion()
       end
     end
 
-    if vim.g.completion_enable_auto_paren == 1 then
+    if opt.get_option('enable_auto_paren') == 1 then
       M.autoAddParens(complete_item)
     end
     if complete_item.kind == 'UltiSnips' then
@@ -97,7 +97,7 @@ function M.on_InsertCharPre()
   manager.insertChar = true
   manager.textHover = true
   manager.selected = -1
-  if vim.g.completion_auto_change_source == 1 then
+  if opt.get_option('auto_change_source') == 1 then
     manager.autoChange = true
   end
 end
@@ -117,7 +117,7 @@ function M.on_InsertEnter()
   manager.insertLeave = false
   manager.insertChar = false
   manager.changeSource = false
-  if vim.g.completion_auto_change_source == 1 then
+  if opt.get_option('auto_change_source') == 1 then
     manager.autoChange = true
   end
 
@@ -125,20 +125,20 @@ function M.on_InsertEnter()
   source.chain_complete_index = 1
   source.stop_complete = false
   local l_complete_index = source.chain_complete_index
-  local timer_cycle = vim.g.completion_timer_cycle
+  local timer_cycle = opt.get_option('timer_cycle')
 
   timer:start(100, timer_cycle, vim.schedule_wrap(function()
     local l_changedTick = api.nvim_buf_get_changedtick(0)
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
       manager.changedTick = l_changedTick
-      if vim.g.completion_enable_auto_popup == 1 then
+      if opt.get_option('enable_auto_popup') == 1 then
         source.autoCompletion(manager)
       end
-      if vim.g.completion_enable_auto_hover == 1 then
+      if opt.get_option('enable_auto_hover') == 1 then
         hover.autoOpenHoverInPopup(manager)
       end
-      if vim.g.completion_enable_auto_signature == 1 then
+      if opt.get_option('enable_auto_signature') == 1 then
         signature.autoOpenSignatureHelp()
       end
     end
@@ -207,7 +207,15 @@ M.prevSource = function()
   source.prevCompletion()
 end
 
-M.on_attach = function(opt)
+M.on_attach = function(option)
+  -- setup completion_option tables
+  if option ~= nil then
+    opt.set_option_table(option)
+  else
+    opt.set_option_table(option)
+  end
+  -- setup autocommand
+  -- TODO: Modified this if lua callbacks for autocmd is merged
   api.nvim_command("augroup CompletionCommand")
     api.nvim_command("autocmd! * <buffer>")
     api.nvim_command("autocmd InsertEnter <buffer> lua require'completion'.on_InsertEnter()")
@@ -215,8 +223,8 @@ M.on_attach = function(opt)
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.confirmCompletion()")
   api.nvim_command("augroup end")
-  if string.len(vim.g.completion_confirm_key) ~= 0 then
-    api.nvim_buf_set_keymap(0, 'i', vim.g.completion_confirm_key,
+  if string.len(opt.get_option('confirm_key')) ~= 0 then
+    api.nvim_buf_set_keymap(0, 'i', opt.get_option('confirm_key'),
       'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" :'..
       ' "\\<c-e>\\<CR>" : "\\<CR>"',
       {silent=false, noremap=false, expr=true})
@@ -228,17 +236,6 @@ M.on_attach = function(opt)
     api.nvim_command("augroup end")
   end
   api.nvim_buf_set_var(0, 'completion_enable', 1)
-  if opt == nil then return end
-  local sorter = opt.sorter
-  local matcher = opt.matcher
-  if sorter ~= nil then
-    vim.validate{sorter={sorter, 'string'}}
-    vim.b.completion_sorting = sorter
-  end
-  if matcher ~= nil then
-    vim.validate{matcher={matcher, 'table'}}
-    vim.b.completion_matching_strategy_list = matcher
-  end
 end
 
 return M

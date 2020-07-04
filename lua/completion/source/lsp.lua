@@ -2,6 +2,7 @@ local vim = vim
 local protocol = require 'vim.lsp.protocol'
 local util = require 'completion.util'
 local match = require 'completion.matching'
+local opt = require 'completion.option'
 local M = {}
 
 M.callback = false
@@ -59,13 +60,13 @@ local function get_context_aware_snippets(item, completion_item, line_to_cursor)
   end
 end
 
-local function text_document_completion_list_to_complete_items(result, opt)
+local function text_document_completion_list_to_complete_items(result, params)
   local items = vim.lsp.util.extract_completion_items(result)
   if vim.tbl_isempty(items) then
     return {}
   end
 
-  local customize_label = vim.g.completion_customize_lsp_label
+  local customize_label = opt.get_option('customize_lsp_label')
   -- items = remove_unmatch_completion_items(items, prefix)
   -- sort_completion_items(items)
 
@@ -84,7 +85,7 @@ local function text_document_completion_list_to_complete_items(result, opt)
     end
     item.info = info
 
-    item.word = get_completion_word(completion_item, opt.prefix, opt.suffix)
+    item.word = get_completion_word(completion_item, params.prefix, params.suffix)
     item.user_data = {
       lsp = {
         completion_item = completion_item,
@@ -93,8 +94,8 @@ local function text_document_completion_list_to_complete_items(result, opt)
     local kind = protocol.CompletionItemKind[completion_item.kind]
     item.kind = customize_label[kind] or kind
     item.abbr = completion_item.label
-    if opt.suffix ~= nil and #opt.suffix ~= 0 then
-      local index = item.word:find(opt.suffix)
+    if params.suffix ~= nil and #params.suffix ~= 0 then
+      local index = item.word:find(params.suffix)
       if index ~= nil then
         local newWord = item.word
         newWord = newWord:sub(1, index-1)
@@ -102,10 +103,10 @@ local function text_document_completion_list_to_complete_items(result, opt)
         item.user_data = {}
       end
     end
-    get_context_aware_snippets(item, completion_item, opt.line_to_cursor)
-    item.priority = vim.g.completion_items_priority[item.kind]
+    get_context_aware_snippets(item, completion_item, params.line_to_cursor)
+    item.priority = opt.get_option('items_priority')[item.kind]
     item.menu = completion_item.detail or ''
-    match.matching(matches, opt.prefix, item)
+    match.matching(matches, params.prefix, item)
   end
 
   return matches
@@ -115,20 +116,20 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function(manager, opt)
-  local params = vim.lsp.util.make_position_params()
+M.triggerFunction = function(manager, params)
+  local position_param = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}
   if #vim.lsp.buf_get_clients() == 0 then
     M.callback = true
     return
   end
-  vim.lsp.buf_request(opt.bufnr, 'textDocument/completion', params, function(err, _, result)
+  vim.lsp.buf_request(params.bufnr, 'textDocument/completion', position_param, function(err, _, result)
     if err or not result then
       M.callback = true
       return
     end
-    local matches = text_document_completion_list_to_complete_items(result, opt)
+    local matches = text_document_completion_list_to_complete_items(result, params)
     M.items = matches
     M.isIncomplete = result.isIncomplete
     M.callback = true

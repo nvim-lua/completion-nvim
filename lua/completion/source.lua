@@ -6,6 +6,7 @@ local chain_completion = require 'completion.chain_completion'
 local lsp = require 'completion.source.lsp'
 local snippet = require 'completion.source.snippet'
 local path = require 'completion.source.path'
+local opt = require 'completion.option'
 
 local M = {}
 
@@ -74,7 +75,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
   local source_trigger_character = getTriggerCharacter(complete_source)
   local triggered
   triggered = util.checkTriggerCharacter(line_to_cursor, source_trigger_character) or
-              util.checkTriggerCharacter(line_to_cursor, vim.g.completion_trigger_character)
+              util.checkTriggerCharacter(line_to_cursor, opt.get_option('trigger_character'))
 
   if complete_source.complete_items ~= nil then
     for _, source in ipairs(complete_source.complete_items) do
@@ -102,7 +103,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
     end
   end
 
-  local length = vim.g.completion_trigger_keyword_length
+  local length = opt.get_option('trigger_keyword_length')
   if #prefix < length and not triggered and not force then
     return
   end
@@ -150,7 +151,7 @@ function M.autoCompletion(manager)
   local prefix = line_to_cursor:sub(textMatch+1)
   local rev_textMatch = #cursor_to_end - vim.fn.match(cursor_to_end:reverse(), '\\k*$')
   local suffix = cursor_to_end:sub(1, rev_textMatch)
-  local length = vim.g.completion_trigger_keyword_length
+  local length = opt.get_option('trigger_keyword_length')
 
   -- reset completion when deleting character in insert mode
   if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
@@ -158,7 +159,7 @@ function M.autoCompletion(manager)
     -- not sure if I should clear cache here
     complete.clearCache()
     -- api.nvim_input("<c-g><c-g>")
-    if vim.g.completion_trigger_on_delete == 1 then
+    if opt.get_option('trigger_on_delete') == 1 then
       M.triggerCompletion(false, manager)
     end
     M.stop_complete = false

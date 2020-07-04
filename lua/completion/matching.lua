@@ -1,9 +1,10 @@
 local vim = vim
-local util = require'completion.util'
+local util = require 'completion.util'
+local opt = require 'completion.option'
 local M = {}
 
 local function fuzzy_match(prefix, word)
-  if vim.g.completion_matching_ignore_case == 1 then
+  if opt.get_option('matching_ignore_case') == 1 then
     prefix = string.lower(prefix)
     word = string.lower(word)
   end
@@ -17,7 +18,7 @@ end
 
 
 local function substring_match(prefix, word)
-  if vim.g.completion_matching_ignore_case == 1 then
+  if opt.get_option('matching_ignore_case') == 1 then
     prefix = string.lower(prefix)
     word = string.lower(word)
   end
@@ -29,7 +30,7 @@ local function substring_match(prefix, word)
 end
 
 local function exact_match(prefix, word)
-  if vim.g.completion_matching_ignore_case == 1 then
+  if opt.get_option('matching_ignore_case') == 1 then
     prefix = string.lower(prefix)
     word = string.lower(word)
   end
@@ -47,7 +48,7 @@ local matching_strategy = {
 }
 
 M.matching = function(complete_items, prefix, item)
-  local matcher_list = vim.b.completion_matching_strategy_list or vim.g.completion_matching_strategy_list
+  local matcher_list = opt.get_option('matching_strategy_list')
   local matching_priority = 2
   for _, method in ipairs(matcher_list) do
     local is_match, score = matching_strategy[method](prefix, item.word)

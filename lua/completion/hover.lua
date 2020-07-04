@@ -2,6 +2,7 @@
 local vim = vim
 local validate = vim.validate
 local api = vim.api
+local opt = require 'completion.option'
 
 local M = {}
 
@@ -190,11 +191,11 @@ local fancy_floating_markdown = function(contents, opts)
   local height = #stripped
   local bufnr = api.nvim_create_buf(false, true)
   local winnr
-  if vim.g.completion_docked_hover == 1 then
-    if height > vim.g.completion_docked_maximum_size then
-      height = vim.g.completion_docked_maximum_size
-    elseif height < vim.g.completion_docked_minimum_size then
-      height = vim.g.completion_docked_minimum_size
+  if opt.get_option('docked_hover') == 1 then
+    if height > opt.get_option('docked_maximum_size') then
+      height = opt.get_option('docked_maximum_size')
+    elseif height < opt.get_option('docked_minimum_size') then
+      height = opt.get_option('docked_minimum_size')
     end
     local row
     if vim.fn.winline() > api.nvim_get_option('lines')/2 then
