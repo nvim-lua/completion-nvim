@@ -99,13 +99,13 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
         if vim.g.completion_sorting ~= "none" then
           util.sort_completion_items(items)
         end
+        log.info("AFTER CACHE")
+        for _, v in ipairs(cache_complete_items) do
+          log.info("  "..vim.inspect(v))
+        end
+        log.info("TOTAL ITEMS: "..#cache_complete_items)
         if #items ~= 0 then
           -- reset insertChar and handle auto changing source
-          log.info("AFTER CACHE")
-          for _, v in ipairs(cache_complete_items) do
-            log.info("  "..vim.inspect(v))
-          end
-          log.info("TOTAL ITEMS: "..#cache_complete_items)
           cache_complete_items = items
           vim.fn.complete(opt.textMatch+1, items)
           manager.changeSource = false
