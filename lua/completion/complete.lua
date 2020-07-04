@@ -3,6 +3,7 @@ local api = vim.api
 local util = require 'completion.util'
 local ins = require 'completion.source.ins_complete'
 local match = require'completion.matching'
+local log = require'completion.log'
 
 local M = {}
 
@@ -72,6 +73,11 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
             if #items ~= 0 then
               -- reset insertChar and handle auto changing source
               cache_complete_items = items
+              log.info("BEFORE CACHE")
+              for _, v in ipairs(cache_complete_items) do
+                log.info("  "..vim.inspect(v))
+              end
+              log.info("TOTAL ITEMS: "..#cache_complete_items)
               vim.fn.complete(opt.textMatch+1, items)
               manager.changeSource = false
             else
@@ -87,6 +93,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
       if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
         local items = {}
         for _, item in ipairs(cache_complete_items) do
+          item.priority = 0
           match.matching(items, opt.prefix, item)
         end
         if vim.g.completion_sorting ~= "none" then
@@ -94,6 +101,11 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
         end
         if #items ~= 0 then
           -- reset insertChar and handle auto changing source
+          log.info("AFTER CACHE")
+          for _, v in ipairs(cache_complete_items) do
+            log.info("  "..vim.inspect(v))
+          end
+          log.info("TOTAL ITEMS: "..#cache_complete_items)
           cache_complete_items = items
           vim.fn.complete(opt.textMatch+1, items)
           manager.changeSource = false
