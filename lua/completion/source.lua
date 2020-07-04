@@ -186,6 +186,7 @@ function M.addCompleteItems(key, complete_item)
 end
 
 function M.nextCompletion()
+  complete.clearCache()
   if M.chain_complete_index ~= #M.chain_complete_list then
     M.chain_complete_index = M.chain_complete_index + 1
   else
@@ -194,6 +195,7 @@ function M.nextCompletion()
 end
 
 function M.prevCompletion()
+  complete.clearCache()
   if M.chain_complete_index ~= 1 then
     M.chain_complete_index = M.chain_complete_index - 1
   else

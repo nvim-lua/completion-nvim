@@ -75,6 +75,7 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
               vim.fn.complete(opt.textMatch+1, items)
               manager.changeSource = false
             else
+              M.clearCache()
               manager.changeSource = true
             end
           end
