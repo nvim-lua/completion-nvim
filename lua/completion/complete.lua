@@ -3,6 +3,7 @@ local api = vim.api
 local util = require 'completion.util'
 local ins = require 'completion.source.ins_complete'
 local match = require'completion.matching'
+local lsp = require'completion.source.lsp'
 
 local M = {}
 
@@ -28,6 +29,7 @@ end
 
 M.clearCache = function()
   cache_complete_items = {}
+  lsp.isIncomplete = true
 end
 
 -- perform completion
@@ -38,23 +40,29 @@ M.performComplete = function(complete_source, complete_items_map, manager, opt)
     -- ins-complete source
     ins.triggerCompletion(manager, complete_source.mode)
   elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
-    if #cache_complete_items == 0 then
-      -- use callback_array to handle async behavior
-      local callback_array = {}
-      local items_array = {}
-      -- collect getCompleteItems function of current completion source
-      for _, item in ipairs(complete_source.complete_items) do
-        local complete_items = complete_items_map[item]
-        if complete_items ~= nil then
-          if complete_items.callback == nil then
-            table.insert(callback_array, true)
-          else
-            table.insert(callback_array, complete_items.callback)
-            complete_items.trigger(manager, opt)
-          end
-          table.insert(items_array, complete_items.item)
+    local callback_array = {}
+    local items_array = {}
+    -- collect getCompleteItems function of current completion source
+    for _, item in ipairs(complete_source.complete_items) do
+      -- check isIncomplete for lsp
+      if item == 'lsp' then
+        if lsp.isIncomplete then
+          cache_complete_items = {}
         end
       end
+      local complete_items = complete_items_map[item]
+      if complete_items ~= nil then
+        if complete_items.callback == nil then
+          table.insert(callback_array, true)
+        else
+          table.insert(callback_array, complete_items.callback)
+          complete_items.trigger(manager, opt)
+        end
+        table.insert(items_array, complete_items.item)
+      end
+    end
+    if #cache_complete_items == 0 then
+      -- use callback_array to handle async behavior
 
       local timer = vim.loop.new_timer()
       timer:start(20, 50, vim.schedule_wrap(function()

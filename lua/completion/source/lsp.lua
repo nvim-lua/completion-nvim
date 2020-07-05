@@ -6,6 +6,8 @@ local M = {}
 
 M.callback = false
 
+M.isIncomplete = true
+
 M.getCompletionItems = function(_, _)
   return M.items
 end
@@ -128,6 +130,7 @@ M.triggerFunction = function(manager, opt)
     end
     local matches = text_document_completion_list_to_complete_items(result, opt)
     M.items = matches
+    M.isIncomplete = result.isIncomplete
     M.callback = true
   end)
 end
