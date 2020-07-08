@@ -53,7 +53,7 @@ function M.confirmCompletion()
   if M.completionConfirm == true then
     local complete_item = api.nvim_get_vvar('completed_item')
     local lnum, _ = unpack(api.nvim_win_get_cursor(0))
-    if complete_item.user_data.lsp ~= nil then
+    if complete_item.user_data ~= nil and complete_item.user_data.lsp ~= nil then
       local item = complete_item.user_data.lsp.completion_item
       if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
         api.nvim_call_function('vsnip_integ#do_complete_done', {
