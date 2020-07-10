@@ -209,11 +209,7 @@ end
 
 M.on_attach = function(option)
   -- setup completion_option tables
-  if option ~= nil then
-    opt.set_option_table(option)
-  else
-    opt.set_option_table(option)
-  end
+  opt.set_option_table(option)
   -- setup autocommand
   -- TODO: Modified this if lua callbacks for autocmd is merged
   api.nvim_command("augroup CompletionCommand")
