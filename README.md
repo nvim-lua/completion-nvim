@@ -264,6 +264,11 @@ let g:completion_trigger_on_delete = 1
 let g:completion_timer_cycle = 200 "default value is 80
 ```
 
+### Per Server Setup
+
+- You can have different setup for each server in completion-nvim using lua, see [wiki]
+(https://github.com/nvim-lua/completion-nvim/wiki/per-server-setup-by-lua) for more guide.
+
 ## Compatibility with diagnostic-nvim
 
 - This plugin only focuses on the **completion** part of the built-in LSP. If
