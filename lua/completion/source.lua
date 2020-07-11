@@ -7,6 +7,7 @@ local lsp = require 'completion.source.lsp'
 local snippet = require 'completion.source.snippet'
 local path = require 'completion.source.path'
 local opt = require 'completion.option'
+local manager = require 'completion.manager'
 
 local M = {}
 
@@ -37,7 +38,6 @@ local complete_items_map = {
 }
 
 M.prefixLength = 0
-M.chain_complete_index = 1
 M.stop_complete = false
 
 
@@ -47,7 +47,7 @@ M.stop_complete = false
 
 local getTriggerCharacter = function()
   local triggerCharacter = {}
-  local complete_source = M.chain_complete_list[M.chain_complete_index]
+  local complete_source = M.chain_complete_list[manager.chainIndex]
   if complete_source ~= nil and vim.fn.has_key(complete_source, "complete_items") > 0 then
     for _, item in ipairs(complete_source.complete_items) do
       local complete_items = complete_items_map[item]
@@ -61,14 +61,14 @@ local getTriggerCharacter = function()
   return triggerCharacter
 end
 
-local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix, textMatch, suffix, force)
+local triggerCurrentCompletion = function(bufnr, line_to_cursor, prefix, textMatch, suffix, force)
   -- avoid rebundant calling of completion
   if manager.insertChar == false then return end
 
   -- get current completion source
   M.chain_complete_list = chain_completion.getChainCompleteList(api.nvim_buf_get_option(0, 'filetype'))
   M.chain_complete_length = #M.chain_complete_list
-  local complete_source = M.chain_complete_list[M.chain_complete_index]
+  local complete_source = M.chain_complete_list[manager.chainIndex]
   if complete_source == nil then return end
 
   -- handle source trigger character and user defined trigger character
@@ -96,7 +96,7 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
   if complete_source['triggered_only'] ~= nil then
     local triggered_only = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
     if not triggered_only then
-      if manager.autoChange then
+      if opt.get_option('auto_change_source') == 1 then
         manager.changeSource = true
       end
       return
@@ -109,10 +109,10 @@ local triggerCurrentCompletion = function(manager, bufnr, line_to_cursor, prefix
   end
   if triggered then
     complete.clearCache()
-    M.chain_complete_index = 1
+    manager.chainIndex = 1
   end
 
-  complete.performComplete(complete_source, complete_items_map, manager, {bufnr=bufnr, prefix=prefix, textMatch=textMatch, suffix=suffix, line_to_cursor=line_to_cursor})
+  complete.performComplete(complete_source, complete_items_map, {bufnr=bufnr, prefix=prefix, textMatch=textMatch, suffix=suffix, line_to_cursor=line_to_cursor})
 end
 
 local getPositionParam = function()
@@ -129,10 +129,10 @@ end
 ------------------------------------------------------------------------
 
 -- Activate when manually triggered completion or manually changing completion source
-function M.triggerCompletion(force, manager)
+function M.triggerCompletion(force)
   complete.clearCache()
   if force then
-    M.chain_complete_index = 1
+    manager.chainIndex = 1
   end
   local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
@@ -141,11 +141,11 @@ function M.triggerCompletion(force, manager)
   local suffix = cursor_to_end:sub(1, rev_textMatch)
   manager.insertChar = true
   -- force is used when manually trigger, so it doesn't repect the trigger word length
-  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, suffix, force)
+  triggerCurrentCompletion(bufnr, line_to_cursor, prefix, textMatch, suffix, force)
 end
 
 -- Handler for auto completion
-function M.autoCompletion(manager)
+function M.autoCompletion()
   local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
@@ -155,12 +155,12 @@ function M.autoCompletion(manager)
 
   -- reset completion when deleting character in insert mode
   if #prefix < M.prefixLength and vim.fn.pumvisible() == 0 then
-    M.chain_complete_index = 1
+    manager.chainIndex = 1
     -- not sure if I should clear cache here
     complete.clearCache()
     -- api.nvim_input("<c-g><c-g>")
     if opt.get_option('trigger_on_delete') == 1 then
-      M.triggerCompletion(false, manager)
+      M.triggerCompletion(false)
     end
     M.stop_complete = false
   end
@@ -169,7 +169,7 @@ function M.autoCompletion(manager)
   -- force reset chain completion
   if (#prefix < length) then
     complete.clearCache()
-    M.chain_complete_index = 1
+    manager.chainIndex = 1
     M.stop_complete = false
     manager.changeSource = false
   end
@@ -181,7 +181,7 @@ function M.autoCompletion(manager)
   -- stop auto completion when all sources return no complete-items
   if M.stop_complete == true then return end
 
-  triggerCurrentCompletion(manager, bufnr, line_to_cursor, prefix, textMatch, suffix)
+  triggerCurrentCompletion(bufnr, line_to_cursor, prefix, textMatch, suffix)
 
 end
 
@@ -191,18 +191,18 @@ function M.addCompleteItems(key, complete_item)
 end
 
 function M.nextCompletion()
-  if M.chain_complete_index ~= #M.chain_complete_list then
-    M.chain_complete_index = M.chain_complete_index + 1
+  if manager.chainIndex ~= #M.chain_complete_list then
+    manager.chainIndex = manager.chainIndex + 1
   else
-    M.chain_complete_index = 1
+    manager.chainIndex = 1
   end
 end
 
 function M.prevCompletion()
-  if M.chain_complete_index ~= 1 then
-    M.chain_complete_index = M.chain_complete_index - 1
+  if manager.chainIndex ~= 1 then
+    manager.chainIndex = manager.chainIndex - 1
   else
-    M.chain_complete_index = #M.chain_complete_list
+    manager.chainIndex = #M.chain_complete_list
   end
 end
 

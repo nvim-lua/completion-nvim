@@ -1,6 +1,7 @@
 -- luacheck: globals vim
 local vim = vim
 local api = vim.api
+local manager = require 'completion.manager'
 local M = {}
 
 local ins_complete_table = {
@@ -22,7 +23,7 @@ local ins_complete_table = {
 }
 
 -- HACK workaround to handle delay of ins-complete
-local checkEmptyCompletion = function(manager)
+local checkEmptyCompletion = function()
   local timer = vim.loop.new_timer()
   timer:start(200, 0, vim.schedule_wrap(function()
     if vim.fn.pumvisible() == 0 then
@@ -41,7 +42,7 @@ M.checkHealth = function(mode)
   end
 end
 
-M.triggerCompletion = function(manager, mode)
+M.triggerCompletion = function(mode)
   if ins_complete_table[mode] == nil then return end
   if vim.fn.pumvisible() == 0 then
     if vim.api.nvim_get_mode()['mode'] == 'i' or vim.api.nvim_get_mode()['mode'] == 'ic' then
@@ -49,7 +50,7 @@ M.triggerCompletion = function(manager, mode)
       -- See https://github.com/neovim/neovim/issues/12297.
       mode_keys = api.nvim_replace_termcodes(mode_keys, true, false, true)
       api.nvim_feedkeys(mode_keys, 'n', true)
-      checkEmptyCompletion(manager)
+      checkEmptyCompletion()
     end
   else
     manager.insertChar = false

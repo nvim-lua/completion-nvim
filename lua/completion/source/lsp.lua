@@ -120,7 +120,7 @@ M.getCallback = function()
   return M.callback
 end
 
-M.triggerFunction = function(manager, params)
+M.triggerFunction = function(_, params)
   local position_param = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}

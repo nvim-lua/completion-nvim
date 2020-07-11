@@ -5,6 +5,7 @@ local ins = require 'completion.source.ins_complete'
 local match = require'completion.matching'
 local lsp = require'completion.source.lsp'
 local opt = require 'completion.option'
+local manager = require 'completion.manager'
 
 local M = {}
 
@@ -34,12 +35,12 @@ M.clearCache = function()
 end
 
 -- perform completion
-M.performComplete = function(complete_source, complete_items_map, manager, params)
+M.performComplete = function(complete_source, complete_items_map, params)
 
   manager.insertChar = false
   if vim.fn.has_key(complete_source, "mode") > 0 then
     -- ins-complete source
-    ins.triggerCompletion(manager, complete_source.mode)
+    ins.triggerCompletion(complete_source.mode)
   elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
     local callback_array = {}
     local items_array = {}
@@ -57,6 +58,8 @@ M.performComplete = function(complete_source, complete_items_map, manager, param
           table.insert(callback_array, true)
         else
           table.insert(callback_array, complete_items.callback)
+          -- TODO: still pass in manager here because there's external sources using it
+          -- will remove it when refactoring aysnc sources
           complete_items.trigger(manager, params)
         end
         table.insert(items_array, complete_items.item)

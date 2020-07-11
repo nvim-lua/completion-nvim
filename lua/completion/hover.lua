@@ -3,6 +3,7 @@ local vim = vim
 local validate = vim.validate
 local api = vim.api
 local opt = require 'completion.option'
+local manager = require 'completion.manager'
 
 local M = {}
 
@@ -298,7 +299,7 @@ local function callback_function(_, method, result)
   end
 end
 
-M.autoOpenHoverInPopup = function(manager)
+M.autoOpenHoverInPopup = function()
   if vim.fn.pumvisible() ~= 1 then return end
   for _, client in pairs(vim.lsp.buf_get_clients(0)) do
     local default_callback = client.config.callbacks['textDocument/hover'] or vim.lsp.callbacks['textDocument/hover']
