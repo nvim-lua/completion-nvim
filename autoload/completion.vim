@@ -1,6 +1,6 @@
 " Perform a Hack to confirm completion
 function! completion#completion_confirm() abort
-    lua require'completion'.toggleConfirm()
+    lua require'completion'.confirmCompletion()
     call nvim_feedkeys("\<C-Y>", "n", v:true)
 endfunction
 
