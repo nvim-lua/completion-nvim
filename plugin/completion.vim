@@ -77,6 +77,10 @@ if ! exists('g:completion_fuzzy_match')
     let g:completion_enable_fuzzy_match = 0
 endif
 
+if ! exists('g:completion_expand_characters')
+    let g:completion_expand_characters = [' ', '\t', '>', ';']
+endif
+
 if ! exists('g:completion_matching_ignore_case')
     let g:completion_matching_ignore_case = 0
 endif
