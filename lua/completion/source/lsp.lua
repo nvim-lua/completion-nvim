@@ -45,18 +45,22 @@ local function get_context_aware_snippets(item, completion_item, line_to_cursor)
   end
   local line = vim.api.nvim_get_current_line()
   local nextWord = line:sub(#line_to_cursor+1, #line_to_cursor+1)
-  if nextWord == " " or #nextWord == 0 then
+  if #nextWord == 0 then
     return
-  else
-    local matches
-    word, matches = item.word:gsub("%(.*%)$", "")
-    if matches == 0 then
-      word, matches = item.word:gsub("<.*>$", "")
+  end
+  for _,ch in ipairs(vim.g.completion_expand_characters) do
+    if nextWord == ch then
+      return
     end
-    if matches ~= 0 then
-      item.word = word
-      item.user_data = {}
-    end
+  end
+  item.user_data = {}
+  local matches
+  word, matches = item.word:gsub("%(.*%)$", "")
+  if matches == 0 then
+    word, matches = item.word:gsub("<.*>$", "")
+  end
+  if matches ~= 0 then
+    item.word = word
   end
 end
 
