@@ -14,8 +14,7 @@ M.getCompletionItems = function(_, _)
 end
 
 local function get_completion_word(item, prefix, suffix)
-  if item.textEdit ~= nil and item.textEdit ~= vim.NIL
-    and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
+  if item.textEdit ~= nil and item.textEdit ~= vim.NIL and item.textEdit.newText ~= nil then
       local start_range = item.textEdit.range["start"]
       local end_range = item.textEdit.range["end"]
       local newText
@@ -27,13 +26,25 @@ local function get_completion_word(item, prefix, suffix)
     if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
       return newText
     else
-      return vim.lsp.util.parse_snippet(newText)
+      if (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
+        local parsed_snippet = vim.lsp.util.parse_snippet(newText)
+        parsed_snippet = parsed_snippet:gsub('\n', ' ')
+        return parsed_snippet
+      else
+        return item.label
+      end
     end
   elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
     if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText" then
       return item.insertText
     else
-      return vim.lsp.util.parse_snippet(item.insertText)
+      if (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
+        local parsed_snippet = vim.lsp.util.parse_snippet(item.insertText)
+        parsed_snippet = parsed_snippet:gsub('\n', ' ')
+        return parsed_snippet
+      else
+        return item.label
+      end
     end
   end
   return item.label
@@ -86,8 +97,6 @@ local function text_document_completion_list_to_complete_items(result, params)
     item.info = info
 
     item.word = get_completion_word(completion_item, params.prefix)
-
-    item.word = item.word:gsub('\n', ' ')
 
     item.user_data = {
       lsp = {
