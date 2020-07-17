@@ -38,6 +38,16 @@ local function chain_list_to_tree(complete_list)
   end
 end
 
+local function ok_or_nil(status, ...)
+  if not status then return end
+  return ...
+end
+
+local function npcall(fn, ...)
+  return ok_or_nil(pcall(fn, ...))
+end
+
+
 local function getScopedChain(ft_subtree)
 
   local function syntaxGroupAtPoint()
@@ -45,18 +55,23 @@ local function getScopedChain(ft_subtree)
     return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
   end
 
-  local VAR_NAME = "completion_syntax_at_point"
-
-  local syntax_getter
-
   -- If this option is effectively a function, use it to determine syntax group at point
-  if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
-    syntax_getter = api.nvim_get_var(VAR_NAME)
+  local ts_utils = require 'nvim-treesitter.ts_utils'
+  local ft = vim.bo.filetype
+  local node
+  if #api.nvim_get_runtime_file('parser/'..ft..'.so', false) > 0 and
+    #api.nvim_get_runtime_file('queries/'..ft..'/highlights.scm') > 0 then
+    node = ts_utils.get_node_at_cursor()
+  end
+  local atPoint
+  if ts_utils ~= nil and node ~= nil then
+    atPoint = node:type()
   else
-    syntax_getter = syntaxGroupAtPoint
+    atPoint = syntaxGroupAtPoint()
   end
 
-  local atPoint = syntax_getter():lower()
+  atPoint = atPoint:lower()
+
   for syntax_regex, complete_list in pairs(ft_subtree) do
     if string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
       return complete_list
