@@ -19,6 +19,7 @@ manager = {
   confirmedCompletion = false,  -- flag for manual confirmation of completion
   forceCompletion     = false,  -- flag for forced manual completion/source change
   chainIndex          = 1,      -- current index in loaded chain
+  checkGlobalMapping  = false   -- indication of global mapping is checked or not
 }
 
 -- reset manager

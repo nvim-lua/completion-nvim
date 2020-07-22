@@ -33,6 +33,7 @@ M.triggerCompletion = function()
   source.triggerCompletion(true, manager)
 end
 
+
 M.completionToggle = function()
   local enable = api.nvim_call_function('completion#get_buffer_variable', {'completion_enable'})
   if enable == nil then
@@ -110,6 +111,17 @@ local function hasConfirmedCompletion()
   end
 end
 
+-- make sure we didn't overwrite user defined mapping
+local function checkMapping(map, key)
+  for _, m in ipairs(map) do
+    if api.nvim_replace_termcodes(m.lhs, true, false, true) == api.nvim_replace_termcodes(key, true, false, true) then
+      if not m.rhs:find("completion_confirm_completion") then
+        return false
+      end
+    end
+  end
+  return true
+end
 ------------------------------------------------------------------------
 --                            autocommands                            --
 ------------------------------------------------------------------------
@@ -213,11 +225,19 @@ M.on_attach = function(option)
     api.nvim_command("autocmd InsertCharPre <buffer> lua require'completion'.on_InsertCharPre()")
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.on_CompleteDone()")
   api.nvim_command("augroup end")
-  if string.len(opt.get_option('confirm_key')) ~= 0 then
-    api.nvim_buf_set_keymap(0, 'i', opt.get_option('confirm_key'),
-      'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" :'..
-      ' "\\<c-e>\\<CR>" : "\\<CR>"',
-      {silent=false, noremap=false, expr=true})
+  local confirm_key = opt.get_option('confirm_key')
+  if string.len(confirm_key) ~= 0 then
+    if checkMapping(api.nvim_buf_get_keymap(0, "i"), confirm_key) and 
+      (manager.checkGlobalMapping or checkMapping(api.nvim_get_keymap("i"), confirm_key)) then
+      manager.checkGlobalMapping = true
+      api.nvim_buf_set_keymap(0, 'i', confirm_key, '<Plug>(completion_confirm_completion)',
+        {silent=false, noremap=false})
+    else
+      api.nvim_err_writeln(string.format(
+        "completion-nvim: mapping conflict! you've already mapped your confirm key to something else in insert mode. ".. 
+        " Consider changing g:completion_confirm_key"
+      ))
+    end
   end
   -- overwrite vsnip_integ autocmd since we handle it on ourself in confirmCompletion
   if vim.fn.exists("#vsnip_integ") then
