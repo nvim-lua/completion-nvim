@@ -25,7 +25,7 @@ local checkSnippetSource = function()
       health_error("UltiSnips is not available! Check if you install Ultisnips correctly.")
     end
   elseif snippet_source == 'Neosnippet' then
-    if string.match(api.nvim_get_option("rtp"), ".*neosnippet.vim.*") == 1 then
+    if string.match(api.nvim_get_option("rtp"), ".*neosnippet.vim.*") then
       health_ok("You are using Neosnippet as your snippet source")
     else
       health_error("Neosnippet is not available! Check if you install Neosnippet correctly.")
