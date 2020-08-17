@@ -344,11 +344,11 @@ g:completion_auto_change_source		     *g:completion_auto_change_source*
 g:completion_matching_strategy_list	*g:completion_matching_strategy_list*
 
 	There are three different kind of matching technique implement in
-	completion-nvim: 'substring', 'fuzzy' or 'exact'. You can specify a list
+	completion-nvim: 'substring', 'fuzzy', 'exact' or 'all'. You can specify a list
 	of matching strategy, completion-nvim will loop through the list and
 	assign priority from high to low. For example
 >
-	let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+	let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
 <
 	default value: ['exact']
 
