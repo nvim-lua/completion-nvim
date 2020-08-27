@@ -76,6 +76,35 @@ M.getVsnipItems = function(prefix)
   return complete_items
 end
 
+-- Cribbed almost wholesale from snippets.lookup_snippet()
+M.getSnippetsNvimItems = function(prefix)
+  local snippets = require 'snippets'
+  if not snippets then return {} end
+  local ft = vim.bo.filetype
+  local snippetsList = vim.tbl_extend('force', snippets.snippets._global, snippets.snippets[ft] or {})
+  local complete_items = {}
+  if vim.tbl_isempty(snippetsList) == 0 then
+    return {}
+  end
+  local priority = vim.g.completion_items_priority['snippets.nvim'] or 1
+  local kind = 'snippets.nvim'
+  for short, long in pairs(snippetsList) do
+	-- TODO: We cannot put the parsed snippet itself in userdata, since it may
+	-- contain Lua functions (see
+	-- https://github.com/norcalli/snippets.nvim#notes-because-this-is-beta-release-software)
+	local user_data = {}
+	local item = {}
+	item.word = short
+	item.kind = kind
+	-- TODO: Turn actual snippet text into label/description?
+	item.menu = short
+	item.priority = priority
+	item.user_data = user_data
+	match.matching(complete_items, prefix, item)
+  end
+  return complete_items
+end
+
 M.getCompletionItems = function(prefix)
   local source = vim.g.completion_enable_snippet
   local snippet_list = {}
@@ -85,6 +114,8 @@ M.getCompletionItems = function(prefix)
     snippet_list = M.getNeosnippetItems(prefix)
   elseif source == 'vim-vsnip' then
     snippet_list = M.getVsnipItems(prefix)
+  elseif source == 'snippets.nvim' then
+    snippet_list = M.getSnippetsNvimItems(prefix)
   end
   return snippet_list
 end

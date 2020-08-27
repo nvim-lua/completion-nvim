@@ -34,6 +34,9 @@ local complete_items_map = {
   },
   ['Neosnippet'] = {
     item = snippet.getNeosnippetItems
+  },
+  ['snippets.nvim'] = {
+    item = snippet.getSnippetsNvimItems
   }
 }
 
