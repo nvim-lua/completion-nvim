@@ -101,6 +101,10 @@ local function hasConfirmedCompletion()
   if opt.get_option('enable_auto_paren') == 1 then
     autoAddParens(completed_item)
   end
+  if completed_item.user_data.lsp ~= nil
+	  and vim.g.completion_enable_snippet == "snippets.nvim" then
+	require 'snippets'.expand_at_cursor(completed_item.user_data.actual_item, completed_item.word)
+  end
   if completed_item.kind == 'UltiSnips' then
     api.nvim_call_function('UltiSnips#ExpandSnippet', {})
   elseif completed_item.kind == 'Neosnippet' then
