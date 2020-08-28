@@ -196,13 +196,13 @@ let g:completion_sorting = "length"
 ### Matching Strategy
 
 - There are three different kind of matching technique implement in
-completion-nvim: `substring`, `fuzzy` or `exact`.
+completion-nvim: `substring`, `fuzzy`, `exact` or `all`.
 
 - You can specify a list of matching strategy, completion-nvim will loop through the list and
 assign priority from high to low. For example
 
 ```vim
-let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
 ```
 
 *NOTE* Fuzzy match highly dependent on what language server you're using. It might not

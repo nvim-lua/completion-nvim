@@ -41,10 +41,15 @@ local function exact_match(prefix, word)
   end
 end
 
+local function all_match()
+  return true
+end
+
 local matching_strategy = {
   fuzzy = fuzzy_match,
   substring = substring_match,
-  exact = exact_match
+  exact = exact_match,
+  all = all_match,
 }
 
 M.matching = function(complete_items, prefix, item)
