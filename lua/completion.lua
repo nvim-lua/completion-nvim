@@ -97,6 +97,9 @@ local function hasConfirmedCompletion()
   local completed_item = api.nvim_get_vvar('completed_item')
   if completed_item.user_data.lsp ~= nil then
     applyAddtionalTextEdits(completed_item)
+    if vim.g.completion_enable_snippet == "snippets.nvim" then
+      require 'snippets'.expand_at_cursor(completed_item.user_data.actual_item, completed_item.word)
+    end
   end
   if opt.get_option('enable_auto_paren') == 1 then
     autoAddParens(completed_item)
