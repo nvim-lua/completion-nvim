@@ -81,7 +81,7 @@ M.getSnippetsNvimItems = function(prefix)
   local snippets = require 'snippets'
   if not snippets then return {} end
   local ft = vim.bo.filetype
-  local snippetsList = vim.tbl_extend('force', snippets.snippets._global, snippets.snippets[ft] or {})
+  local snippetsList = vim.tbl_extend('force', snippets.snippets._global or {}, snippets.snippets[ft] or {})
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
