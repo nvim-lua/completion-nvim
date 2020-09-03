@@ -276,7 +276,7 @@ local function callback_function(_, method, result)
         align = 'left'
       end
       bufnr, winnr = fancy_floating_markdown(markdown_lines, {
-        pad_left = 1; pad_right = 1;
+        pad_left = 0; pad_right = 1;
         col = position['col']; width = position['width']; row = position['row']-1;
         align = align
       })
