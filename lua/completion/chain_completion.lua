@@ -40,20 +40,19 @@ end
 
 local function getScopedChain(ft_subtree)
 
-  local function syntaxGroupAtPoint()
+  local syntax_getter = function()
     local pos = api.nvim_win_get_cursor(0)
     return vim.fn.synIDattr(vim.fn.synID(pos[1], pos[2]-1, 1), "name")
   end
 
-  local VAR_NAME = "completion_syntax_at_point"
-
-  local syntax_getter
-
   -- If this option is effectively a function, use it to determine syntax group at point
-  if vim.fn.exists("g:" .. VAR_NAME) > 0 and vim.is_callable(api.nvim_get_var(VAR_NAME)) > 0 then
-    syntax_getter = api.nvim_get_var(VAR_NAME)
-  else
-    syntax_getter = syntaxGroupAtPoint
+  local syntax_at_point = opt.get_option("syntax_at_point")
+  if syntax_at_point then
+      if vim.is_callable(syntax_at_point) then
+          syntax_getter = syntax_at_point
+      elseif type(syntax_at_point) == "string" and vim.fn.exists("*" .. syntax_at_point) then
+          syntax_getter = vim.fn[syntax_at_point]
+      end
   end
 
   local atPoint = syntax_getter():lower()
