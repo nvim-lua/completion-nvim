@@ -92,6 +92,7 @@ local function text_document_completion_list_to_complete_items(result, params)
     item.info = info
 
     item.word = get_completion_word(completion_item, params.prefix, params.suffix)
+    item.word = item.word:gsub('\n', ' ')
     item.user_data = {
       lsp = {
         completion_item = completion_item,
