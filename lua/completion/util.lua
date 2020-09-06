@@ -17,7 +17,6 @@ end
 ------------------------
 
 function M.sort_completion_items(items)
-  print(opt.get_option("sorting"))
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
