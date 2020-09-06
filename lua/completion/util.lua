@@ -17,13 +17,16 @@ end
 ------------------------
 
 function M.sort_completion_items(items)
+  print(opt.get_option("sorting"))
   table.sort(items, function(a, b)
     if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
     elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
       return a.score < b.score
-    elseif vim.g.completion_sorting == 'alphabet' then
+    elseif opt.get_option("sorting") == 'alphabet' then
       return a.word < b.word
+    elseif opt.get_option("sorting") == 'length_desc' then
+      return string.len(a.word) > string.len(b.word)
     else
       return string.len(a.word) < string.len(b.word)
     end
