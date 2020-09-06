@@ -96,6 +96,7 @@ end
 -- handle completeDone stuff here
 local function hasConfirmedCompletion()
   local completed_item = api.nvim_get_vvar('completed_item')
+  if completed_item.user_data == nil then return end
   if completed_item.user_data.lsp ~= nil then
     applyAddtionalTextEdits(completed_item)
     if vim.g.completion_enable_snippet == "snippets.nvim" then
