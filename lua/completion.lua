@@ -44,6 +44,33 @@ M.completionToggle = function()
   end
 end
 
+------------------------------------------------------------------------
+--                         smart tab                                  --
+------------------------------------------------------------------------
+
+function M.smart_tab()
+  if vim.fn.pumvisible() ~= 0 then
+    api.nvim_eval([[feedkeys("\<c-n>", "n")]])
+    return
+  end
+
+  local col = vim.fn.col('.') - 1
+  if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+    api.nvim_eval([[feedkeys("\<tab>", "n")]])
+    return
+  end
+
+  source.triggerCompletion(true, manager)
+end
+
+function M.smart_s_tab()
+  if vim.fn.pumvisible() ~= 0 then
+    api.nvim_eval([[feedkeys("\<c-p>", "n")]])
+    return
+  end
+
+  api.nvim_eval([[feedkeys("\<s-tab>", "n")]])
+end
 
 ------------------------------------------------------------------------
 --                         confirm completion                         --
