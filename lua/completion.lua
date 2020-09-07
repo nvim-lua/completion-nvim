@@ -68,7 +68,6 @@ end
 -- apply additionalTextEdits in LSP specs
 local function applyAddtionalTextEdits(completed_item)
   local lnum = api.nvim_win_get_cursor(0)[1]
-  if completed_item.user_data == nil then return end
   if completed_item.user_data.lsp ~= nil then
     local item = completed_item.user_data.lsp.completion_item
     -- vim-vsnip have better additional text edits...
