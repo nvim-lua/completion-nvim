@@ -24,7 +24,7 @@ local checkSnippetSource = function()
     local snippet_sources = {
         ["UltiSnips"] = "ultisnips",
         ["Neosnippet"] = "neosnippet.vim",
-        ["vim-snip"] = "vsnip",
+        ["vim-vsnip"] = "vsnip",
         ["snippets.nvim"] = "snippets.nvim"
     }
 
