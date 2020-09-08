@@ -207,7 +207,7 @@ function M.on_CompleteDone()
   end
   -- auto trigger signature help when we confirm completion
   if vim.g.completion_enable_auto_signature ~= 0 then
-    vim.lsp.buf.signature_help()
+    signature.autoOpenSignatureHelp()
   end
 end
 
