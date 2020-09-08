@@ -27,7 +27,22 @@ M.autoOpenSignatureHelp = function()
   end
 
   if triggered then
-    vim.lsp.buf.signature_help()
+    -- overwrite signature help here to disable "no signature help" message
+    local params = vim.lsp.util.make_position_params()
+    vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(_, method, result)
+      if not (result and result.signatures and result.signatures[1]) then
+        return
+      end
+      local lines = vim.lsp.util.convert_signature_help_to_markdown_lines(result)
+      if vim.tbl_isempty(lines) then
+        return
+      end
+      vim.lsp.util.focusable_preview(method, function()
+        -- TODO show popup when signatures is empty?
+        lines = vim.lsp.util.trim_empty_lines(lines)
+        return lines, vim.lsp.util.try_trim_markdown_code_blocks(lines)
+      end)
+    end)
   end
 end
 
