@@ -280,9 +280,9 @@ let g:completion_timer_cycle = 200 "default value is 80
 
 ```vim
 lua << EOF
-local on_attach_vim = function()
-  require'completion'.on_attach()
-  require'diagnostic'.on_attach()
+local on_attach_vim = function(client)
+  require'completion'.on_attach(client)
+  require'diagnostic'.on_attach(client)
 end
 require'nvim_lsp'.pyls.setup{on_attach=on_attach_vim}
 EOF
