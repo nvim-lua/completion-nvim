@@ -224,10 +224,14 @@ M.on_attach = function(option)
     api.nvim_command("autocmd CompleteDone <buffer> lua require'completion'.on_CompleteDone()")
   api.nvim_command("augroup end")
   if string.len(opt.get_option('confirm_key')) ~= 0 then
-    api.nvim_buf_set_keymap(0, 'i', opt.get_option('confirm_key'),
+    api.nvim_set_keymap('i', '<Plug>(completion_confirm_expr)',
       'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" :'..
-      ' "\\<c-e>\\<CR>" : "\\<CR>"',
-      {silent=false, noremap=false, expr=true})
+      ' "\\<C-e>" : empty(maparg("\\'..opt.get_option('confirm_key')..'", "i")) ? "\\<CR>" : ""',
+      {silent=false, noremap=true, expr=true})
+
+    api.nvim_buf_set_keymap(0, 'i', opt.get_option('confirm_key'),
+      vim.fn.maparg(opt.get_option('confirm_key'), 'i')..'<Plug>(completion_confirm_expr)',
+      {silent=false, noremap=false})
   end
   -- overwrite vsnip_integ autocmd since we handle it on ourself in confirmCompletion
   if vim.fn.exists("#vsnip_integ") then
