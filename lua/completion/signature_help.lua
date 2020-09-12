@@ -8,7 +8,6 @@ local M = {}
 --  signature help  --
 ----------------------
 M.autoOpenSignatureHelp = function()
-  local bufnr = api.nvim_get_current_buf()
   local pos = api.nvim_win_get_cursor(0)
   local line = api.nvim_get_current_line()
   local line_to_cursor = line:sub(1, pos[2])
@@ -29,7 +28,13 @@ M.autoOpenSignatureHelp = function()
   if triggered then
     -- overwrite signature help here to disable "no signature help" message
     local params = vim.lsp.util.make_position_params()
-    vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(_, method, result)
+    vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(err, method, result, client_id)
+      local client = vim.lsp.get_client_by_id(client_id)
+      local callback = client and client.callbacks['textDocument/signatureHelp']
+      if callback then
+          callback(err, method, result, client_id)
+          return
+      end
       if not (result and result.signatures and result.signatures[1]) then
         return
       end
