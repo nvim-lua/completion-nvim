@@ -201,13 +201,13 @@ function M.on_CompleteDone()
   if manager.confirmedCompletion then
     manager.confirmedCompletion = false
     hasConfirmedCompletion()
+    -- auto trigger signature help when we confirm completion
+    if vim.g.completion_enable_auto_signature ~= 0 then
+      signature.autoOpenSignatureHelp()
+    end
   end
   if hover.winnr ~= nil and api.nvim_win_is_valid(hover.winnr) then
     api.nvim_win_close(hover.winnr, true)
-  end
-  -- auto trigger signature help when we confirm completion
-  if vim.g.completion_enable_auto_signature ~= 0 then
-    signature.autoOpenSignatureHelp()
   end
 end
 
