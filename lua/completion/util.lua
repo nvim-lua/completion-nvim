@@ -41,6 +41,7 @@ function M.addCompletionItems(item_table, item)
       kind = item.kind or '',
       menu = item.menu or '',
       info = item.info or '',
+      equal = 1;
       priority = item.priority or 1,
       icase = 1,
       dup = item.dup or 1,
