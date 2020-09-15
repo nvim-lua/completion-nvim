@@ -22,7 +22,7 @@ Demo using `sumneko_lua`
 
 ## Prerequisites
 - Neovim nightly
-- You should set up your language server of choice with the help of [nvim-lsp](https://github.com/neovim/nvim-lsp)
+- You should set up your language server of choice with the help of [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
 ## Install
 
