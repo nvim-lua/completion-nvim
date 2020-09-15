@@ -109,6 +109,10 @@ if ! exists('g:completion_items_priority')
     let g:completion_items_priority = {}
 endif
 
+if ! exists('g:completion_menu_length')
+    let g:completion_menu_length = 0
+endif
+
 inoremap <silent> <Plug>(completion_confirm_completion)
       \ <cmd>call completion#wrap_completion()<CR>
 
