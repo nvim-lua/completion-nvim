@@ -358,7 +358,7 @@ M.autoOpenHoverInPopup = function()
         col = vim.str_utfindex(line, col)
         local params = {
           textDocument = vim.lsp.util.make_text_document_params();
-          position = { line = row; character = col-1; }
+          position = { line = row; character = col-string.len(item.word); }
         }
         vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
       end
