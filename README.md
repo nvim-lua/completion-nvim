@@ -123,10 +123,10 @@ inoremap <silent><expr> <TAB>
 - By default other snippets source support are disabled, turn them on by
 
 ```vim
-" possible value: 'UltiSnips', 'Neosnippet', 'vim-vsnip'
+" possible value: 'UltiSnips', 'Neosnippet', 'vim-vsnip', 'snippets.nvim'
 let g:completion_enable_snippet = 'UltiSnips'
 ```
-- Support `UltiSnips` and `Neosnippet` and `vim-vsnip`
+- Supports `UltiSnips`, `Neosnippet`, `vim-vsnip` and `snippets.nvim`
 
 ### LSP Based Snippet parsing
 
