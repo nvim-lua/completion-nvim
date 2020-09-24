@@ -122,6 +122,15 @@ inoremap <silent> <Plug>(completion_next_source)
 inoremap <silent> <Plug>(completion_prev_source)
       \ <cmd>lua require'completion'.prevSource()<CR>
 
+inoremap <silent> <Plug>(completion_smart_tab)
+      \ <cmd>lua require'completion'.smart_tab()<CR>
+
+inoremap <silent> <Plug>(completion_smart_s_tab)
+      \ <cmd>lua require'completion'.smart_s_tab()<CR>
+
+inoremap <silent> <Plug>(completion_trigger)
+      \ <cmd>lua require'completion'.triggerCompletion()<CR>
+
 command! -nargs=0 CompletionToggle  lua require'completion'.completionToggle()
 
 let &cpo = s:save_cpo

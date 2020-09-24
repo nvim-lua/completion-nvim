@@ -101,21 +101,15 @@ let g:completion_enable_auto_popup = 0
 - You can manually trigger completion with mapping key by
 
 ```vim
-inoremap <silent><expr> <c-p> completion#trigger_completion() "map <c-p> to manually trigger completion
+"map <c-p> to manually trigger completion
+imap <silent> <c-p> <Plug>(completion_trigger)
 ```
 
 - Or you want to use `<Tab>` as trigger keys
 
 ```vim
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-inoremap <silent><expr> <TAB>
-  \ pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ completion#trigger_completion()
+nmap <tab> <Plug>(completion_smart_tab)
+nmap <s-tab> <Plug>(completion_smart_s_tab)
 ```
 
 ### Enable Snippets Support
