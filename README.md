@@ -73,6 +73,7 @@ another completion source instead(Ex: snippets).
     * [vim-dadbod-completion](https://github.com/kristijanhusak/vim-dadbod-completion): completion sources
     for `vim-dadbod`.
     * [completion-tabnine](https://github.com/aca/completion-tabnine): AI code completion tool TabNine integration.
+    * [completion-tags](https://github.com/kristijanhusak/completion-tags): Slightly improved ctags completion
 
 ## Configuration
 
