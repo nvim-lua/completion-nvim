@@ -66,7 +66,7 @@ g:completion_enable_auto_popup               *g:completion_enable_auto_popup*
 	mapping keys. For example: 
 >
         " map <c-p> to manually trigger completion 
-        inoremap <silent><expr> <c-p> completion#trigger_completion()
+        imap <silent> <c-p> <Plug>(completion_trigger)
 <
         Or you want to use <tab> to trigger completion without modifying the
         usage to <tab> keys.

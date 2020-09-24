@@ -102,7 +102,7 @@ let g:completion_enable_auto_popup = 0
 
 ```vim
 "map <c-p> to manually trigger completion
-imap <c-p> <Plug>(completion_trigger)
+imap <silent> <c-p> <Plug>(completion_trigger)
 ```
 
 - Or you want to use `<Tab>` as trigger keys
