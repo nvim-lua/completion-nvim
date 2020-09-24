@@ -1,6 +1,7 @@
 local vim = vim
 local api = vim.api
 local match = require'completion.matching'
+local opt = require 'completion.option'
 local M = {}
 
 
@@ -12,6 +13,8 @@ M.getUltisnipItems = function(prefix)
     return {}
   end
   local priority = vim.g.completion_items_priority['UltiSnips'] or 1
+  local kind = 'UltiSnips'
+  kind = opt.get_option('customize_lsp_label')[kind] or kind
   for key, val in pairs(snippetsList) do
     -- fix lua parsing issue
     if key == true then
@@ -19,7 +22,7 @@ M.getUltisnipItems = function(prefix)
     end
     local item = {}
     item.word = key
-    item.kind = 'UltiSnips'
+    item.kind = kind
     item.priority = priority
     local user_data = {hover = val}
     item.user_data = user_data
@@ -35,6 +38,8 @@ M.getNeosnippetItems = function(prefix)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
+  local kind = 'Neosnippet'
+  kind = opt.get_option('customize_lsp_label')[kind] or kind
   local priority = vim.g.completion_items_priority['Neosnippet']
   for key, val in pairs(snippetsList) do
     if key == true then
@@ -43,7 +48,7 @@ M.getNeosnippetItems = function(prefix)
     local user_data = {hover = val.description}
     local item = {}
     item.word = key
-    item.kind = 'Neosnippet'
+    item.kind = kind
     item.priority = priority
     item.user_data = user_data
     match.matching(complete_items, prefix, item)
@@ -58,6 +63,8 @@ M.getVsnipItems = function(prefix)
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
   end
+  local kind = 'vim-vsnip'
+  kind = opt.get_option('customize_lsp_label')[kind] or kind
   local priority = vim.g.completion_items_priority['vim-vsnip']
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
@@ -65,7 +72,7 @@ M.getVsnipItems = function(prefix)
         local user_data = {hover = snippet.description}
         local item = {}
         item.word = word
-        item.kind = 'vim-vsnip'
+        item.kind = kind
         item.menu = snippet.label
         item.priority = priority
         item.user_data = user_data
