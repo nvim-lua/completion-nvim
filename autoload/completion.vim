@@ -14,6 +14,17 @@ function! completion#wrap_completion() abort
     endif
 endfunction
 
+" Wrapper to get manually trigger working
+" Please send me a pull request if you know how to do this properly...
+function! completion#completion_wrapper()
+    lua require'completion'.triggerCompletion()
+    return ''
+endfunction
+
+function! completion#trigger_completion()
+    return "\<c-r>=completion#completion_wrapper()\<CR>"
+endfunction
+
 " Wrapper of getting buffer variable
 " Avoid accessing to unavailable variable
 function! completion#get_buffer_variable(str)
