@@ -38,7 +38,7 @@ function M.addCompletionItems(item_table, item)
   local menu_length = opt.get_option('menu_length')
   if menu_length ~= 0 then
     if string.len(item.abbr) > menu_length then
-      item.abbr = string.sub(item.abbr, 0, opt.get_option('menu_length')).."..."
+      item.abbr = string.sub(item.abbr, 0, menu_length).."..."
     end
   end
   table.insert(item_table, {
