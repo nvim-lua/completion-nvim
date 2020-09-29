@@ -57,7 +57,7 @@ local function getScopedChain(ft_subtree)
 
   local atPoint = syntax_getter():lower()
   for syntax_regex, complete_list in pairs(ft_subtree) do
-    if string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
+    if type(syntax_regex) == "string" and string.match(atPoint, '.*' .. syntax_regex:lower() .. '.*') ~= nil and syntax_regex ~= "default" then
       return complete_list
     end
   end
@@ -93,18 +93,20 @@ function M.checkHealth(complete_items_map)
     else
       chain_complete_list = getScopedChain(completion_list.default) or completion_list.default.default
     end
-    for _,complete_source in ipairs(chain_complete_list) do
-      if vim.fn.has_key(complete_source, "complete_items") > 0 then
-        for _,item in ipairs(complete_source.complete_items) do
-          if complete_items_map[item] == nil then
-            health_error(item.." is not a valid completion source (in filetype "..filetype..")")
-            error = true
+    if chain_complete_list ~= nil then
+      for _,complete_source in ipairs(chain_complete_list) do
+        if vim.fn.has_key(complete_source, "complete_items") > 0 then
+          for _,item in ipairs(complete_source.complete_items) do
+            if complete_items_map[item] == nil then
+              health_error(item.." is not a valid completion source (in filetype "..filetype..")")
+              error = true
+            end
           end
-        end
-      else
-        local ins = require 'completion.source.ins_complete'
-        if ins.checkHealth(complete_source.mode) then
-          health_error(complete_source.mode.." is not a valid insert complete mode")
+        else
+          local ins = require 'completion.source.ins_complete'
+          if ins.checkHealth(complete_source.mode) then
+            health_error(complete_source.mode.." is not a valid insert complete mode")
+          end
         end
       end
     end
