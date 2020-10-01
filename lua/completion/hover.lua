@@ -219,6 +219,8 @@ local fancy_floating_markdown = function(contents, opts)
     winnr = api.nvim_open_win(bufnr, false, opt)
   end
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, stripped)
+  -- setup a variable for floating window, fix #223
+  vim.api.nvim_buf_set_var(bufnr, "lsp_floating", true)
 
   local cwin = vim.api.nvim_get_current_win()
   vim.api.nvim_set_current_win(winnr)

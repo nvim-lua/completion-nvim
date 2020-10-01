@@ -42,11 +42,13 @@ M.autoOpenSignatureHelp = function()
       if vim.tbl_isempty(lines) then
         return
       end
-      vim.lsp.util.focusable_preview(method, function()
+      local bufnr, _ = vim.lsp.util.focusable_preview(method, function()
         -- TODO show popup when signatures is empty?
         lines = vim.lsp.util.trim_empty_lines(lines)
         return lines, vim.lsp.util.try_trim_markdown_code_blocks(lines)
       end)
+      -- setup a variable for floating window, fix #223
+      vim.api.nvim_buf_set_var(bufnr, "lsp_floating", true)
     end)
   end
 end
