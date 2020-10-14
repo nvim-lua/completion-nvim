@@ -99,13 +99,7 @@ local function applyAddtionalTextEdits(completed_item)
     local item = completed_item.user_data.lsp.completion_item
     -- vim-vsnip have better additional text edits...
     if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
-      api.nvim_call_function('vsnip_integ#do_complete_done', {
-        {
-          completed_item = completed_item,
-          completion_item = item,
-          apply_additional_text_edits = true
-        }
-      })
+      api.nvim_call_function('vsnip_integ#on_complete_done', { completed_item })
     else
       if item.additionalTextEdits then
         local bufnr = api.nvim_get_current_buf()
