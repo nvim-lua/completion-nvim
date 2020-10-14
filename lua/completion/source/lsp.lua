@@ -128,21 +128,11 @@ M.getCallback = function()
   return M.callback
 end
 
-local buf_has_clients = function()
-  -- buf_get_clients() may return an associative table that has numbers as
-  -- keys. So while using # may work at first, it stops working if the client
-  -- is restarted.
-  for _ in pairs(vim.lsp.buf_get_clients()) do
-    return true
-  end
-  return false
-end
-
 M.triggerFunction = function(_, params)
   local position_param = vim.lsp.util.make_position_params()
   M.callback = false
   M.items = {}
-  if not buf_has_clients() then
+  if vim.tbl_isempty(vim.lsp.buf_get_clients()) then
     M.callback = true
     return
   end
