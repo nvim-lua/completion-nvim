@@ -24,7 +24,7 @@ M.getUltisnipItems = function(prefix)
     item.word = key
     item.kind = kind
     item.priority = priority
-    local user_data = {hover = val}
+    local user_data = {snippet_source = 'UltiSnips', hover = val}
     item.user_data = user_data
     match.matching(complete_items, prefix, item)
   end
@@ -45,7 +45,7 @@ M.getNeosnippetItems = function(prefix)
     if key == true then
       key = 'true'
     end
-    local user_data = {hover = val.description}
+    local user_data = {snippet_source = 'Neosnippet', hover = val.description}
     local item = {}
     item.word = key
     item.kind = kind
@@ -69,7 +69,7 @@ M.getVsnipItems = function(prefix)
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
       for _, word in pairs(snippet.prefix) do
-        local user_data = {hover = snippet.description}
+        local user_data = {snippet_source = 'vim-vsnip', hover = snippet.description}
         local item = {}
         item.word = word
         item.kind = kind
@@ -95,19 +95,20 @@ M.getSnippetsNvimItems = function(prefix)
   end
   local priority = vim.g.completion_items_priority['snippets.nvim'] or 1
   local kind = 'snippets.nvim'
+  kind = opt.get_option('customize_lsp_label')[kind] or kind
   for short, long in pairs(snippetsList) do
-	-- TODO: We cannot put the parsed snippet itself in userdata, since it may
-	-- contain Lua functions (see
-	-- https://github.com/norcalli/snippets.nvim#notes-because-this-is-beta-release-software)
-	local user_data = {}
-	local item = {}
-	item.word = short
-	item.kind = kind
-	-- TODO: Turn actual snippet text into label/description?
-	item.menu = short
-	item.priority = priority
-	item.user_data = user_data
-	match.matching(complete_items, prefix, item)
+    -- TODO: We cannot put the parsed snippet itself in userdata, since it may
+    -- contain Lua functions (see
+    -- https://github.com/norcalli/snippets.nvim#notes-because-this-is-beta-release-software)
+    local user_data = {snippet_source = 'snippets.nvim'}
+    local item = {}
+    item.word = short
+    item.kind = kind
+    -- TODO: Turn actual snippet text into label/description?
+    item.menu = short
+    item.priority = priority
+    item.user_data = user_data
+    match.matching(complete_items, prefix, item)
   end
   return complete_items
 end
