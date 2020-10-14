@@ -46,7 +46,7 @@ M.getNeosnippetItems = function(prefix)
       key = 'true'
     end
     local description
-    if val == nil then description = nil else description = val.description end
+    if val == nil or type(val) ~= "table" then description = nil else description = val.description end
     local user_data = {snippet_source = 'Neosnippet', hover = description}
     local item = {}
     item.word = key
