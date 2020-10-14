@@ -221,7 +221,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	let g:completion_chain_complete_list = {
 	    \'default' : [
 	    \    {'complete_items': ['lsp']},
-	    \    {'complete_items': ['snippet']}
+	    \    {'complete_items': ['snippet']},
 	    \    {'mode': '<c-p>'},
 	    \    {'mode': '<c-n>'}
 	    \]
