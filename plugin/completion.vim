@@ -86,7 +86,7 @@ if ! exists('g:completion_matching_ignore_case')
 endif
 
 if ! exists('g:completion_matching_smart_case')
-    let g:completion_matching_smart_case = 0
+    let g:completion_matching_smart_case = &smartcase
 endif
 
 if ! exists('g:completion_matching_strategy_list')

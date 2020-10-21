@@ -359,7 +359,7 @@ g:completion_matching_smart_case	*g:completion_matching_smart_case*
 >
 	let g:completion_matching_smart_case = 1
 <
-	default value: 0
+	default value: &smartcase
 
 g:completion_sorting				    *g:completion_sorting*
 
