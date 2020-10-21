@@ -3,11 +3,22 @@ local util = require 'completion.util'
 local opt = require 'completion.option'
 local M = {}
 
-local function fuzzy_match(prefix, word)
-  if opt.get_option('matching_ignore_case') == 1 then
-    prefix = string.lower(prefix)
-    word = string.lower(word)
+local function setup_case(prefix, word)
+  local ignore_case = opt.get_option('matching_ignore_case') == 1
+
+  if not ignore_case and opt.get_option('matching_smart_case') == 1 and not prefix:match('[A-Z]') then
+    ignore_case = true
   end
+
+  if ignore_case then
+    return string.lower(prefix), string.lower(word)
+  end
+
+  return prefix, word
+end
+
+local function fuzzy_match(prefix, word)
+  prefix, word = setup_case(prefix, word)
   local score = util.fuzzy_score(prefix, word)
   if score < 1 then
     return true, score
@@ -18,10 +29,7 @@ end
 
 
 local function substring_match(prefix, word)
-  if opt.get_option('matching_ignore_case') == 1 then
-    prefix = string.lower(prefix)
-    word = string.lower(word)
-  end
+  prefix, word = setup_case(prefix, word)
   if string.find(word, prefix) then
     return true
   else
@@ -30,10 +38,7 @@ local function substring_match(prefix, word)
 end
 
 local function exact_match(prefix, word)
-  if opt.get_option('matching_ignore_case') == 1 then
-    prefix = string.lower(prefix)
-    word = string.lower(word)
-  end
+  prefix, word = setup_case(prefix, word)
   if vim.startswith(word, prefix) then
     return true
   else
