@@ -131,7 +131,6 @@ end
 M.triggerFunction = function(_, params)
   local position_param = vim.lsp.util.make_position_params()
   M.callback = false
-  print("REQUEST")
   M.items = {}
   if vim.tbl_isempty(vim.lsp.buf_get_clients()) then
     M.callback = true
