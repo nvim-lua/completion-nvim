@@ -109,6 +109,10 @@ if ! exists('g:completion_items_priority')
     let g:completion_items_priority = {}
 endif
 
+if ! exists('g:completion_abbr_length')
+    let g:completion_abbr_length = 0
+endif
+
 if ! exists('g:completion_menu_length')
     let g:completion_menu_length = 0
 endif
