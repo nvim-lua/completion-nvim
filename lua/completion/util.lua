@@ -35,10 +35,16 @@ end
 function M.addCompletionItems(item_table, item)
   -- word cannot be nil
   if item.word == nil then return end
+  local abbr_length = opt.get_option('abbr_length')
   local menu_length = opt.get_option('menu_length')
   if menu_length ~= 0 then
-    if string.len(item.abbr) > menu_length then
-      item.abbr = string.sub(item.abbr, 0, menu_length).."..."
+    if item.menu ~= nil and string.len(item.menu) > menu_length then
+      item.menu = string.sub(item.menu, 0, menu_length).."..."
+    end
+  end
+  if item.abbr ~= nil and abbr_length ~= 0 then
+    if string.len(item.abbr) > abbr_length then
+      item.abbr = string.sub(item.abbr, 0, abbr_length).."..."
     end
   end
   table.insert(item_table, {
