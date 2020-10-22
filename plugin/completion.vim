@@ -82,7 +82,7 @@ if ! exists('g:completion_expand_characters')
 endif
 
 if ! exists('g:completion_matching_ignore_case')
-    let g:completion_matching_ignore_case = 0
+    let g:completion_matching_ignore_case = &ignorecase
 endif
 
 if ! exists('g:completion_matching_smart_case')
