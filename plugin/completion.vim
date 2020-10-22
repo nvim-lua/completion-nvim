@@ -85,6 +85,10 @@ if ! exists('g:completion_matching_ignore_case')
     let g:completion_matching_ignore_case = 0
 endif
 
+if ! exists('g:completion_matching_smart_case')
+    let g:completion_matching_smart_case = &smartcase
+endif
+
 if ! exists('g:completion_matching_strategy_list')
     let g:completion_matching_strategy_list = ['exact']
 endif

@@ -63,9 +63,9 @@ g:completion_enable_auto_popup               *g:completion_enable_auto_popup*
 	this value to 0 if you don't want automatically popup window.
 
 	If you disable auto popup menu, you can manually trigger completion by
-	mapping keys. For example: 
+	mapping keys. For example:
 >
-        " map <c-p> to manually trigger completion 
+        " map <c-p> to manually trigger completion
         imap <silent> <c-p> <Plug>(completion_trigger)
 <
         Or you want to use <tab> to trigger completion without modifying the
@@ -157,7 +157,7 @@ g:completion_trigger_character                *g:completion_trigger_character*
         default value: ['.']
 
 g:completion_trigger_keyword_length		    *g:completion_trigger_keyword_length*
-	
+
 	You can specify keyword length for triggering completion, if the
 	current word is less than keyword length, completion won't be
 	triggered.
@@ -277,7 +277,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 <
 	You can take a step further to specify different 'scope' of different
 	filetypes. 'scope' is literally syntax in your file. Say that you want
-	different completion lists in comments and function calls, strings, 
+	different completion lists in comments and function calls, strings,
 	etc, you can do that easily. Here is an example
 >
 	let g:completion_chain_complete_list = {
@@ -346,15 +346,23 @@ g:completion_matching_strategy_list	*g:completion_matching_strategy_list*
 	default value: ['exact']
 
 g:completion_matching_ignore_case	*g:completion_matching_ignore_case*
-	
+
 	Enable ignore case matching in all matching strategy. For example
 >
 	let g:completion_matching_ignore_case = 1
 <
 	default value: 0
 
+g:completion_matching_smart_case	*g:completion_matching_smart_case*
+
+	Enable smart case matching in all matching strategy. For example
+>
+	let g:completion_matching_smart_case = 1
+<
+	default value: &smartcase
+
 g:completion_sorting				    *g:completion_sorting*
-	
+
 	You can determine how you want to sort the completion items in popup
 	menu. Possible values are 'alphabet', 'length', 'none'
 

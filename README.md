@@ -207,6 +207,10 @@ work as you expect on some language server.
 ```vim
 g:completion_matching_ignore_case = 1
 ```
+- Or smart case matching by
+```vim
+g:completion_matching_smart_case = 1
+```
 
 ### Trigger Characters
 
