@@ -99,7 +99,13 @@ local function applyAddtionalTextEdits(completed_item)
     local item = completed_item.user_data.lsp.completion_item
     -- vim-vsnip have better additional text edits...
     if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
-      api.nvim_call_function('vsnip_integ#on_complete_done', { completed_item })
+      api.nvim_call_function('vsnip_integ#do_complete_done', {
+        {
+          completed_item = completed_item,
+          completion_item = item,
+          apply_additional_text_edits = true
+        }
+      })
     else
       if item.additionalTextEdits then
         local bufnr = api.nvim_get_current_buf()
@@ -249,12 +255,6 @@ M.on_attach = function(option)
       'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" :'..
       ' "\\<c-e>\\<CR>" : "\\<CR>"',
       {silent=false, noremap=false, expr=true})
-  end
-  -- overwrite vsnip_integ autocmd since we handle it on ourself in confirmCompletion
-  if vim.fn.exists("#vsnip_integ") then
-    api.nvim_command("augroup vsnip_integ")
-      api.nvim_command("autocmd!")
-    api.nvim_command("augroup end")
   end
   vim.b.completion_enable = 1
 end
