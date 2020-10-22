@@ -47,22 +47,27 @@ M.performComplete = function(complete_source, complete_items_map, params)
     -- collect getCompleteItems function of current completion source
     for _, item in ipairs(complete_source.complete_items) do
       -- check isIncomplete for lsp
+      local complete_items = complete_items_map[item]
+      -- special case to handle lsp isIncomplete flag
       if item == 'lsp' then
         if lsp.isIncomplete then
           cache_complete_items = {}
-        end
-      end
-      local complete_items = complete_items_map[item]
-      if complete_items ~= nil then
-        if complete_items.callback == nil then
-          table.insert(callback_array, true)
-        else
           table.insert(callback_array, complete_items.callback)
-          -- TODO: still pass in manager here because there's external sources using it
-          -- will remove it when refactoring aysnc sources
           complete_items.trigger(manager, params)
+          table.insert(items_array, complete_items.item)
         end
-        table.insert(items_array, complete_items.item)
+      else
+        if complete_items ~= nil then
+          if complete_items.callback == nil then
+            table.insert(callback_array, true)
+          else
+            table.insert(callback_array, complete_items.callback)
+            -- TODO: still pass in manager here because there's external sources using it
+            -- will remove it when refactoring aysnc sources
+            complete_items.trigger(manager, params)
+          end
+          table.insert(items_array, complete_items.item)
+        end
       end
     end
     if #cache_complete_items == 0 then
@@ -104,9 +109,15 @@ M.performComplete = function(complete_source, complete_items_map, params)
           util.sort_completion_items(items)
         end
         if #items ~= 0 then
+          local matching_strategy = opt.get_option("matching_strategy_list")
+          -- don't re-trigger complete when exact matching to avoid flickering
           -- reset insertChar and handle auto changing source
           cache_complete_items = items
-          vim.fn.complete(params.textMatch+1, items)
+          if #matching_strategy == 1 and matching_strategy[1] == 'exact' then
+            return
+          else
+            vim.fn.complete(params.textMatch+1, items)
+          end
           manager.changeSource = false
         else
           cache_complete_items = {}
