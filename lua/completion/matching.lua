@@ -6,8 +6,8 @@ local M = {}
 local function setup_case(prefix, word)
   local ignore_case = opt.get_option('matching_ignore_case') == 1
 
-  if not ignore_case and opt.get_option('matching_smart_case') == 1 and not prefix:match('[A-Z]') then
-    ignore_case = true
+  if ignore_case and opt.get_option('matching_smart_case') == 1 and prefix:match('[A-Z]') then
+    ignore_case = false
   end
 
   if ignore_case then
