@@ -116,7 +116,7 @@ local function text_document_completion_list_to_complete_items(result, params)
       end
     end
     get_context_aware_snippets(item, completion_item, params.line_to_cursor)
-    item.priority = opt.get_option('items_priority')[item.kind]
+    item.priority = opt.get_option('items_priority')[item.kind] or opt.get_option('items_priority')[kind]
     item.menu = completion_item.detail or ''
     match.matching(matches, params.prefix, item)
   end
