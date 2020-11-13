@@ -5,7 +5,7 @@ local api = vim.api
 local util = require 'completion.util'
 
 M.items = {}
-M.callback = false
+M.handler = false
 
 -- onDirScanned handler for vim.loop
 local function onDirScanned(_, data)
@@ -17,7 +17,7 @@ local function onDirScanned(_, data)
       table.insert(M.items, {type = type, name=name})
     end
   end
-  M.callback = true
+  M.handler = true
 end
 
 
@@ -54,7 +54,7 @@ M.getCompletionItems = function(prefix)
 end
 
 M.getHandler = function()
-  return M.callback
+  return M.handler
 end
 
 M.triggerFunction = function(_, opt)

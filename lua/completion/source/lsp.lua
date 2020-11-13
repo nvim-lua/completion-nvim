@@ -5,7 +5,7 @@ local match = require 'completion.matching'
 local opt = require 'completion.option'
 local M = {}
 
-M.callback = false
+M.handler = false
 
 M.isIncomplete = true
 
@@ -125,26 +125,26 @@ local function text_document_completion_list_to_complete_items(result, params)
 end
 
 M.getHandler = function()
-  return M.callback
+  return M.handler
 end
 
 M.triggerFunction = function(_, params)
   local position_param = vim.lsp.util.make_position_params()
-  M.callback = false
+  M.handler = false
   M.items = {}
   if vim.tbl_isempty(vim.lsp.buf_get_clients()) then
-    M.callback = true
+    M.handler = true
     return
   end
   vim.lsp.buf_request(params.bufnr, 'textDocument/completion', position_param, function(err, _, result)
     if err or not result then
-      M.callback = true
+      M.handler = true
       return
     end
     local matches = text_document_completion_list_to_complete_items(result, params)
     M.items = matches
     M.isIncomplete = result.isIncomplete
-    M.callback = true
+    M.handler = true
   end)
 end
 

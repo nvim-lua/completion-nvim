@@ -11,8 +11,8 @@ local M = {}
 
 local cache_complete_items = {}
 
-local function checkHandler(callback_array)
-  for _,val in ipairs(callback_array) do
+local function checkHandler(handler_array)
+  for _,val in ipairs(handler_array) do
     if not val then return false end
     if type(val) == 'function' then
       if val() == false then return end
@@ -42,7 +42,7 @@ M.performComplete = function(complete_source, complete_items_map, params)
     -- ins-complete source
     ins.triggerCompletion(complete_source.mode)
   elseif vim.fn.has_key(complete_source, "complete_items") > 0 then
-    local callback_array = {}
+    local handler_array = {}
     local items_array = {}
     -- collect getCompleteItems function of current completion source
     for _, item in ipairs(complete_source.complete_items) do
@@ -52,16 +52,16 @@ M.performComplete = function(complete_source, complete_items_map, params)
       if item == 'lsp' then
         if lsp.isIncomplete then
           cache_complete_items = {}
-          table.insert(callback_array, complete_items.callback)
+          table.insert(handler_array, complete_items.handler)
           complete_items.trigger(manager, params)
           table.insert(items_array, complete_items.item)
         end
       else
         if complete_items ~= nil then
-          if complete_items.callback == nil then
-            table.insert(callback_array, true)
+          if complete_items.handler == nil then
+            table.insert(handler_array, true)
           else
-            table.insert(callback_array, complete_items.callback)
+            table.insert(handler_array, complete_items.handler)
             -- TODO: still pass in manager here because there's external sources using it
             -- will remove it when refactoring aysnc sources
             complete_items.trigger(manager, params)
@@ -71,7 +71,7 @@ M.performComplete = function(complete_source, complete_items_map, params)
       end
     end
     if #cache_complete_items == 0 then
-      -- use callback_array to handle async behavior
+      -- use handler_array to handle async behavior
 
       local timer = vim.loop.new_timer()
       timer:start(20, 50, vim.schedule_wrap(function()
@@ -79,8 +79,8 @@ M.performComplete = function(complete_source, complete_items_map, params)
           timer:stop()
           timer:close()
         end
-        -- only perform complete when callback_array are all true
-        if checkHandler(callback_array) == true and timer:is_closing() == false then
+        -- only perform complete when handler_array are all true
+        if checkHandler(handler_array) == true and timer:is_closing() == false then
           if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
             local items = getCompletionItems(items_array, params.prefix)
             if opt.get_option('sorting') ~= "none" then
