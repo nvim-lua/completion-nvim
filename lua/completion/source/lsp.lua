@@ -124,7 +124,7 @@ local function text_document_completion_list_to_complete_items(result, params)
   return matches
 end
 
-M.getCallback = function()
+M.getHandler = function()
   return M.callback
 end
 

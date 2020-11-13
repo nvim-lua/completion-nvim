@@ -53,7 +53,7 @@ M.getCompletionItems = function(prefix)
   return complete_items
 end
 
-M.getCallback = function()
+M.getHandler = function()
   return M.callback
 end
 

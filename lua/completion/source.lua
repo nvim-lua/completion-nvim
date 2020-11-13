@@ -14,7 +14,7 @@ local M = {}
 local complete_items_map = {
   ['lsp'] = {
     trigger = lsp.triggerFunction,
-    callback = lsp.getCallback,
+    callback = lsp.getHandler,
     item = lsp.getCompletionItems
   },
   ['snippet'] = {
@@ -22,7 +22,7 @@ local complete_items_map = {
   },
   ['path'] = {
     item = path.getCompletionItems,
-    callback = path.getCallback,
+    callback = path.getHandler,
     trigger = path.triggerFunction,
     trigger_character = {'/'}
   },

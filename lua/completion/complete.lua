@@ -11,7 +11,7 @@ local M = {}
 
 local cache_complete_items = {}
 
-local function checkCallback(callback_array)
+local function checkHandler(callback_array)
   for _,val in ipairs(callback_array) do
     if not val then return false end
     if type(val) == 'function' then
@@ -80,7 +80,7 @@ M.performComplete = function(complete_source, complete_items_map, params)
           timer:close()
         end
         -- only perform complete when callback_array are all true
-        if checkCallback(callback_array) == true and timer:is_closing() == false then
+        if checkHandler(callback_array) == true and timer:is_closing() == false then
           if api.nvim_get_mode()['mode'] == 'i' or api.nvim_get_mode()['mode'] == 'ic' then
             local items = getCompletionItems(items_array, params.prefix)
             if opt.get_option('sorting') ~= "none" then
