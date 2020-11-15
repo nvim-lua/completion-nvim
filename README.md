@@ -74,6 +74,7 @@ another completion source instead(Ex: snippets).
     for `vim-dadbod`.
     * [completion-tabnine](https://github.com/aca/completion-tabnine): AI code completion tool TabNine integration.
     * [completion-tags](https://github.com/kristijanhusak/completion-tags): Slightly improved ctags completion
+    * [completion-tmux](https://github.com/albertoCaroM/completion-tmux): tmux panels completion
 
 ## Configuration
 
