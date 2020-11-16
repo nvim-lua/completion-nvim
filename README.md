@@ -38,7 +38,7 @@ Plug 'nvim-lua/completion-nvim'
   set it up using the `on_attach` function like this.
 
 ```vim
-lua require'nvim_lsp'.pyls.setup{on_attach=require'completion'.on_attach}
+lua require'lspconfig'.pyls.setup{on_attach=require'completion'.on_attach}
 ```
 - Change `pyls` to whichever language server you're using.
 - If you want completion-nvim to be set up for all buffers instead of only being
