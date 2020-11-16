@@ -30,9 +30,9 @@ M.autoOpenSignatureHelp = function()
     local params = vim.lsp.util.make_position_params()
     vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(err, method, result, client_id)
       local client = vim.lsp.get_client_by_id(client_id)
-      local callback = client and client.callbacks['textDocument/signatureHelp']
-      if callback then
-          callback(err, method, result, client_id)
+      local handler = client and client.handler['textDocument/signatureHelp']
+      if handler then
+          handler(err, method, result, client_id)
           return
       end
       if not (result and result.signatures and result.signatures[1]) then
