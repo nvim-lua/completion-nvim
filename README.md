@@ -268,25 +268,6 @@ let g:completion_timer_cycle = 200 "default value is 80
 - You can have different setup for each server in completion-nvim using lua, see [wiki]
 (https://github.com/nvim-lua/completion-nvim/wiki/per-server-setup-by-lua) for more guide.
 
-## Compatibility with diagnostic-nvim
-
-- This plugin only focuses on the **completion** part of the built-in LSP. If
-  you want similar help with diagnostics (e.g. virtual text, jump to diagnostic,
-  open line diagnostic automatically...), take a look at [diagnostic-nvim](https://github.com/haorenW1025/diagnostic-nvim).
-
-- Both diagnostic-nvim and completion-nvim require setting up via `on_attach`.
-  To use them together, create a wrapper function like this.
-
-```vim
-lua << EOF
-local on_attach_vim = function(client)
-  require'completion'.on_attach(client)
-  require'diagnostic'.on_attach(client)
-end
-require'nvim_lsp'.pyls.setup{on_attach=on_attach_vim}
-EOF
-```
-
 ## Trouble Shooting
 
 - This plugin is in the early stages and might have unexpected issues.
