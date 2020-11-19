@@ -353,7 +353,10 @@ M.autoOpenHoverInPopup = function()
       else
         local has_hover = false
         for _, value in pairs(vim.lsp.buf_get_clients(0)) do
-          has_hover = value.resolved_capabilities.hover or has_hover
+          if value.resolved_capabilities.hover then
+            has_hover = true
+            break
+          end
         end
         if not has_hover then return end
         local row, col = unpack(api.nvim_win_get_cursor(0))
