@@ -240,8 +240,8 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	For ins-complete sources, possible 'mode' to the actual key in vim are
 	listed below.
 >
-	"c-n" : i_CTRL-N
-	"c-p" : i_CTRL-P
+	"<c-n>" : i_CTRL-N
+	"<c-p>" : i_CTRL-P
 	"cmd" : i_CTRL-X_CTRL-V
 	"defs": i_CTRL-X_CTRL-D
 	"dict": i_CTRL-X_CTRL-K
@@ -249,6 +249,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	"incl": i_CTRL-X_CTRL-I
 	"keyn": i_CTRL-X_CTRL-N
 	"keyp": i_CTRL-X_CTRL-P
+	"omni": i_CTRL-X_CTRL-O
 	"line": i_CTRL-X_CTRL-L
 	"spel": i_CTRL-X_s
 	"tags": i_CTRL-X_CTRL-]
