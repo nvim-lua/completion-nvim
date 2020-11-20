@@ -306,6 +306,7 @@ M.autoOpenHoverInPopup = function()
   for _, client in pairs(vim.lsp.buf_get_clients(0)) do
     local default_handler = (client.config.handlers or {})['textDocument/hover'] or vim.lsp.handlers['textDocument/hover']
     if default_handler ~= handler_function then
+      if not client.config.handlers then client.config.handlers = {} end
       client.config.handlers['textDocument/hover'] = handler_function
     end
   end
