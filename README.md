@@ -109,8 +109,8 @@ imap <silent> <c-p> <Plug>(completion_trigger)
 - Or you want to use `<Tab>` as trigger keys
 
 ```vim
-nmap <tab> <Plug>(completion_smart_tab)
-nmap <s-tab> <Plug>(completion_smart_s_tab)
+imap <tab> <Plug>(completion_smart_tab)
+imap <s-tab> <Plug>(completion_smart_s_tab)
 ```
 
 ### Enable Snippets Support
