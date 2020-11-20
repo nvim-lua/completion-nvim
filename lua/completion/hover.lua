@@ -272,14 +272,18 @@ local function handler_function(_, method, result)
       -- Set max width option to avoid overlapping with popup menu
       local total_column = api.nvim_get_option('columns')
       local align
+      local col = position['col']
       if position['col'] < total_column/2 then
         align = 'right'
+        if position['scrollbar'] then
+          col = col + 1
+        end
       else
         align = 'left'
       end
       bufnr, winnr = fancy_floating_markdown(markdown_lines, {
         pad_left = 0; pad_right = 1;
-        col = position['col']; width = position['width']; row = position['row']-1;
+        col = col; width = position['width']; row = position['row']-1;
         align = align
       })
       M.winnr = winnr
