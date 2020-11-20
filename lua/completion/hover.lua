@@ -246,13 +246,7 @@ local fancy_floating_markdown = function(contents, opts)
   return bufnr, winnr
 end
 
-local handler = 'textDocument/hover'
-M.default_handler = vim.lsp.handlers[handler]
-
 local function handler_function(_, method, result)
-  -- if M.winnr ~= nil and api.nvim_win_is_valid(M.winnr) then
-    -- api.nvim_win_close(M.winnr, true)
-  -- end
   if vim.fn.pumvisible() == 1 then
     M.focusable_float(method, function()
       if not (result and result.contents) then
@@ -300,20 +294,11 @@ local function handler_function(_, method, result)
       end
       return bufnr, winnr
     end)
-  else
-    M.default_handler(_, method, result, _)
   end
 end
 
 M.autoOpenHoverInPopup = function()
   if vim.fn.pumvisible() ~= 1 then return end
-  for _, client in pairs(vim.lsp.buf_get_clients(0)) do
-    local default_handler = (client.config.handlers or {})['textDocument/hover'] or vim.lsp.handlers['textDocument/hover']
-    if default_handler ~= handler_function then
-      if not client.config.handlers then client.config.handlers = {} end
-      client.config.handlers['textDocument/hover'] = handler_function
-    end
-  end
 
   local bufnr = api.nvim_get_current_buf()
   if api.nvim_call_function('pumvisible', {}) == 1 then
@@ -372,7 +357,7 @@ M.autoOpenHoverInPopup = function()
           textDocument = vim.lsp.util.make_text_document_params();
           position = { line = row; character = col-string.len(item.word); }
         }
-        vim.lsp.buf_request(bufnr, 'textDocument/hover', params)
+        vim.lsp.buf_request(bufnr, 'textDocument/hover', params, handler_function)
       end
       manager.textHover = false
     end
