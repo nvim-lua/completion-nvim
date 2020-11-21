@@ -20,9 +20,8 @@ M.autoOpenSignatureHelp = function()
       return
     end
 
-    if value.resolved_capabilities.hover == false then return end
-      triggered = util.checkTriggerCharacter(line_to_cursor,
-        value.server_capabilities.signatureHelpProvider.triggerCharacters)
+    triggered = util.checkTriggerCharacter(line_to_cursor,
+      value.server_capabilities.signatureHelpProvider.triggerCharacters)
   end
 
   if triggered then
