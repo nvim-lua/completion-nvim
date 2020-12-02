@@ -5,7 +5,7 @@ local M = {}
 local completion_opt_metatable = {
   __index = function(_, key)
     key = 'completion_'..key
-    return vim.g[key]
+    return vim.b[key] or vim.g[key]
   end
 }
 
