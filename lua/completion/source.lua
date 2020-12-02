@@ -76,11 +76,13 @@ local triggerCurrentCompletion = function(bufnr, line_to_cursor, prefix, textMat
 
   -- handle source trigger character and user defined trigger character
   local source_trigger_character = getTriggerCharacter(complete_source)
-  local triggered
+  local trigger_char_option = opt.get_option('trigger_character')
+  local triggered 
   triggered = util.checkTriggerCharacter(line_to_cursor, source_trigger_character) or
-              util.checkTriggerCharacter(line_to_cursor, opt.get_option('trigger_character'))
+              util.checkTriggerCharacter(line_to_cursor, trigger_char_option)
 
-  if complete_source.complete_items ~= nil then
+  local use_lsp_trigger = table.getn(trigger_char_option) == 0
+  if use_lsp_trigger and complete_source.complete_items ~= nil then
     for _, source in ipairs(complete_source.complete_items) do
       if source == 'lsp' and vim.lsp.buf_get_clients() ~= nil then
         for _, value in pairs(vim.lsp.buf_get_clients()) do
