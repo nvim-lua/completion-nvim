@@ -223,6 +223,8 @@ local fancy_floating_markdown = function(contents, opts)
   vim.api.nvim_buf_set_var(bufnr, "lsp_floating", true)
 
   local cwin = vim.api.nvim_get_current_win()
+  local ei = vim.api.nvim_eval("&ei")
+  vim.api.nvim_command("set ei=WinEnter,WinLeave")
   vim.api.nvim_set_current_win(winnr)
 
   vim.cmd("ownsyntax markdown")
@@ -243,6 +245,7 @@ local fancy_floating_markdown = function(contents, opts)
   end
 
   vim.api.nvim_set_current_win(cwin)
+  vim.api.nvim_command("set ei=".. tostring(ei))
   return bufnr, winnr
 end
 
