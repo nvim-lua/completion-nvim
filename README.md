@@ -11,6 +11,7 @@ supported.
 - Asynchronous completion using the `libuv` api.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
+- Automatically insert parentheses
 - Snippets integration with UltiSnips and Neosnippet and vim-vsnip.
 - Apply *additionalTextEdits* in LSP spec if it's available.
 - Chain completion support inspired by [vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
@@ -112,6 +113,14 @@ imap <silent> <c-p> <Plug>(completion_trigger)
 ```vim
 imap <tab> <Plug>(completion_smart_tab)
 imap <s-tab> <Plug>(completion_smart_s_tab)
+```
+
+### Enable automatic parentheses insertion
+
+- By default this setting is turned off. Turn it on by
+
+``` vim
+let g:completion_enable_auto_paren = 1
 ```
 
 ### Enable Snippets Support
