@@ -37,6 +37,8 @@ function M.addCompletionItems(item_table, item)
   if item.word == nil then return end
   local abbr_length = opt.get_option('abbr_length')
   local menu_length = opt.get_option('menu_length')
+  local symbol_kind_list = opt.get_option('symbol_kind_list')
+  local kind_symbol = symbol_kind_list[string.lower(item.kind)]
   if menu_length ~= 0 then
     if item.menu ~= nil and string.len(item.menu) > menu_length then
       item.menu = string.sub(item.menu, 0, menu_length).."..."
@@ -50,7 +52,7 @@ function M.addCompletionItems(item_table, item)
   table.insert(item_table, {
       word = item.word,
       abbr = item.abbr or '',
-      kind = item.kind or '',
+      kind = kind_symbol or '',
       menu = item.menu or '',
       info = item.info or '',
       priority = item.priority or 1,
