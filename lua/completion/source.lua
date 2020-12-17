@@ -87,8 +87,10 @@ local triggerCurrentCompletion = function(bufnr, line_to_cursor, prefix, textMat
           if value.server_capabilities.completionProvider == nil then
             break
           end
-          triggered = triggered or util.checkTriggerCharacter(line_to_cursor,
-            value.server_capabilities.completionProvider.triggerCharacters)
+          if opt.get_option('enable_server_trigger') == 1 then
+            triggered = triggered or util.checkTriggerCharacter(line_to_cursor,
+              value.server_capabilities.completionProvider.triggerCharacters)
+          end
         end
         break
       end

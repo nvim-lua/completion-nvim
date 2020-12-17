@@ -49,6 +49,10 @@ if ! exists('g:completion_trigger_character')
     let g:completion_trigger_character = []
 endif
 
+if ! exists('g:completion_enable_server_trigger')
+    let g:completion_enable_server_trigger = 1
+endif
+
 if ! exists('g:completion_enable_auto_popup')
     let g:completion_enable_auto_popup = 1
 endif

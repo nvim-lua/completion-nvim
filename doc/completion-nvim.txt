@@ -156,6 +156,14 @@ g:completion_trigger_character                *g:completion_trigger_character*
 
         default value: ['.']
 
+g:completion_enable_server_trigger        *g:completion_enable_server_trigger*
+
+	Wether or not to use the trigger characters provided by language 
+	server for triggering the popup menu.
+	You can turn it off by setting this option to zero.
+
+        default value: 1
+
 g:completion_trigger_keyword_length		    *g:completion_trigger_keyword_length*
 
 	You can specify keyword length for triggering completion, if the
