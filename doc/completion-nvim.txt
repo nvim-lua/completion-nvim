@@ -33,7 +33,7 @@ FEATURE                                                  *completion-features*
 PREREQUISITES                                       *completion-prerequisites*
 
 - Neovim 5.0
-- You should be setting up language server with the help of nvim-lsp
+- You should be setting up language server with the help of nvim-lspconfig
 
 ==============================================================================
 SETUP                                                       *completion-setup*
@@ -41,7 +41,7 @@ SETUP                                                       *completion-setup*
 - completion-nvim requires several autocommands set up to work properly, you
   should set it up using the `on_attach` function like this.
   >
-  lua require'nvim_lsp'.pyls.setup{on_attach=require'completion'.on_attach}
+  lua require'lspconfig'.pyls.setup{on_attach=require'completion'.on_attach}
 
 - Change `pyls` to whichever language server you are using.
 
