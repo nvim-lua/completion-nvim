@@ -30,7 +30,7 @@ end
 
 local function substring_match(prefix, word)
   prefix, word = setup_case(prefix, word)
-  if string.find(word, prefix) then
+  if string.find(word, prefix, 1, true) then
     return true
   else
     return false
