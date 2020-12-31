@@ -3,6 +3,7 @@ local vim = vim
 local loop = vim.loop
 local api = vim.api
 local util = require 'completion.util'
+local opt = require 'completion.option'
 
 M.items = {}
 M.callback = false
@@ -36,12 +37,14 @@ local fileTypesMap = setmetatable({
 
 M.getCompletionItems = function(prefix)
   local complete_items = {}
+  local kind = 'Path'
+  kind = opt.get_option('customize_lsp_label')[kind] or kind
   for _, val in ipairs(M.items) do
     local score = util.fuzzy_score(prefix, val.name)
     if score < #prefix/3 or #prefix == 0 then
       table.insert(complete_items, {
         word = val.name,
-        kind = 'Path',
+        kind = kind,
         menu = fileTypesMap[val.type],
         score = score,
         icase = 1,
