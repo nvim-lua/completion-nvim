@@ -7,7 +7,7 @@ local M = {}
 
 M.getUltisnipItems = function(prefix)
   if vim.fn.exists("*UltiSnips#SnippetsInCurrentScope") == 0 then return {} end
-  local snippetsList = api.nvim_call_function('UltiSnips#SnippetsInCurrentScope', {})
+  local snippetsList = vim.call('UltiSnips#SnippetsInCurrentScope')
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) then
     return {}
@@ -16,10 +16,6 @@ M.getUltisnipItems = function(prefix)
   local kind = 'UltiSnips'
   kind = opt.get_option('customize_lsp_label')[kind] or kind
   for key, val in pairs(snippetsList) do
-    -- fix lua parsing issue
-    if key == true then
-      key = 'true'
-    end
     local item = {}
     item.word = key
     item.kind = kind
@@ -33,7 +29,7 @@ end
 
 M.getNeosnippetItems = function(prefix)
   if vim.fn.exists("*neosnippet#helpers#get_completion_snippets") == 0 then return {} end
-  local snippetsList = api.nvim_call_function('neosnippet#helpers#get_completion_snippets', {})
+  local snippetsList = vim.call('neosnippet#helpers#get_completion_snippets')
   local complete_items = {}
   if vim.tbl_isempty(snippetsList) == 0 then
     return {}
@@ -42,9 +38,6 @@ M.getNeosnippetItems = function(prefix)
   kind = opt.get_option('customize_lsp_label')[kind] or kind
   local priority = vim.g.completion_items_priority['Neosnippet']
   for key, val in pairs(snippetsList) do
-    if key == true then
-      key = 'true'
-    end
     local description
     if val == nil or type(val) ~= "table" then description = nil else description = val.description end
     local user_data = {snippet_source = 'Neosnippet', hover = description}
