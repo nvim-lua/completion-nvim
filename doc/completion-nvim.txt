@@ -1,6 +1,6 @@
 *completion-nvim.txt*
-A async completion framework aims to provide completion to neovim's built in
-LSP written in Lua
+Async completion framework that aims to provide completion for neovim's
+built-in LSP, written in Lua.
 
 
 CONTENTS                                                     *completion-nvim*
@@ -12,14 +12,14 @@ CONTENTS                                                     *completion-nvim*
     3. Options .............. |completion-option|
 
 ==============================================================================
-INTRODUCTION					     *completion-introdction*
+INTRODUCTION					     *completion-introduction*
 
 completion-nvim is an auto completion framework that aims to provide a better
 completion experience with neovim's built-in LSP.  Other LSP functionality is
 not supported.
 
 ==============================================================================
-FEATURE                                                  *completion-features*
+FEATURES                                                 *completion-features*
 
 - Asynchronous completion using libuv api.
 - Automatically open hover windows when popupmenu is available.
@@ -74,7 +74,6 @@ g:completion_enable_auto_popup               *g:completion_enable_auto_popup*
 	imap <tab> <Plug>(completion_smart_tab)
 	imap <s-tab> <Plug>(completion_smart_s_tab)
 <
-
         default value: 1
 
 g:completion_enable_snippet                      *g:completion_enable_snippet*
@@ -97,12 +96,11 @@ g:completion_confirm_key                            *g:completion_confirm_key*
         " Change confirm key to <C-y>
         let g:completion_confirm_key = "\<C-y>"
 <
-
         default value: "\<CR>"
 
-	If the confirm key has a fallback mapping, for example when using the auto
-	pairs plugin, it maps to `<cr>`. you can avoid using the default confirm key
-	option and use a mapping like this instead.
+	If the confirm key has a fallback mapping, for example when using the
+        auto pairs plugin, it maps to `<cr>`. You can avoid using the default
+        confirm key option and use a mapping like this instead:
 >
 	let g:completion_confirm_key = ""
 	imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
@@ -120,8 +118,8 @@ g:completion_enable_auto_hover                *g:completion_enable_auto_hover*
 
 g:completion_enable_auto_signature        *g:completion_enable_auto_signature*
 
-	By default signature help opens automatically whenever it is availabe.
-	You can turn it off by setting this option to zero.
+	By default signature help opens automatically whenever it is
+        available. You can turn it off by setting this option to zero.
 
         default value: 1
 
@@ -133,19 +131,20 @@ g:completion_enable_auto_paren		      *g:completion_enable_auto_paren*
 	default value: 0
 
 g:completion_trigger_character                *g:completion_trigger_character*
+
 	You can add or disable a trigger character that will trigger
 	completion.
 
-        For example, disable trigger character
+        For example, disable trigger character:
 >
         let g:completion_trigger_character = []
 <
-        Or having multiple trigger characters
+        Or having multiple trigger characters:
 >
         let g:completion_trigger_character = ['.', '::']
 <
 	Use an autocmd if you want a different trigger character for different
-	lanugages.
+        languages:
 >
         augroup CompletionTriggerCharacter
             autocmd!
@@ -153,18 +152,18 @@ g:completion_trigger_character                *g:completion_trigger_character*
             autocmd BufEnter *.c,*.cpp let g:completion_trigger_character = ['.', '::']
         augroup end
 <
-
         default value: ['.']
 
 g:completion_enable_server_trigger        *g:completion_enable_server_trigger*
 
-	Wether or not to use the trigger characters provided by language 
-	server for triggering the popup menu.
+	Whether or not to use the trigger characters provided by the language
+        server for triggering the popup menu.
+
 	You can turn it off by setting this option to zero.
 
         default value: 1
 
-g:completion_trigger_keyword_length		    *g:completion_trigger_keyword_length*
+g:completion_trigger_keyword_length	 *g:completion_trigger_keyword_length*
 
 	You can specify keyword length for triggering completion, if the
 	current word is less than keyword length, completion won't be
@@ -175,17 +174,13 @@ g:completion_trigger_keyword_length		    *g:completion_trigger_keyword_length*
 
 	default value: 1
 
+g:completion_trigger_on_delete		      *g:completion_trigger_on_delete*
 
-g:completion_trigger_on_delete			    *g:completion_trigger_on_delete*
-
-
-	completion-nvim doesn't trigger completion on delete by default because
-	sometimes I've found it annoying. However, you can enable it by
+	completion-nvim doesn't trigger completion on delete by default,
+        as this can be a nuisance. However, you can enable it via:
 >
 	let g:completion_trigger_on_delete = 1
 <
-
-
 g:completion_timer_cycle                            *g:completion_timer_cycle*
 
         completion-nvim uses a timer to control the rate of completion. Adjust
@@ -201,8 +196,8 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	vim-mucomplete.  In short, you can divide completion sources in groups
 	and have an ins-completion method as backup completion.
 
-	You can specify different completion list for different filetypes. By
-	default, possible sources are 'lsp', 'snippet', 'path' and various
+	You can specify different completion list for different filetypes.
+        By default, possible sources are 'lsp', 'snippet', 'path' and various
 	ins-complete sources. Specify 'mode' as your key for ins-complete
 	sources, 'complete_items' for other sources. For example:
 >
@@ -244,7 +239,6 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	"Neosnippet": neosnippet source
 	"vim-vsnip": vim-vsnip source
 <
-
 	For ins-complete sources, possible 'mode' to the actual key in vim are
 	listed below.
 >
@@ -266,7 +260,6 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 <
 	You can also specify different completion lists for different
 	filetypes, for example:
-
 >
 	let g:completion_chain_complete_list = {
 	    \ 'vim': [
@@ -312,7 +305,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 <
 	For every completion source, you can specify `triggered_only` key.
 	This completion source will only trigger when this key is press. For
-	example
+	example:
 >
 	let g:completion_chain_complete_list = {
 	    \ 'default' : {
@@ -325,7 +318,6 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	    \   }
 	    \}
 <
-
 	Note: Every syntax highlighter has a different syntax name
 	defined(most of them are similar though). You can check your syntax
 	name under your cursor by this command:
@@ -333,7 +325,7 @@ g:completion_chain_complete_list	    *g:completion_chain_complete_list*
 	:echo synIDattr(synID(line('.'), col('.'), 1), "name")
 <
 	You just need to specify a part of a result in the scope since it uses
-	a regex pattern to match it ( For example: if the result is 'luaComment'
+	a regex pattern to match it (For example: if the result is 'luaComment'
 	you only need to specified 'comment', case doesn't matter).
 
 g:completion_auto_change_source		     *g:completion_auto_change_source*
@@ -346,9 +338,9 @@ g:completion_auto_change_source		     *g:completion_auto_change_source*
 g:completion_matching_strategy_list	*g:completion_matching_strategy_list*
 
 	There are three different kind of matching technique implement in
-	completion-nvim: 'substring', 'fuzzy', 'exact' or 'all'. You can specify a list
-	of matching strategy, completion-nvim will loop through the list and
-	assign priority from high to low. For example
+	completion-nvim: 'substring', 'fuzzy', 'exact' or 'all'. You can
+        specify a list of matching strategy, completion-nvim will loop through
+        the list and assign priority from high to low. For example:
 >
 	let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
 <
@@ -356,7 +348,7 @@ g:completion_matching_strategy_list	*g:completion_matching_strategy_list*
 
 g:completion_matching_ignore_case	*g:completion_matching_ignore_case*
 
-	Enable ignore case matching in all matching strategy. For example
+	Enable ignore case matching in all matching strategy. For example:
 >
 	let g:completion_matching_ignore_case = 1
 <

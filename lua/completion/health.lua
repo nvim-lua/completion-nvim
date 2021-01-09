@@ -17,7 +17,7 @@ end
 local checkSnippetSource = function()
   local snippet_source = opt.get_option('enable_snippet')
   if snippet_source == nil then
-    health_info("You haven't setup any snippet source.")
+    health_info("You haven't set up any snippet source")
   else
     local rtp = string.lower(api.nvim_get_option("rtp"))
     local unknown_snippet_source = true
@@ -34,7 +34,7 @@ local checkSnippetSource = function()
             if string.match(rtp, ".*"..v..".*") then
                 health_ok("You are using "..k.." as your snippet source")
             else
-                health_error(k.." is not available! Check if you install "..k.." correctly.")
+                health_error(k.." is not available! Check if you installed "..k.." correctly")
             end
             break
         end
@@ -49,7 +49,7 @@ end
 function M.checkHealth()
   health_start("general")
   if vim.tbl_filter == nil then
-    health_error("vim.tbl_filter is not found!", {'consider recompile neovim from the latest master branch'})
+    health_error("vim.tbl_filter is not found!", {'consider recompiling neovim from the latest master branch'})
   else
     health_ok("neovim version is supported")
   end

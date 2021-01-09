@@ -105,14 +105,14 @@ function M.checkHealth(complete_items_map)
         else
           local ins = require 'completion.source.ins_complete'
           if ins.checkHealth(complete_source.mode) then
-            health_error(complete_source.mode.." is not a valid insert complete mode")
+            health_error(complete_source.mode.." is not a valid insert completion mode")
           end
         end
       end
     end
   end
   if not error then
-    health_ok("all completion source are valid")
+    health_ok("all completion sources are valid")
   end
 end
 
