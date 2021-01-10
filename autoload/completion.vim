@@ -5,12 +5,21 @@ function! completion#completion_confirm() abort
 endfunction
 
 function! completion#wrap_completion() abort
-    if pumvisible() != 0 && complete_info()["selected"] != "-1"
-        call completion#completion_confirm()
-    else
-        call nvim_feedkeys("\<c-g>\<c-g>", "n", v:true)
-        let key = g:completion_confirm_key
-        call nvim_feedkeys(key, "n", v:true)
+    if g:completion_auto_select == 0
+        if pumvisible() != 0 && complete_info()["selected"] != "-1"
+            call completion#completion_confirm()
+        else
+            call nvim_feedkeys("\<c-g>\<c-g>", "n", v:true)
+            let key = g:completion_confirm_key
+            call nvim_feedkeys(key, "n", v:true)
+        endif
+    elseif g:completion_auto_select == 1
+        if pumvisible() != 0 && complete_info()["selected"] != "-1"
+            call completion#completion_confirm()
+        elseif pumvisible() != 0 && complete_info()["selected"] == "-1"
+            call nvim_feedkeys("\<C-n>", "n", v:true)
+            call completion#completion_confirm()
+        endif
     endif
 endfunction
 

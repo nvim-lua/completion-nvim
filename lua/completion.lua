@@ -252,8 +252,7 @@ M.on_attach = function(option)
   api.nvim_command("augroup end")
   if string.len(opt.get_option('confirm_key')) ~= 0 then
     api.nvim_buf_set_keymap(0, 'i', opt.get_option('confirm_key'),
-      'pumvisible() ? complete_info()["selected"] != "-1" ? "\\<Plug>(completion_confirm_completion)" :'..
-      ' "\\<c-e>\\<CR>" : "\\<CR>"',
+      'pumvisible() ? "\\<Plug>(completion_confirm_completion)" : "\\<CR>"',
       {silent=false, noremap=false, expr=true})
   end
   vim.b.completion_enable = 1

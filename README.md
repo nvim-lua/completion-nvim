@@ -169,6 +169,16 @@ imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
 let g:completion_enable_auto_hover = 0
 ```
 
+### Enable/Disable auto select
+
+- By default to confirm completion an result item must be selected manually.
+  You can enable automatic confirmation with [confirm key](#changing-completion-confirm-key)
+  without having to enter completion menu by
+
+```vim
+let g:completion_auto_select = 1
+```
+
 ### Enable/Disable auto signature
 
 - By default signature help opens automatically whenever it's available. Disable
