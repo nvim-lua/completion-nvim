@@ -11,7 +11,7 @@ supported.
 - Asynchronous completion using the `libuv` api.
 - Automatically open hover windows when popupmenu is available.
 - Automatically open signature help if it's available.
-- Snippets integration with UltiSnips and Neosnippet and vim-vsnip.
+- Snippets integration with UltiSnips, Neosnippet, vim-vsnip, and snippets.nvim.
 - Apply *additionalTextEdits* in LSP spec if it's available.
 - Chain completion support inspired by [vim-mucomplete](https://github.com/lifepillar/vim-mucomplete)
 
@@ -129,9 +129,7 @@ let g:completion_enable_snippet = 'UltiSnips'
 - Some language server have snippet support but neovim couldn't handle that for now, `completion-nvim` can integrate
 with other LSP snippet parsing plugin for this support.
 
-- Right now only support `vim-vsnip`(require `vim-vsnip-integ`), it should
-work out of the box if you have [vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and
-[vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ) installed.
+Right now, [vim-vsnip](https://github.com/hrsh7th/vim-vsnip) (requiring [vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ)) and [snippets.nvim](https://github.com/norcalli/snippets.nvim) are supported.
 
 ### Chain Completion Support
 
