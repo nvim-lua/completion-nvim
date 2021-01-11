@@ -25,14 +25,14 @@ local function get_completion_word(item, prefix, suffix)
           newText = item.textEdit.newText
       end
     if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText"
-		or vim.g.completion_enable_snippet == "snippets.nvim" then
+		or opt.get_option('enable_snippet') == "snippets.nvim" then
       return newText
     else
       return vim.lsp.util.parse_snippet(newText)
     end
   elseif item.insertText ~= nil and item.insertText ~= vim.NIL then
     if protocol.InsertTextFormat[item.insertTextFormat] == "PlainText"
-		or vim.g.completion_enable_snippet == "snippets.nvim" then
+		or opt.get_option('enable_snippet') == "snippets.nvim" then
       return item.insertText
     else
       return vim.lsp.util.parse_snippet(item.insertText)
@@ -99,7 +99,7 @@ local function text_document_completion_list_to_complete_items(result, params)
       }
     }
 	if protocol.InsertTextFormat[completion_item.insertTextFormat] == 'Snippet'
-		and vim.g.completion_enable_snippet == "snippets.nvim" then
+		and opt.get_option('enable_snippet') == "snippets.nvim" then
 	  item.user_data.actual_item = item.word
 	  item.word = completion_item.label
 	end

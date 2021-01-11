@@ -125,7 +125,7 @@ local function hasConfirmedCompletion()
   if completed_item.user_data == nil then return end
   if completed_item.user_data.lsp ~= nil then
     applyAddtionalTextEdits(completed_item)
-    if vim.g.completion_enable_snippet == "snippets.nvim" then
+    if opt.get_option('enable_snippet') == "snippets.nvim" then
       require 'snippets'.expand_at_cursor(completed_item.user_data.actual_item, completed_item.word)
     end
   end
