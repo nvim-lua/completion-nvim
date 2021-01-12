@@ -109,7 +109,7 @@ M.getSnippetsNvimItems = function(prefix)
 end
 
 M.getCompletionItems = function(prefix)
-  local source = vim.g.completion_enable_snippet
+  local source = opt.get_option('enable_snippet')
   local snippet_list = {}
   if source == 'UltiSnips' then
     snippet_list = M.getUltisnipItems(prefix)
