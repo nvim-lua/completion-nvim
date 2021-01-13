@@ -14,12 +14,14 @@ M.getUltisnipItems = function(prefix)
   end
   local priority = vim.g.completion_items_priority['UltiSnips'] or 1
   local kind = 'UltiSnips'
+  local dup = opt.get_option('items_duplicate')[kind] or 1
   kind = opt.get_option('customize_lsp_label')[kind] or kind
   for key, val in pairs(snippetsList) do
     local item = {}
     item.word = key
     item.kind = kind
     item.priority = priority
+    item.dup = dup
     local user_data = {snippet_source = 'UltiSnips', hover = val}
     item.user_data = user_data
     match.matching(complete_items, prefix, item)
@@ -36,6 +38,7 @@ M.getNeosnippetItems = function(prefix)
   end
   local kind = 'Neosnippet'
   kind = opt.get_option('customize_lsp_label')[kind] or kind
+  local dup = opt.get_option('items_duplicate')[kind] or 1
   local priority = vim.g.completion_items_priority['Neosnippet']
   for key, val in pairs(snippetsList) do
     local description
@@ -45,6 +48,7 @@ M.getNeosnippetItems = function(prefix)
     item.word = key
     item.kind = kind
     item.priority = priority
+    item.dup = dup
     item.user_data = user_data
     match.matching(complete_items, prefix, item)
   end
@@ -61,6 +65,7 @@ M.getVsnipItems = function(prefix)
   local kind = 'vim-vsnip'
   kind = opt.get_option('customize_lsp_label')[kind] or kind
   local priority = vim.g.completion_items_priority['vim-vsnip']
+  local dup = opt.get_option('items_duplicate')[kind] or 1
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
       for _, word in pairs(snippet.prefix) do
@@ -69,6 +74,7 @@ M.getVsnipItems = function(prefix)
         item.word = word
         item.kind = kind
         item.menu = snippet.label
+        item.dup = dup
         item.priority = priority
         item.user_data = user_data
         match.matching(complete_items, prefix, item)
@@ -90,6 +96,7 @@ M.getSnippetsNvimItems = function(prefix)
   end
   local priority = vim.g.completion_items_priority['snippets.nvim'] or 1
   local kind = 'snippets.nvim'
+  local dup = opt.get_option('items_duplicate')[kind] or 1
   kind = opt.get_option('customize_lsp_label')[kind] or kind
   for short, long in pairs(snippetsList) do
     -- TODO: We cannot put the parsed snippet itself in userdata, since it may
@@ -99,6 +106,7 @@ M.getSnippetsNvimItems = function(prefix)
     local item = {}
     item.word = short
     item.kind = kind
+    item.dup = dup
     -- TODO: Turn actual snippet text into label/description?
     item.menu = short
     item.priority = priority
