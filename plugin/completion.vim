@@ -125,8 +125,8 @@ if ! exists('g:completion_menu_length')
     let g:completion_menu_length = 0
 endif
 
-if ! exists('g:completion_dup_items')
-    let g:completion_lsp_dup_items = {}
+if ! exists('g:completion_items_duplicate')
+    let g:completion_items_duplicate = {}
 endif
 
 inoremap <silent> <Plug>(completion_confirm_completion)
