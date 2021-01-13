@@ -125,6 +125,10 @@ if ! exists('g:completion_menu_length')
     let g:completion_menu_length = 0
 endif
 
+if ! exists('g:completion_dup_items')
+    let g:completion_lsp_dup_items = {}
+endif
+
 inoremap <silent> <Plug>(completion_confirm_completion)
       \ <cmd>call completion#wrap_completion()<CR>
 
@@ -149,3 +153,5 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 let g:loaded_completion = 1
+
+
