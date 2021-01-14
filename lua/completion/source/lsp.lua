@@ -13,6 +13,12 @@ M.getCompletionItems = function(_, _)
   return M.items
 end
 
+local function sort_completion_items(items)
+  table.sort(items, function(a, b)
+    return (a.sortText or a.label) < (b.sortText or b.label)
+  end)
+end
+
 local function get_completion_word(item, prefix, suffix)
   if item.textEdit ~= nil and item.textEdit ~= vim.NIL
     and item.textEdit.newText ~= nil and (item.insertTextFormat ~= 2 or vim.fn.exists('g:loaded_vsnip_integ')) then
@@ -74,7 +80,7 @@ local function text_document_completion_list_to_complete_items(result, params)
 
   local customize_label = opt.get_option('customize_lsp_label')
   -- items = remove_unmatch_completion_items(items, prefix)
-  -- sort_completion_items(items)
+  sort_completion_items(items)
 
   local matches = {}
 
