@@ -20,6 +20,7 @@ M.autoOpenSignatureHelp = function()
       return
     end
 
+    line_to_cursor = vim.trim(line_to_cursor)
     triggered = util.checkTriggerCharacter(line_to_cursor,
       value.server_capabilities.signatureHelpProvider.triggerCharacters)
   end
