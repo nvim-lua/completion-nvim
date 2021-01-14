@@ -56,7 +56,7 @@ local function get_context_aware_snippets(item, completion_item, line_to_cursor)
     end
   end
   item.user_data = {}
-  local matches
+  local matches, word
   word, matches = item.word:gsub("%(.*%)$", "")
   if matches == 0 then
     word, matches = item.word:gsub("<.*>$", "")
@@ -93,6 +93,7 @@ local function text_document_completion_list_to_complete_items(result, params)
 
     item.word = get_completion_word(completion_item, params.prefix, params.suffix)
     item.word = item.word:gsub('\n', ' ')
+    item.word = vim.trim(item.word)
     item.dup = opt.get_option("items_duplicate")['lsp']
     item.user_data = {
       lsp = {
@@ -102,11 +103,11 @@ local function text_document_completion_list_to_complete_items(result, params)
 	if protocol.InsertTextFormat[completion_item.insertTextFormat] == 'Snippet'
 		and opt.get_option('enable_snippet') == "snippets.nvim" then
 	  item.user_data.actual_item = item.word
-	  item.word = completion_item.label
+	  item.word = vim.trim(completion_item.label)
 	end
     local kind = protocol.CompletionItemKind[completion_item.kind]
     item.kind = customize_label[kind] or kind
-    item.abbr = completion_item.label
+    item.abbr = vim.trim(completion_item.label)
     if params.suffix ~= nil and #params.suffix ~= 0 then
       local index = item.word:find(params.suffix)
       if index ~= nil then
