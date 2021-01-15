@@ -137,7 +137,12 @@ local function hasConfirmedCompletion()
   elseif completed_item.user_data.snippet_source == 'Neosnippet' then
     api.nvim_input("<c-r>".."=neosnippet#expand('"..completed_item.word.."')".."<CR>")
   elseif completed_item.user_data.snippet_source == 'vim-vsnip' then
-    api.nvim_call_function('vsnip#expand', {})
+    api.nvim_call_function('vsnip#anonymous', {
+      table.concat(completed_item.user_data.snippet_body, "\n"),
+      {
+        prefix = completed_item.word
+      }
+    })
   elseif completed_item.user_data.snippet_source == 'snippets.nvim' then
     require'snippets'.expand_at_cursor()
   end

@@ -69,7 +69,7 @@ M.getVsnipItems = function(prefix)
   for _, source in pairs(snippetsList) do
     for _, snippet in pairs(source) do
       for _, word in pairs(snippet.prefix) do
-        local user_data = {snippet_source = 'vim-vsnip', hover = snippet.description}
+        local user_data = {snippet_source = 'vim-vsnip', snippet_body = snippet.body, hover = snippet.description}
         local item = {}
         item.word = word
         item.kind = kind
