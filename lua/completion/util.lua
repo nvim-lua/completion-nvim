@@ -18,7 +18,9 @@ end
 
 function M.sort_completion_items(items)
   table.sort(items, function(a, b)
-    if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
+    if a.source_priority ~= b.source_priority and a.source_priority ~= nil and b.source_priority ~= nil then
+      return a.source_priority > b.source_priority
+    elseif a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
       return a.priority > b.priority
     elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
       return a.score < b.score
@@ -54,6 +56,7 @@ function M.addCompletionItems(item_table, item)
       menu = item.menu or '',
       info = item.info or '',
       priority = item.priority or 1,
+      source_priority = item.source_priority or 1,
       icase = 1,
       dup = item.dup or 1,
       empty = 1,
