@@ -28,27 +28,29 @@ M.autoOpenSignatureHelp = function()
   if triggered then
     -- overwrite signature help here to disable "no signature help" message
     local params = vim.lsp.util.make_position_params()
-    vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(err, method, result, client_id)
+    vim.lsp.buf_request(0, 'textDocument/signatureHelp', params,
+        function(err, method, result, client_id, bufnr)
       local client = vim.lsp.get_client_by_id(client_id)
       local handler = client and client.handlers['textDocument/signatureHelp']
       if handler then
-          handler(err, method, result, client_id)
-          return
+        handler(err, method, result, client_id, bufnr)
+        return
       end
       if not (result and result.signatures and result.signatures[1]) then
         return
       end
       local lines = vim.lsp.util.convert_signature_help_to_markdown_lines(result)
+      lines = vim.lsp.util.trim_empty_lines(lines)
       if vim.tbl_isempty(lines) then
         return
       end
-      local bufnr, _ = vim.lsp.util.focusable_preview(method, function()
-        -- TODO show popup when signatures is empty?
-        lines = vim.lsp.util.trim_empty_lines(lines)
+      local syntax = api.nvim_buf_get_option(bufnr, 'syntax')
+      local p_bufnr, _ = vim.lsp.util.focusable_preview(method, function()
         return lines, vim.lsp.util.try_trim_markdown_code_blocks(lines)
       end)
+      api.nvim_buf_set_option(p_bufnr, 'syntax', syntax)
       -- setup a variable for floating window, fix #223
-      vim.api.nvim_buf_set_var(bufnr, "lsp_floating", true)
+      vim.api.nvim_buf_set_var(p_bufnr, 'lsp_floating', true)
     end)
   end
 end

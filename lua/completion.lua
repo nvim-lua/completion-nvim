@@ -234,7 +234,7 @@ function M.on_CompleteDone()
     manager.confirmedCompletion = false
     hasConfirmedCompletion()
     -- auto trigger signature help when we confirm completion
-    if vim.g.completion_enable_auto_signature ~= 0 then
+    if opt.get_option('enable_auto_signature') == 1 then
       signature.autoOpenSignatureHelp()
     end
   end
