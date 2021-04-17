@@ -98,7 +98,7 @@ local function applyAddtionalTextEdits(completed_item)
   if completed_item.user_data.lsp ~= nil then
     local item = completed_item.user_data.lsp.completion_item
     -- vim-vsnip have better additional text edits...
-    if vim.fn.exists('g:loaded_vsnip_integ') then
+    if vim.fn.exists('g:loaded_vsnip_integ') ~= 0 then
       api.nvim_call_function('vsnip_integ#do_complete_done', {
         {
           completed_item = completed_item,
