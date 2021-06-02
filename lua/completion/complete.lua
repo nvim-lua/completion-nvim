@@ -21,10 +21,19 @@ local function checkCallback(callback_array)
   return true
 end
 
+local function assignSourcePriority(items, source)
+  local source_priority = opt.get_option('source_priority')[source] or 1
+  for _, item in ipairs(items) do
+    item.source_priority = source_priority
+  end
+end
+
 local function getCompletionItems(items_array, prefix)
   local complete_items = {}
-  for _,func in ipairs(items_array) do
-    vim.list_extend(complete_items, func(prefix))
+  for source, func in pairs(items_array) do
+    local items = func(prefix)
+    assignSourcePriority(items, source)
+    vim.list_extend(complete_items, items)
   end
   return complete_items
 end
@@ -54,7 +63,7 @@ M.performComplete = function(complete_source, complete_items_map, params)
           cache_complete_items = {}
           table.insert(callback_array, complete_items.callback)
           complete_items.trigger(manager, params)
-          table.insert(items_array, complete_items.item)
+          items_array[item] = complete_items.item
         end
       else
         if complete_items ~= nil then
@@ -66,7 +75,7 @@ M.performComplete = function(complete_source, complete_items_map, params)
             -- will remove it when refactoring aysnc sources
             complete_items.trigger(manager, params)
           end
-          table.insert(items_array, complete_items.item)
+          items_array[item] = complete_items.item
         end
       end
     end
