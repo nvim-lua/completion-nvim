@@ -142,8 +142,7 @@ function M.triggerCompletion(force)
   local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
-  local rev_textMatch = #cursor_to_end - vim.fn.match(cursor_to_end:reverse(), '\\k*$')
-  local suffix = cursor_to_end:sub(1, rev_textMatch)
+  local suffix = cursor_to_end:sub(1, vim.fn.matchend(cursor_to_end, '^\\k*'))
   manager.insertChar = true
   -- force is used when manually trigger, so it doesn't repect the trigger word length
   triggerCurrentCompletion(bufnr, line_to_cursor, prefix, textMatch, suffix, force)
@@ -154,8 +153,7 @@ function M.autoCompletion()
   local bufnr, line_to_cursor, cursor_to_end = getPositionParam()
   local textMatch = vim.fn.match(line_to_cursor, '\\k*$')
   local prefix = line_to_cursor:sub(textMatch+1)
-  local rev_textMatch = #cursor_to_end - vim.fn.match(cursor_to_end:reverse(), '\\k*$')
-  local suffix = cursor_to_end:sub(1, rev_textMatch)
+  local suffix = cursor_to_end:sub(1, vim.fn.matchend(cursor_to_end, '^\\k*'))
   local length = opt.get_option('trigger_keyword_length')
 
   -- reset completion when deleting character in insert mode

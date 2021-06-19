@@ -16,19 +16,29 @@ end
 --  completion items  --
 ------------------------
 
-function M.sort_completion_items(items)
-  table.sort(items, function(a, b)
-    if a.priority ~= b.priority and a.priority ~= nil and b.priority ~= nil then
-      return a.priority > b.priority
-    elseif a.score ~= b.score and a.score ~= nil and b.score ~= nil then
-      return a.score < b.score
-    elseif opt.get_option("sorting") == 'alphabet' then
+local function compare_strings(a, b)
+    if opt.get_option("sorting") == 'alphabet' then
       return a.word < b.word
     elseif opt.get_option("sorting") == 'length_desc' then
       return string.len(a.word) > string.len(b.word)
     else
       return string.len(a.word) < string.len(b.word)
     end
+end
+
+local function compare_scores_then_strings(a, b)
+  if a.score == b.score or a.score == nil or b.score == nil then
+    return compare_strings(a, b);
+  end
+  return a.score < b.score
+end
+
+function M.sort_completion_items(items)
+  table.sort(items, function(a, b)
+    if a.priority == b.priority or a.priority == nil or b.priority == nil then
+      return compare_scores_then_strings(a, b)
+    end
+    return a.priority > b.priority
   end)
 end
 
