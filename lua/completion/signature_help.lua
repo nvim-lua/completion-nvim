@@ -42,10 +42,13 @@ M.autoOpenSignatureHelp = function()
       if vim.tbl_isempty(lines) then
         return
       end
+
+      -- if `lines` can be trimmed, it is modified in place
+      local trimmed_lines_filetype = vim.lsp.util.try_trim_markdown_code_blocks(lines)
       local bufnr, _ = vim.lsp.util.open_floating_preview(
         -- TODO show popup when signatures is empty?
         vim.lsp.util.trim_empty_lines(lines),
-        vim.lsp.util.try_trim_markdown_code_blocks(lines),
+        trimmed_lines_filetype,
         {}
       )
       -- setup a variable for floating window, fix #223
