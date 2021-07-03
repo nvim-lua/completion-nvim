@@ -28,6 +28,7 @@ M.autoOpenSignatureHelp = function()
   if triggered then
     -- overwrite signature help here to disable "no signature help" message
     local params = vim.lsp.util.make_position_params()
+    local filetype = vim.api.nvim_buf_get_option(0, 'filetype')
     vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(err, method, result, client_id)
       local client = vim.lsp.get_client_by_id(client_id)
       local handler = client and client.handlers['textDocument/signatureHelp']
@@ -38,7 +39,7 @@ M.autoOpenSignatureHelp = function()
       if not (result and result.signatures and result.signatures[1]) then
         return
       end
-      local lines = vim.lsp.util.convert_signature_help_to_markdown_lines(result)
+      local lines = vim.lsp.util.convert_signature_help_to_markdown_lines(result, filetype)
       if vim.tbl_isempty(lines) then
         return
       end
