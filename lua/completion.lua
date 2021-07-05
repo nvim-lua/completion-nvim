@@ -246,7 +246,7 @@ end
 M.on_attach = function(option)
   -- setup completion_option tables
   opt.set_option_table(option)
-  local disable_filetypes = opt.get_option("disable_filetypes")
+  local disable_filetypes = opt.get_option("disable_filetypes") or {}
   local ft = vim.bo.filetype
   for _, disable_ft in ipairs(disable_filetypes) do
     if ft == disable_ft then
