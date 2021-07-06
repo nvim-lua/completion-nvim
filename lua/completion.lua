@@ -107,7 +107,7 @@ local function applyAddtionalTextEdits(completed_item)
         }
       })
     else
-      if next(item.additionalTextEdits) then
+      if next(item.additionalTextEdits or {}) then
         local bufnr = api.nvim_get_current_buf()
         local edits = vim.tbl_filter(
           function(x) return x.range.start.line ~= (lnum - 1) end,
