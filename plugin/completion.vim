@@ -25,6 +25,10 @@ if ! exists('g:completion_enable_auto_hover')
     let g:completion_enable_auto_hover = 1
 endif
 
+if ! exists('g:completion_popup_border')
+    let g:completion_popup_border = 'single'
+endif
+
 if ! exists('g:completion_docked_hover')
     let g:completion_docked_hover = 0
 endif

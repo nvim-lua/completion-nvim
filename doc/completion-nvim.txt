@@ -123,6 +123,16 @@ g:completion_enable_auto_signature        *g:completion_enable_auto_signature*
 
         default value: 1
 
+g:completion_popup_border        		*g:completion_popup_border*
+
+	By default border for auto hover popup and signature help popup
+	are set to single. You can change it as per neovim's popup/preview
+	window sepcifications.
+
+	available options: 'single', 'double', 'rounded', 'solid' and 'shadow'
+
+        default value: 'single'
+
 g:completion_enable_auto_paren		      *g:completion_enable_auto_paren*
 
 	Enable the auto insert parenthesis feature. completion-nvim will

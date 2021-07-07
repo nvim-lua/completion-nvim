@@ -81,6 +81,7 @@ local make_floating_popup_options = function(width, height, opts)
     focusable = false,
     style = 'minimal',
     width = width,
+	border = vim.g.completion_popup_border
   }
 end
 
