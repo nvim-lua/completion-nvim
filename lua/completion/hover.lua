@@ -73,6 +73,17 @@ local make_floating_popup_options = function(width, height, opts)
     col = opts.col - width - 1
   end
 
+  local default_border = {
+    {"", "NormalFloat"},
+    {"", "NormalFloat"},
+    {"", "NormalFloat"},
+    {" ", "NormalFloat"},
+    {"", "NormalFloat"},
+    {"", "NormalFloat"},
+    {"", "NormalFloat"},
+    {" ", "NormalFloat"},
+  }
+
   return {
     col = col,
     height = height,
@@ -81,6 +92,7 @@ local make_floating_popup_options = function(width, height, opts)
     focusable = false,
     style = 'minimal',
     width = width,
+    border = vim.g.completion_popup_border or default_border
   }
 end
 
