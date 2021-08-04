@@ -123,6 +123,17 @@ g:completion_enable_auto_signature        *g:completion_enable_auto_signature*
 
         default value: 1
 
+g:completion_popup_border        		*g:completion_popup_border*
+
+	This variable sets border for auto hover popup and signature help popup.
+	The variable is not created by default so that there is no border by
+	default. You can set it as per neovim's popup/preview
+	window sepcifications.
+
+	available options: 'single', 'double', 'rounded', 'solid' and 'shadow'
+
+        default value: variable not declared
+
 g:completion_enable_auto_paren		      *g:completion_enable_auto_paren*
 
 	Enable the auto insert parenthesis feature. completion-nvim will
