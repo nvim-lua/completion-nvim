@@ -159,8 +159,8 @@ local fancy_floating_markdown = function(contents, opts)
   local width = 0
   for i, v in ipairs(stripped) do
     v = v:gsub("\r", "")
-    if pad_left then v = (" "):rep(pad_left)..v end
-    if pad_right then v = v..(" "):rep(pad_right) end
+    if pad_left then v = (" "):rep(pad_left)..v end
+    if pad_right then v = v..(" "):rep(pad_right) end
     stripped[i] = v
     width = math.max(width, #v)
   end
@@ -182,7 +182,7 @@ local fancy_floating_markdown = function(contents, opts)
       h.start = h.start + i - 1
       h.finish = h.finish + i - 1
       if h.finish + 1 <= #stripped then
-        table.insert(stripped, h.finish + 1, " " .. string.rep("—", width - 2))
+        table.insert(stripped, h.finish + 1, " " .. string.rep("─", width - 2))
       end
     end
   end
