@@ -51,7 +51,7 @@ M.autoOpenSignatureHelp = function()
         opts.border = vim.g.completion_popup_border
       end
       local fbuf, fwin = vim.lsp.util.open_floating_preview(
-        vim.lsp.util.trim_empty_lines(lines),
+        lines,
         trimmed_lines_filetype,
         opts
       )
