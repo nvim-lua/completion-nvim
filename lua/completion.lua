@@ -84,6 +84,12 @@ local function autoAddParens(completed_item)
   end
 end
 
+local function autoAddBrace(completed_item)
+  if completed_item.kind == 'Variable' and string.match(completed_item.abbr, '.*}$') and string.match(completed_item.word, '.*}$') == nil then
+    api.nvim_input("}<left>")
+  end
+end
+
 -- Workaround to avoid expand snippets when not confirm
 -- confirmCompletion is now triggered by CompleteDone autocmd to solve issue with noselect
 -- Will cause snippets to expand with not pressing confirm key
@@ -132,6 +138,11 @@ local function hasConfirmedCompletion()
   if opt.get_option('enable_auto_paren') == 1 then
     autoAddParens(completed_item)
   end
+
+  if opt.get_option('enable_auto_close_brace') == 1 then
+    autoAddBrace(completed_item)
+  end
+
   if completed_item.user_data.snippet_source == 'UltiSnips' then
     api.nvim_call_function('UltiSnips#ExpandSnippet', {})
   elseif completed_item.user_data.snippet_source == 'Neosnippet' then
