@@ -76,6 +76,7 @@ another completion source instead(Ex: snippets).
     * [completion-tags](https://github.com/kristijanhusak/completion-tags): Slightly improved ctags completion
     * [completion-tmux](https://github.com/albertoCaroM/completion-tmux): tmux panels completion
     * [completion-vcard](https://github.com/cbarrete/completion-vcard): email completion from vCards
+    * [completion-fish](https://github.com/mtoohey31/completion-fish): fish shell completion
 
 ## Configuration
 
