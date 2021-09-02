@@ -235,6 +235,11 @@ augroup CompletionTriggerCharacter
 augroup end
 ```
 
+- If you don't want to use trigger characters provided by language servers, you can disable it with
+```vim
+let g:completion_enable_server_trigger = 0
+```
+
 ### Trigger keyword length
 
 - You can specify keyword length for triggering completion, if the current word is less then keyword length, completion won't be
