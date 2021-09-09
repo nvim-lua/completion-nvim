@@ -258,8 +258,15 @@ local fancy_floating_markdown = function(contents, opts)
   return bufnr, winnr
 end
 
-local function handler_function(_, method, result)
+local function handler_function(_, ...)
   if vim.fn.pumvisible() == 1 then
+    local method = select(1, ...)
+    local result = select(2, ...)
+    if type(method) == 'table' then
+      result = select(1, ...)
+      method = select(2, ...).method
+    end
+
     M.focusable_float(method, function()
       if not (result and result.contents) then
         -- return { 'No information available' }
