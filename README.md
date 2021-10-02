@@ -1,3 +1,7 @@
+## WARNING: completion.nvim is no longer maintained
+
+If you are looking for an autocompletion plugin, the neovim LSP team recommends either [nvim-cmp](https://github.com/hrsh7th/nvim-cmp/) or [coq_nvim](https://github.com/ms-jpq/coq_nvim).
+
 [![Build Status](https://travis-ci.com/haorenW1025/completion-nvim.svg?branch=master)](https://travis-ci.com/haorenW1025/completion-nvim)
 [![Gitter](https://badges.gitter.im/completion-nvim/community.svg)](https://gitter.im/completion-nvim/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 # completion-nvim
