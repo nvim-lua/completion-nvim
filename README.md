@@ -25,7 +25,7 @@ Demo using `sumneko_lua`
 ![](https://user-images.githubusercontent.com/35623968/76489411-3ca1d480-6463-11ea-8c3a-7f0e3c521cdb.gif)
 
 ## Prerequisites
-- Neovim nightly
+- Neovim v0.5.0 or newer 
 - You should set up your language server of choice with the help of [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
 ## Install
