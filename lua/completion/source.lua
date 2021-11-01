@@ -87,7 +87,7 @@ local triggerCurrentCompletion = function(bufnr, line_to_cursor, prefix, textMat
           if value.server_capabilities.completionProvider == nil then
             break
           end
-          if opt.get_option('enable_server_trigger') == 1 then
+          if opt.get_option('enable_server_trigger') then
             triggered = triggered or util.checkTriggerCharacter(line_to_cursor,
               value.server_capabilities.completionProvider.triggerCharacters)
           end
@@ -101,7 +101,7 @@ local triggerCurrentCompletion = function(bufnr, line_to_cursor, prefix, textMat
   if complete_source['triggered_only'] ~= nil then
     local triggered_only = util.checkTriggerCharacter(line_to_cursor, complete_source['triggered_only'])
     if not triggered_only then
-      if opt.get_option('auto_change_source') == 1 then
+      if opt.get_option('auto_change_source') then
         manager.changeSource = true
       end
       return
@@ -162,7 +162,7 @@ function M.autoCompletion()
     -- not sure if I should clear cache here
     complete.clearCache()
     -- api.nvim_input("<c-g><c-g>")
-    if opt.get_option('trigger_on_delete') == 1 then
+    if opt.get_option('trigger_on_delete') then
       M.triggerCompletion(false)
     end
     M.stop_complete = false

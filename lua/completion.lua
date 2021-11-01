@@ -98,7 +98,7 @@ local function applyAddtionalTextEdits(completed_item)
   if completed_item.user_data.lsp ~= nil then
     local item = completed_item.user_data.lsp.completion_item
     -- vim-vsnip have better additional text edits...
-    if vim.fn.exists('g:loaded_vsnip_integ') == 1 then
+    if vim.fn.exists('g:loaded_vsnip_integ') ~= 0 then
       api.nvim_call_function('vsnip_integ#do_complete_done', {
         {
           completed_item = completed_item,
@@ -129,7 +129,7 @@ local function hasConfirmedCompletion()
       require 'snippets'.expand_at_cursor(completed_item.user_data.actual_item, completed_item.word)
     end
   end
-  if opt.get_option('enable_auto_paren') == 1 then
+  if opt.get_option('enable_auto_paren') then
     autoAddParens(completed_item)
   end
   if completed_item.user_data.snippet_source == 'UltiSnips' then
@@ -174,7 +174,7 @@ function M.on_InsertEnter()
 
   -- TODO: remove this
   local autoChange = false
-  if opt.get_option('auto_change_source') == 1 then
+  if opt.get_option('auto_change_source') then
     autoChange = true
   end
 
@@ -189,13 +189,13 @@ function M.on_InsertEnter()
     -- complete if changes are made
     if l_changedTick ~= manager.changedTick then
       manager.changedTick = l_changedTick
-      if opt.get_option('enable_auto_popup') == 1 then
+      if opt.get_option('enable_auto_popup') then
         source.autoCompletion()
       end
-      if opt.get_option('enable_auto_hover') == 1 then
+      if opt.get_option('enable_auto_hover') then
         hover.autoOpenHoverInPopup(manager)
       end
-      if opt.get_option('enable_auto_signature') == 1 then
+      if opt.get_option('enable_auto_signature') then
         signature.autoOpenSignatureHelp()
       end
     end

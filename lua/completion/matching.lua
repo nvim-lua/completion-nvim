@@ -4,9 +4,9 @@ local opt = require 'completion.option'
 local M = {}
 
 local function setup_case(prefix, word)
-  local ignore_case = opt.get_option('matching_ignore_case') == 1
+  local ignore_case = opt.get_option('matching_ignore_case')
 
-  if ignore_case and opt.get_option('matching_smart_case') == 1 and prefix:match('[A-Z]') then
+  if ignore_case and opt.get_option('matching_smart_case') and prefix:match('[A-Z]') then
     ignore_case = false
   end
 

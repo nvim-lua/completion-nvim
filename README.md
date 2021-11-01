@@ -102,7 +102,7 @@ set shortmess+=c
 - By default auto popup is enabled, turn it off by
 
 ```vim
-let g:completion_enable_auto_popup = 0
+let g:completion_enable_auto_popup = v:false
 ```
 - Or you can toggle auto popup on the fly by using command `CompletionToggle`
 - You can manually trigger completion with mapping key by
@@ -169,7 +169,7 @@ imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
   called and displays in a floating window. Disable it by
 
 ```vim
-let g:completion_enable_auto_hover = 0
+let g:completion_enable_auto_hover = v:false
 ```
 
 ### Enable/Disable auto signature
@@ -178,7 +178,7 @@ let g:completion_enable_auto_hover = 0
   it by
 
 ```vim
-let g:completion_enable_auto_signature = 0
+let g:completion_enable_auto_signature = v:false
 ```
 
 ### Sorting completion items
@@ -256,7 +256,7 @@ let g:completion_trigger_keyword_length = 3 " default = 1
 you can enable it by
 
 ```vim
-let g:completion_trigger_on_delete = 1
+let g:completion_trigger_on_delete = v:true
 ```
 
 ### Timer Adjustment
