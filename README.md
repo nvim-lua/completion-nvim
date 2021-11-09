@@ -181,6 +181,14 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_auto_signature = 0
 ```
 
+### Enable/Disable auto close brace
+
+- By default variable completion with brace will not auto close. Enable it by
+
+```vim
+let g:completion_enable_auto_close_brace = 1
+```
+
 ### Sorting completion items
 
 - You can decide how your items being sorted in the popup menu. The default value
