@@ -107,13 +107,22 @@ local function applyAddtionalTextEdits(completed_item)
         }
       })
     else
-      if item.additionalTextEdits then
+      if next(item.additionalTextEdits or {}) then
         local bufnr = api.nvim_get_current_buf()
         local edits = vim.tbl_filter(
           function(x) return x.range.start.line ~= (lnum - 1) end,
           item.additionalTextEdits
         )
         vim.lsp.util.apply_text_edits(edits, bufnr)
+      else
+        vim.lsp.buf_request(bufnr, "completionItem/resolve", item, function(err, _, result)
+          if err or not result then
+            return
+          end
+          if result.additionalTextEdits then
+            vim.lsp.util.apply_text_edits(result.additionalTextEdits, bufnr)
+          end
+        end)
       end
     end
   end
